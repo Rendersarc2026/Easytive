@@ -1,6 +1,8 @@
+import Image from "next/image";
+import sunsetDance from "@/assets/brand/sunset-dance.jpg";
 import { testimonials } from "@/data/site";
 import { Carousel } from "../Carousel";
-import { Avatar, HandHeart } from "../Illustrations";
+import { Avatar } from "../Illustrations";
 import { ArrowRight, buttonStyles, Container, toneBg } from "../ui";
 
 function initials(name: string) {
@@ -44,14 +46,24 @@ export function Reviews() {
           ))}
         </Carousel>
 
-        <div className="mt-20 flex flex-col items-center text-center">
-          <HandHeart className="w-24" />
-          <p className="mt-6 max-w-md font-display text-2xl font-medium tracking-tight sm:text-3xl">
-            Thousands of quiet wins, shared out loud.
-          </p>
-          <a href="#" className={`${buttonStyles.primary} mt-8`}>
-            Head to our wall of love <ArrowRight />
-          </a>
+        <div className="relative mt-20 overflow-hidden rounded-3xl bg-ink text-paper">
+          <Image
+            src={sunsetDance}
+            alt=""
+            fill
+            placeholder="blur"
+            sizes="(min-width: 1320px) 1240px, 100vw"
+            className="object-cover object-[50%_20%]"
+          />
+          <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-t from-ink/80 via-ink/30 to-ink/10" />
+          <div className="relative flex min-h-[420px] flex-col items-center justify-end px-6 pb-12 text-center sm:min-h-[520px]">
+            <p className="max-w-md font-display text-2xl font-medium tracking-tight sm:text-4xl">
+              Thousands of quiet wins, shared out loud.
+            </p>
+            <a href="#" className={`${buttonStyles.light} mt-8`}>
+              Head to our wall of love <ArrowRight />
+            </a>
+          </div>
         </div>
       </Container>
     </section>

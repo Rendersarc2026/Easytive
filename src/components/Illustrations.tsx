@@ -78,38 +78,3 @@ export function ArticleArt({ tone, seed, className = "" }: { tone: Tone; seed: n
     </svg>
   );
 }
-
-export function HandHeart({ className = "" }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 120 110" className={className} aria-hidden="true" fill="none">
-      <path
-        d="M60 100C30 78 10 60 10 36 10 20 22 10 36 10c10 0 18 6 24 16 6-10 14-16 24-16 14 0 26 10 26 26 0 24-20 42-50 64Z"
-        stroke="#597b58"
-        strokeWidth="4"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <path d="M58 96C34 76 16 60 16 38 16 24 26 16 37 16" stroke="#597b58" strokeWidth="2" strokeLinecap="round" opacity=".5" />
-      <path d="M96 14l8-8M104 26l10-2M88 8l2-6" stroke="#151515" strokeWidth="3" strokeLinecap="round" />
-    </svg>
-  );
-}
-
-export function LabPattern({ className = "" }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 600 400" className={className} aria-hidden="true" preserveAspectRatio="xMidYMid slice">
-      <defs>
-        <pattern id="hex" width="60" height="52" patternUnits="userSpaceOnUse">
-          <path d="M15 0h30l15 26-15 26H15L0 26Z" fill="none" stroke="#fff" strokeOpacity=".07" />
-        </pattern>
-      </defs>
-      <rect width="600" height="400" fill="url(#hex)" />
-      <g stroke="#fff" strokeOpacity=".25" fill="none" strokeWidth="1.5">
-        <path d="M420 80v120a50 50 0 0 0 100 0V80" />
-        <path d="M410 80h120" />
-        <path d="M60 300h60l-20-90h-20Z" />
-      </g>
-      <path d="M420 170h100v30a50 50 0 0 1-100 0Z" fill="#9cc29a" opacity=".3" />
-    </svg>
-  );
-}

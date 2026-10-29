@@ -1,4 +1,5 @@
-import { Bottle } from "../Illustrations";
+import Image from "next/image";
+import bottlesLight from "@/assets/brand/bottles-light.jpg";
 import { ArrowRight, buttonStyles, Container } from "../ui";
 
 export function Hero() {
@@ -31,11 +32,16 @@ export function Hero() {
           </div>
         </div>
 
-        <div className="relative mx-auto flex w-full max-w-[520px] items-end justify-center">
-          <div aria-hidden="true" className="absolute inset-x-6 bottom-6 top-10 rounded-[48%] bg-paper/70" />
-          <Bottle tone="rose" name="Easytive Comfort" className="relative -mr-10 w-[38%] translate-y-4" />
-          <Bottle tone="sage" name="Easytive Daily" className="relative z-10 w-[48%]" />
-          <Bottle tone="ink" name="Easytive Flow" className="relative -ml-10 w-[38%] translate-y-4" />
+        <div className="relative mx-auto aspect-[4/5] w-full max-w-[520px] overflow-hidden rounded-3xl bg-sand-50 sm:aspect-square lg:aspect-[4/5]">
+          <Image
+            src={bottlesLight}
+            alt="Two clear Easytive bottles glowing in warm light"
+            fill
+            preload
+            placeholder="blur"
+            sizes="(min-width: 1024px) 520px, (min-width: 640px) 520px, 100vw"
+            className="object-cover object-[45%_50%]"
+          />
         </div>
       </Container>
     </section>

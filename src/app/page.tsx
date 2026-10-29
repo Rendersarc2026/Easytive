@@ -6,7 +6,7 @@ import { PressStrip } from "@/components/sections/PressStrip";
 import { Products } from "@/components/sections/Products";
 import { Reviews } from "@/components/sections/Reviews";
 import { Doctors, Rigor } from "@/components/sections/Science";
-import { Formula, Intro } from "@/components/sections/Story";
+import { Formula, Intro, Lifestyle } from "@/components/sections/Story";
 
 export default function Home() {
   return (
@@ -16,6 +16,7 @@ export default function Home() {
         <Hero />
         <PressStrip />
         <Intro />
+        <Lifestyle />
         <Products />
         <Formula />
         <Rigor />

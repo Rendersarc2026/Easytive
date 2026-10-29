@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { announcement, nav } from "@/data/site";
+import { Logo } from "./Logo";
 
 export function Header() {
   const [scrolled, setScrolled] = useState(false);
@@ -37,8 +38,8 @@ export function Header() {
         }`}
       >
         <div className="mx-auto flex h-16 max-w-[1320px] items-center justify-between px-4 sm:h-20 sm:px-6 lg:px-10">
-          <a href="#top" className="font-display text-[28px] font-medium tracking-tight sm:text-[34px]">
-            easytive
+          <a href="#top" className="inline-flex min-h-11 items-center">
+            <Logo className="h-[26px] w-auto sm:h-8" title="Easytive home" />
           </a>
 
           <nav aria-label="Primary" className="hidden lg:block">

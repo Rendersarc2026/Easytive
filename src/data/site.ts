@@ -3,6 +3,10 @@
 // articles are sample copy. Replace with verified Easytive content before launch —
 // health claims, credentials and press mentions must be real.
 
+import balconyReading from "@/assets/brand/balcony-reading.jpg";
+import friendsCar from "@/assets/brand/friends-car.jpg";
+import windowBlur from "@/assets/brand/window-blur.jpg";
+
 export type Product = {
   slug: string;
   name: string;
@@ -206,6 +210,7 @@ export const articles = [
     date: "Oct 12, 2026",
     tag: "Ingredients",
     tone: "rose" as const,
+    image: balconyReading,
   },
   {
     title: "How much water do you need? A realistic guide",
@@ -213,6 +218,7 @@ export const articles = [
     date: "Sep 28, 2026",
     tag: "Habits",
     tone: "aqua" as const,
+    image: windowBlur,
   },
   {
     title: "Five pelvic floor exercises you can do at your desk",
@@ -220,6 +226,7 @@ export const articles = [
     date: "Sep 09, 2026",
     tag: "Movement",
     tone: "sage" as const,
+    image: friendsCar,
   },
 ];
 

@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { articles, learn } from "@/data/site";
 import { Carousel } from "../Carousel";
 import { ArticleArt } from "../Illustrations";
@@ -55,14 +56,17 @@ export function Journal() {
           </a>
         </div>
         <ul className="mt-12 grid gap-10 md:grid-cols-3 md:gap-6">
-          {articles.map((a, i) => (
+          {articles.map((a) => (
             <li key={a.title}>
               <a href="#" className="group block">
-                <div className={`aspect-[16/10] overflow-hidden rounded-2xl ${toneBg[a.tone]}`}>
-                  <ArticleArt
-                    tone={a.tone}
-                    seed={i + 1}
-                    className="size-full transition-transform duration-500 group-hover:scale-105"
+                <div className={`relative aspect-[16/10] overflow-hidden rounded-2xl ${toneBg[a.tone]}`}>
+                  <Image
+                    src={a.image}
+                    alt=""
+                    fill
+                    placeholder="blur"
+                    sizes="(min-width: 768px) 33vw, 100vw"
+                    className="object-cover transition-transform duration-500 group-hover:scale-105"
                   />
                 </div>
                 <span className="mt-5 inline-block rounded-full border border-line px-3 py-1 text-xs">{a.tag}</span>

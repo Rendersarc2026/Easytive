@@ -1,14 +1,24 @@
+import Image from "next/image";
+import iconEmboss from "@/assets/brand/icon-emboss.jpg";
 import { doctors, stats } from "@/data/site";
-import { LabPattern, Portrait } from "../Illustrations";
+import { Portrait } from "../Illustrations";
 import { ArrowRight, buttonStyles, Container, Eyebrow, toneBg } from "../ui";
 
 // Slide 5 (Arrae): "The rigor behind every formula" stat cards over a lab image.
 export function Rigor() {
   return (
     <section className="px-4 sm:px-6 lg:px-10">
-      <div className="relative mx-auto max-w-[1400px] overflow-hidden rounded-3xl bg-sage-dark text-paper">
-        <LabPattern className="absolute inset-0 size-full" />
-        <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-t from-ink/60 via-transparent to-transparent" />
+      <div className="relative mx-auto max-w-[1400px] overflow-hidden rounded-3xl bg-ink text-paper">
+        <Image
+          src={iconEmboss}
+          alt=""
+          fill
+          placeholder="blur"
+          sizes="(min-width: 1400px) 1400px, 100vw"
+          className="object-cover object-[80%_50%]"
+        />
+        <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-r from-ink/80 via-ink/40 to-transparent" />
+        <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-t from-ink/70 via-transparent to-transparent" />
         <div className="relative px-6 py-16 sm:px-12 sm:py-24 lg:px-16">
           <p className="text-xs font-medium uppercase tracking-[0.18em] text-paper/70">Quality</p>
           <h2 className="mt-3 max-w-2xl font-display text-4xl font-medium leading-[1.05] tracking-tight sm:text-6xl">

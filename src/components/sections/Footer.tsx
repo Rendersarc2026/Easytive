@@ -1,4 +1,5 @@
 import { footerLinks } from "@/data/site";
+import { Logo } from "../Logo";
 import { Container } from "../ui";
 
 export function Footer() {
@@ -13,7 +14,7 @@ export function Footer() {
       <Container className="py-16 sm:py-20">
         <div className="grid gap-12 lg:grid-cols-[1.3fr_2fr]">
           <div>
-            <p className="font-display text-5xl font-medium tracking-tight sm:text-6xl">easytive</p>
+            <Logo tagline className="h-16 w-auto sm:h-20" />
             <p className="mt-3 text-paper/60">Everyday urinary wellness. Made in India.</p>
             <form action="#" className="mt-8 flex max-w-sm border-b border-paper/40">
               <label htmlFor="newsletter-email" className="sr-only">
