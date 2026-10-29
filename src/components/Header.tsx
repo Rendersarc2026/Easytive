@@ -34,7 +34,7 @@ export function Header() {
       </div>
       <header
         className={`sticky top-0 z-40 transition-colors duration-300 ${
-          scrolled || open ? "border-b border-line bg-cream/90 backdrop-blur-md" : "bg-transparent"
+          scrolled || open ? "border-b border-line bg-cream/90 text-ink backdrop-blur-md" : "bg-transparent text-paper"
         }`}
       >
         <div className="mx-auto flex h-16 max-w-[1320px] items-center justify-between px-4 sm:h-20 sm:px-6 lg:px-10">
@@ -46,7 +46,7 @@ export function Header() {
             <ul className="flex gap-9 text-[15px]">
               {nav.map((item) => (
                 <li key={item.href}>
-                  <a href={item.href} className="inline-block py-2.5 transition-colors hover:text-sage">
+                  <a href={item.href} className="inline-block py-2.5 transition-opacity hover:opacity-60">
                     {item.label}
                   </a>
                 </li>
@@ -55,10 +55,10 @@ export function Header() {
           </nav>
 
           <div className="flex items-center gap-3 text-[15px] sm:gap-5">
-            <a href="#" className="hidden min-h-11 items-center hover:text-sage sm:inline-flex">
+            <a href="#" className="hidden min-h-11 items-center transition-opacity hover:opacity-60 sm:inline-flex">
               Login
             </a>
-            <a href="#shop" className="inline-flex min-h-11 items-center px-1 hover:text-sage">
+            <a href="#shop" className="inline-flex min-h-11 items-center px-1 transition-opacity hover:opacity-60">
               Cart (0)
             </a>
             <button

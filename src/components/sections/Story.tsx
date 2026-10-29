@@ -1,7 +1,7 @@
 import Image, { type StaticImageData } from "next/image";
 import beachLaugh from "@/assets/brand/beach-laugh.jpg";
-import bedJump from "@/assets/brand/bed-jump.jpg";
 import bottleHand from "@/assets/brand/bottle-hand.jpg";
+import bottlesLight from "@/assets/brand/bottles-light.jpg";
 import hotelMorning from "@/assets/brand/hotel-morning.jpg";
 import sunsetRocks from "@/assets/brand/sunset-rocks.jpg";
 import { ingredients } from "@/data/site";
@@ -24,8 +24,8 @@ export function Intro() {
 // Brand photography from the guidelines deck, under the "Easy does it" tagline.
 const moments: { src: StaticImageData; alt: string; className: string; sizes: string }[] = [
   {
-    src: bedJump,
-    alt: "A woman in a white robe leaping onto a hotel bed",
+    src: bottlesLight,
+    alt: "Two clear Easytive bottles glowing in warm light",
     className: "col-span-2 lg:col-span-2",
     sizes: "(min-width: 1024px) 50vw, 100vw",
   },

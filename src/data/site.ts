@@ -1,10 +1,14 @@
 // All homepage content lives here.
 // PLACEHOLDER: products, prices, press names, stats, doctors, testimonials and
-// articles are sample copy. Replace with verified Easytive content before launch —
+// articles and Instagram reels are sample copy. Replace with verified Easytive content before launch —
 // health claims, credentials and press mentions must be real.
 
 import balconyReading from "@/assets/brand/balcony-reading.jpg";
+import beachLaugh from "@/assets/brand/beach-laugh.jpg";
+import bottleHand from "@/assets/brand/bottle-hand.jpg";
 import friendsCar from "@/assets/brand/friends-car.jpg";
+import hotelMorning from "@/assets/brand/hotel-morning.jpg";
+import sunsetRocks from "@/assets/brand/sunset-rocks.jpg";
 import windowBlur from "@/assets/brand/window-blur.jpg";
 
 export type Product = {
@@ -132,6 +136,16 @@ export const doctors = [
     title: "Head of Formulation",
     tone: "sand" as const,
   },
+];
+
+// Dummy Instagram reels: brand photos stand in for video posters.
+export const reels = [
+  { image: beachLaugh, handle: "@priya.outdoors", caption: "Beach day, zero washroom math", views: "128K" },
+  { image: friendsCar, handle: "@roadtrip.duo", caption: "6-hour drive. Two stops. Both for snacks.", views: "94.2K" },
+  { image: hotelMorning, handle: "@slowmornings", caption: "My 7am routine, now with Easytive Daily", views: "61.8K" },
+  { image: bottleHand, handle: "@easytive", caption: "What's actually inside one capsule", views: "203K" },
+  { image: sunsetRocks, handle: "@neha.k", caption: "Finally staying for the whole sunset", views: "47.5K" },
+  { image: balconyReading, handle: "@dr.ananya.rao", caption: "3 myths about UTIs, busted in 30 seconds", views: "156K" },
 ];
 
 export const testimonials = [
