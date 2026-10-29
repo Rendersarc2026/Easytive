@@ -7,7 +7,11 @@ export function Hero() {
       <div aria-hidden="true" className="absolute -right-40 -top-40 size-[640px] rounded-full bg-aqua-50 opacity-80 blur-3xl" />
       <Container className="relative grid items-center gap-10 py-14 sm:py-20 lg:grid-cols-[1.1fr_1fr] lg:py-28">
         <div>
-          <p className="mb-6 text-sm text-sage-dark">Urinary wellness · Doctor-guided · Third-party tested</p>
+          <p className="mb-6 flex flex-wrap gap-x-2 text-sm text-sage-dark">
+            <span>Urinary wellness ·</span>
+            <span>Doctor-guided ·</span>
+            <span className="whitespace-nowrap">Third-party tested</span>
+          </p>
           <h1 className="font-display text-[44px] font-medium leading-[1.02] tracking-tight sm:text-6xl lg:text-[84px]">
             Feel easy,
             <br />

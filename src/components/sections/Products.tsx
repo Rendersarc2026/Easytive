@@ -37,14 +37,14 @@ export function Products() {
                   <p className="mt-1 text-sm text-muted">{p.tagline}</p>
                 </a>
                 <div className="mt-3 flex items-center justify-between gap-3">
-                  <p className="text-sm">
+                  <p className="flex flex-wrap items-baseline gap-x-2 text-sm">
                     <span className="sr-only">Sale price </span>
-                    <span className="font-medium">{formatPrice(p.price)}</span>
+                    <span className="whitespace-nowrap font-medium">{formatPrice(p.price)}</span>
                     {p.compareAt && (
                       <>
                         <span className="sr-only"> Regular price </span>
-                        <s className="ml-2 text-muted">{formatPrice(p.compareAt)}</s>
-                        <span className="ml-2 text-sage">{off}% off</span>
+                        <s className="whitespace-nowrap text-muted">{formatPrice(p.compareAt)}</s>
+                        <span className="whitespace-nowrap text-sage">{off}% off</span>
                       </>
                     )}
                   </p>

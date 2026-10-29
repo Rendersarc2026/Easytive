@@ -27,7 +27,10 @@ export function Header() {
 
   return (
     <>
-      <div className="bg-ink px-4 py-2.5 text-center text-xs tracking-wide text-paper sm:text-[13px]">{announcement}</div>
+      <div className="bg-ink px-4 py-2.5 text-center text-xs tracking-wide text-paper sm:text-[13px]">
+        <span className="sm:hidden">{announcement.short}</span>
+        <span className="hidden sm:inline">{announcement.full}</span>
+      </div>
       <header
         className={`sticky top-0 z-40 transition-colors duration-300 ${
           scrolled || open ? "border-b border-line bg-cream/90 backdrop-blur-md" : "bg-transparent"
@@ -42,7 +45,7 @@ export function Header() {
             <ul className="flex gap-9 text-[15px]">
               {nav.map((item) => (
                 <li key={item.href}>
-                  <a href={item.href} className="transition-colors hover:text-sage">
+                  <a href={item.href} className="inline-block py-2.5 transition-colors hover:text-sage">
                     {item.label}
                   </a>
                 </li>
@@ -50,16 +53,16 @@ export function Header() {
             </ul>
           </nav>
 
-          <div className="flex items-center gap-5 text-[15px]">
-            <a href="#" className="hidden sm:inline hover:text-sage">
+          <div className="flex items-center gap-3 text-[15px] sm:gap-5">
+            <a href="#" className="hidden min-h-11 items-center hover:text-sage sm:inline-flex">
               Login
             </a>
-            <a href="#shop" className="hover:text-sage">
+            <a href="#shop" className="inline-flex min-h-11 items-center px-1 hover:text-sage">
               Cart (0)
             </a>
             <button
               type="button"
-              className="grid size-10 place-items-center lg:hidden"
+              className="grid size-11 place-items-center lg:hidden"
               aria-label={open ? "Close menu" : "Open menu"}
               aria-expanded={open}
               aria-controls="mobile-menu"
@@ -77,7 +80,7 @@ export function Header() {
         </div>
 
         {open && (
-          <nav id="mobile-menu" aria-label="Mobile" className="h-[calc(100dvh-4rem)] border-t border-line bg-cream lg:hidden">
+          <nav id="mobile-menu" aria-label="Mobile" className="h-[calc(100dvh-4rem)] overflow-y-auto overscroll-contain border-t border-line bg-cream pb-10 lg:hidden">
             <ul className="flex flex-col px-4 pt-6 sm:px-6">
               {nav.map((item) => (
                 <li key={item.href}>

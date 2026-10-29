@@ -23,9 +23,9 @@ export function Formula() {
         <div className="relative order-last aspect-square overflow-hidden rounded-3xl bg-sand-50 lg:order-first">
           <div aria-hidden="true" className="absolute left-1/2 top-1/2 size-[70%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-paper/70" />
           <Bottle tone="sage" name="Easytive Daily" className="absolute inset-x-0 bottom-[12%] mx-auto w-[46%]" />
-          <span className="absolute left-[8%] top-[14%] rounded-full bg-paper px-4 py-2 text-sm shadow-sm">36 mg PACs</span>
-          <span className="absolute right-[8%] top-[34%] rounded-full bg-paper px-4 py-2 text-sm shadow-sm">2 g D-Mannose</span>
-          <span className="absolute bottom-[10%] left-[10%] rounded-full bg-paper px-4 py-2 text-sm shadow-sm">No added sugar</span>
+          <span className="absolute left-[6%] top-[8%] rounded-full bg-paper px-3 py-1.5 text-xs shadow-sm sm:left-[8%] sm:top-[14%] sm:px-4 sm:py-2 sm:text-sm">36 mg PACs</span>
+          <span className="absolute right-[6%] top-[20%] rounded-full bg-paper px-3 py-1.5 text-xs shadow-sm sm:right-[8%] sm:top-[34%] sm:px-4 sm:py-2 sm:text-sm">2 g D-Mannose</span>
+          <span className="absolute bottom-[6%] left-[6%] rounded-full bg-paper px-3 py-1.5 text-xs shadow-sm sm:bottom-[10%] sm:left-[10%] sm:px-4 sm:py-2 sm:text-sm">No added sugar</span>
         </div>
 
         <div>

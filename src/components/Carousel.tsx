@@ -53,7 +53,8 @@ export function Carousel({ heading, children, label }: Props) {
         role="region"
         aria-label={label}
         tabIndex={0}
-        className="no-scrollbar -mx-4 flex snap-x snap-mandatory scroll-px-4 gap-4 overflow-x-auto px-4 pb-2 focus-visible:outline-none sm:-mx-6 sm:scroll-px-6 sm:px-6 lg:mx-0 lg:scroll-px-0 lg:px-0 lg:gap-6"
+        // `relative` keeps absolutely positioned children (e.g. sr-only labels) clipped by the track.
+        className="no-scrollbar relative -mx-4 flex overscroll-x-contain snap-x snap-mandatory scroll-px-4 gap-4 overflow-x-auto px-4 pb-2 focus-visible:outline-none sm:-mx-6 sm:scroll-px-6 sm:px-6 lg:mx-0 lg:scroll-px-0 lg:px-0 lg:gap-6"
       >
         {children}
       </div>

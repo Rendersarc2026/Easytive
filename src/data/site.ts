@@ -13,8 +13,10 @@ export type Product = {
   badge?: string;
 };
 
-export const announcement =
-  "Free shipping on orders above Rs. 999 · Discreet packaging on every order";
+export const announcement = {
+  full: "Free shipping on orders above Rs. 999 · Discreet packaging on every order",
+  short: "Free shipping above Rs. 999 · Discreet packaging",
+};
 
 export const nav = [
   { label: "Shop", href: "#shop" },

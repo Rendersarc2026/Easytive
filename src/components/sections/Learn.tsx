@@ -26,7 +26,7 @@ export function LearnHub() {
               className={`group flex w-[85%] shrink-0 snap-start flex-col rounded-2xl p-7 sm:w-[46%] lg:w-[calc((100%-48px)/3)] ${toneBg[card.tone]}`}
             >
               <p className="text-xs uppercase tracking-[0.18em] text-muted">{card.kicker}</p>
-              <ArticleArt tone={card.tone} seed={i} className="my-6 h-40 w-full" />
+              <ArticleArt tone={card.tone} seed={i} className="my-4 h-28 w-full sm:my-6 sm:h-40" />
               <h3 className="font-display text-2xl font-medium">{card.title}</h3>
               <p className="mt-2 flex-1 text-ink-soft">{card.body}</p>
               <span className="mt-6 inline-flex items-center gap-2 text-sm font-medium group-hover:text-sage">
