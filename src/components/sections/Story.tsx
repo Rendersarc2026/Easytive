@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useEffect, useState, type SubmitEvent } from "react";
-import { BAND_MS, bandPhotos, moments, reviewCount } from "@/data/site";
+import { BAND_MS, bandPhotos, moments } from "@/data/site";
 import { useBag } from "../Bag";
 import { Arrow } from "../icons";
 import { PhotoStack } from "../PhotoStack";
@@ -13,10 +13,10 @@ export function Moments() {
       <div className="wrap">
         <div className="shead">
           <h2>
-            Long drives, <em>late nights</em>
+            Life, without the <em>washroom map</em>
           </h2>
           <a className="link" href="#creators">
-            More stories <Arrow />
+            Read their stories <Arrow />
           </a>
         </div>
         <div className="mgrid">
@@ -55,13 +55,13 @@ export function Note() {
     <section className="note" aria-label="Our approach">
       <div className="wrap">
         <p className="l">
-          We only use ingredients that have been studied, at the doses the studies used, plus a few herbs from Ayurveda. Every
-          dose is printed on the label.
+          At Easytive, we use studied ingredients at the doses research supports, paired with botanicals rooted in Ayurveda.
+          Nothing you don&apos;t need, and nothing hidden on the label.
         </p>
         <div className="r">
           <p>
-            A urologist, a gynaecologist and a formulation scientist review each product before it goes on sale. An independent
-            lab then tests every batch for purity and strength.
+            Urologists, gynaecologists and formulation scientists review every product before it reaches you, and every batch
+            is tested by an independent lab for purity and potency.
           </p>
           <button className="btn" type="button" aria-expanded={open} aria-controls="lookup-box" onClick={() => setOpen((o) => !o)}>
             View batch reports <Arrow />
@@ -122,13 +122,13 @@ export function Band() {
         <PhotoStack photos={bandPhotos} active={active} sizes="(min-width: 1440px) 1296px, 100vw" />
         <div className="in">
           <span className="label" style={{ color: "#fff" }}>
-            {reviewCount} reviews
+            12K+ customers
           </span>
           <h2>
-            Mostly from people who <em>never talk about this.</em>
+            Thousands of quiet wins, <em>shared out loud.</em>
           </h2>
-          <a className="btn btn-light" href="#reviews">
-            Read the reviews <Arrow />
+          <a className="btn btn-light" href="#creators">
+            Read their stories <Arrow />
           </a>
         </div>
       </section>

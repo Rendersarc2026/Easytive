@@ -83,11 +83,11 @@ export function Creators() {
               Creators
             </span>
             <h2>
-              How they <em>take it</em>
+              Easy, in <em>their</em> words
             </h2>
           </div>
           <div className="r">
-            <p>Creators who take Easytive, showing when and how. Tap a reel to watch.</p>
+            <p>Real routines from creators who live with it. Tap any reel to watch.</p>
             <div className="arrows">
               <button type="button" className="arrow-btn" aria-label="Scroll reels back" disabled={edges.start} onClick={() => scrollBy(-1)}>
                 <ArrowLeft />

@@ -29,10 +29,10 @@ export function Statement() {
   return (
     <section className="statement">
       <div className="wrap">
-        <span className="label">How it fits in</span>
+        <span className="label">Everyday urinary wellness</span>
         <h2>
-          Two capsules <Chip src={statementImages.a} /> with breakfast. Then <Chip src={statementImages.b} /> you get on{" "}
-          <Chip src={statementImages.c} /> with your day.
+          A calm, daily <Chip src={statementImages.a} /> approach to urinary wellness, designed <Chip src={statementImages.b} /> for
+          consistency <Chip src={statementImages.c} />, not urgency.
         </h2>
       </div>
     </section>

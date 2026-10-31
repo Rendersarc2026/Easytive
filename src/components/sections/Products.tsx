@@ -28,10 +28,10 @@ export function Products() {
         <div className="panel">
           <div className="shead">
             <h2>
-              Shop the <em>range</em>
+              Designed around your <em>daily rhythm</em>
             </h2>
             <div className="r">
-              <p>Most people start with Daily and add the others only if they need them.</p>
+              <p>Studied ingredients at meaningful doses, doctor-reviewed and third-party tested, batch by batch.</p>
               <a className="link" href="#shop">
                 Shop all <Arrow />
               </a>

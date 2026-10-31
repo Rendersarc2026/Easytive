@@ -80,7 +80,7 @@ export function DailySystem() {
   }, []);
 
   return (
-    <section className="system" id="system" ref={section} aria-label="How it works">
+    <section className="system" id="system" ref={section} aria-label="A daily system">
       <div className="pin">
         <div className="wrap">
           <div className="shead">
@@ -89,11 +89,11 @@ export function DailySystem() {
                 How it works
               </span>
               <h2>
-                What to take, <em>and when</em>
+                A daily system, <em>easily</em> applied
               </h2>
             </div>
             <div className="r">
-              <p>Five steps across a day. Most people only need the first one.</p>
+              <p>Four small moments that keep comfort steady from morning to night.</p>
               <div className="arrows">
                 <button type="button" className="arrow-btn" aria-label="Previous step" onClick={() => api.current.step(-1)}>
                   <ArrowLeft />

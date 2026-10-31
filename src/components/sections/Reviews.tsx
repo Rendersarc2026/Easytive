@@ -99,7 +99,7 @@ export function Reviews() {
       <div className="wrap">
         <div className="rv-top">
           <div className="left">
-            <span className="label">Customer reviews</span>
+            <span className="label">Real people. Real relief.</span>
             <span className="rv-tag">Sample reviews</span>
           </div>
           <div className="arrows">

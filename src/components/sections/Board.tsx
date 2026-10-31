@@ -10,11 +10,11 @@ export function Board() {
         <div className="shead">
           <div>
             <h2>
-              The doctors <em>who check it</em>
+              Meet our <em>scientists</em>.
             </h2>
             <p className="sub">
-              A urologist, a physician, a gynaecologist and a formulation scientist review every formula and every article
-              before it goes out.
+              Urologists, gynaecologists and formulation scientists review every formula and every article before it reaches
+              you.
             </p>
           </div>
           <a className="link" href="#experts">

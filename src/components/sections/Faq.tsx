@@ -39,9 +39,9 @@ export function Faq() {
         <div className="faq-l">
           <span className="label">FAQ</span>
           <h2>
-            Things people <em>ask us</em>
+            Questions, <em>answered.</em>
           </h2>
-          <p>Rather ask a person? Message us on WhatsApp and someone from our team will reply.</p>
+          <p>Something personal you&apos;d rather ask a person? Our team replies on WhatsApp, quietly and quickly.</p>
           <WhatsAppButton className="faq-wa">
             <i>
               <WhatsApp stroke={2.4} />

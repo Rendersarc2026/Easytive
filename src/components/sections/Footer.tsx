@@ -14,7 +14,7 @@ export function Footer() {
         <div className="ftop">
           <div className="fbrand">
             <Logo tagline title="easytive, urinary health" />
-            <p>Easy does it. Made in India.</p>
+            <p>Doctor-guided, third-party tested urinary wellness. Made in India.</p>
           </div>
           {footerCols.map((c) => (
             <div className="fcol" key={c.title}>
@@ -30,7 +30,7 @@ export function Footer() {
           ))}
           <div className="fnews">
             <h4>The Easy Letter</h4>
-            <p>One short email every two weeks on bladder health, hydration and habits.</p>
+            <p>One short email a fortnight on bladder health, hydration and habits.</p>
             <form
               onSubmit={(e) => {
                 e.preventDefault();

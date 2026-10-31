@@ -8,7 +8,7 @@ export function Journal() {
       <div className="wrap">
         <div className="shead">
           <h2>
-            Questions you <em>didn&rsquo;t want to ask</em>
+            Know your body <em>better</em>
           </h2>
           <a className="link" href="#journal">
             All articles <Arrow />

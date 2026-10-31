@@ -55,7 +55,7 @@ export const products = {
   flow: { name: "Easytive Flow", desc: "Pumpkin seed + saw palmetto, for men", price: 1349, tint: "#DAD7D0", l1: "#F0EEEA", l2: "#D3CFC7" },
   comfort: { name: "Easytive Comfort", desc: "D-Mannose sachets, cranberry flavour", price: 899, badge: "New", tint: "#EBD3CA", l1: "#F6E9E4", l2: "#E8CFC5", sachet: true },
   proFlora: { name: "Easytive Pro-Flora", desc: "Probiotic for women's urinary flora", price: 1249, tint: "#E3DBCB", l1: "#F5F2EC", l2: "#E1D9CA" },
-  hydrate: { name: "Easytive Hydrate+", desc: "Electrolyte drink mix, no added sugar", price: 749, tint: "#D5DFDC", l1: "#F1F4F3", l2: "#D5DFDC" },
+  hydrate: { name: "Easytive Hydrate+", desc: "Electrolyte drink mix", price: 749, tint: "#D5DFDC", l1: "#F1F4F3", l2: "#D5DFDC" },
 } satisfies Record<string, Product>;
 
 export type ProductKey = keyof typeof products;
@@ -77,7 +77,7 @@ export const heroPhotos: (BannerPhoto & { slide: "lifestyle" | "proof"; hold: nu
 export const heroCopy = {
   lifestyle: { tag: "Easy does it" },
   proof: {
-    tag: "The numbers",
+    tag: "The proof",
     stats: [
       { value: "36 mg", label: "cranberry PACs, the dose used in published studies" },
       { value: "2 g", label: "D-Mannose per serving" },
@@ -99,13 +99,13 @@ export const steps: { image: Photo; pill: string; title: string; body: string }[
     image: { src: hotelMorning, alt: "A woman in a robe sipping from a mug on the edge of a hotel bed" },
     pill: "Morning · Daily",
     title: "Two capsules with breakfast",
-    body: "Easytive Daily: 36 mg cranberry PACs and 2 g D-Mannose.",
+    body: "Easytive Daily: 36 mg cranberry PACs and 2 g D-Mannose to start the day.",
   },
   {
     image: { src: bottlesLight, alt: "Two clear Easytive bottles with brushed metal caps in warm light" },
     pill: "Through the day · Hydrate+",
     title: "One scoop in your bottle",
-    body: "Electrolytes for work, the gym or a long drive.",
+    body: "Electrolytes for steady hydration at work, at the gym or on a long drive.",
   },
   {
     image: { src: friendsCar, alt: "Two women laughing in an open-top car" },
@@ -116,14 +116,14 @@ export const steps: { image: Photo; pill: string; title: string; body: string }[
   {
     image: { src: balconyReading, alt: "Someone in a white robe reading on a sunny balcony" },
     pill: "Evening · Pro-Flora",
-    title: "A probiotic with dinner",
-    body: "Lactobacillus strains picked for women's urinary flora.",
+    title: "Friendly flora before bed",
+    body: "Lactobacillus strains for women, taken with dinner.",
   },
   {
     image: { src: iconEmboss, alt: "The Easytive mark embossed on a dark surface" },
     pill: "Every batch · Tested",
     title: "Checked before it ships",
-    body: "An independent lab tests every batch. Enter your batch number to see the report.",
+    body: "Every batch goes to an independent lab. Enter your batch number to see the report.",
   },
 ];
 
@@ -158,14 +158,14 @@ export const reels: Reel[] = [
   {
     image: { src: hotelMorning, alt: "A woman in a robe sipping from a mug on the edge of a hotel bed" },
     pos: "low",
-    type: { kind: "mix", line: "With my", em: "morning chai" },
+    type: { kind: "mix", line: "Morning", em: "Ritual" },
     creator: "Wellness creator",
     product: "daily",
   },
   {
     image: { src: friendsCar, alt: "Two women laughing in an open-top car" },
     pos: "top",
-    type: { kind: "pill", text: "8 hours, 1 stop" },
+    type: { kind: "pill", text: "Road-trip ready" },
     creator: "Travel creator",
     product: "comfort",
   },
@@ -179,14 +179,14 @@ export const reels: Reel[] = [
   {
     image: { src: sunsetDance, alt: "A couple dancing on a lakeside deck at sunset" },
     pos: "low",
-    type: { kind: "mix", line: "Through the", em: "whole sangeet" },
+    type: { kind: "mix", line: "Stay for the", em: "last song" },
     creator: "Wedding season",
     product: "comfort",
   },
   {
     image: { src: beachLaugh, alt: "A woman laughing on the beach, framed by a straw hat brim" },
     pos: "top",
-    type: { kind: "pill", text: "At the beach till sunset" },
+    type: { kind: "pill", text: "Beach day, all day" },
     creator: "Fitness creator",
     product: "hydrate",
   },
@@ -246,10 +246,10 @@ export const reviews: { quote: string; name: string; about: string; product: Pro
 
 export const moments: { image: Photo; label: string; line: string }[] = [
   { image: { src: friendsCar, alt: "Two women laughing in an open-top car on a country road" }, label: "The road trip", line: "No pit-stop maths." },
-  { image: { src: sunsetDance, alt: "A couple dancing on a lakeside deck at sunset" }, label: "The sangeet", line: "Stay till the DJ packs up." },
-  { image: { src: balconyReading, alt: "Someone reading on a sunny balcony over the water" }, label: "The morning", line: "Chai, the paper, no rush." },
-  { image: { src: beachLaugh, alt: "A woman laughing on the beach under a straw hat brim" }, label: "The beach day", line: "No hunting for a loo." },
-  { image: { src: windowBlur, alt: "A woman by a window overlooking the sea, softly out of focus" }, label: "The afternoon", line: "A nap that runs its full length." },
+  { image: { src: sunsetDance, alt: "A couple dancing on a lakeside deck at sunset" }, label: "The party", line: "Stay for the last song." },
+  { image: { src: balconyReading, alt: "Someone reading on a sunny balcony over the water" }, label: "The morning", line: "A slow one, uninterrupted." },
+  { image: { src: beachLaugh, alt: "A woman laughing on the beach under a straw hat brim" }, label: "The beach day", line: "All day, all yours." },
+  { image: { src: windowBlur, alt: "A woman by a window overlooking the sea, softly out of focus" }, label: "The pause", line: "Nowhere you need to be." },
 ];
 
 // ---- Journal -----------------------------------------------------------------
@@ -258,14 +258,14 @@ export const articles: { image: Photo; tag: string; title: string; author: strin
   {
     image: { src: bottleHand, alt: "A hand holding a clear Easytive bottle in warm light" },
     tag: "Ingredients",
-    title: "Cranberry or D-Mannose? What the studies found",
+    title: "Cranberry vs D-Mannose: what the research says",
     author: "Dr. Ananya Rao",
     date: "12 Oct 2026",
   },
   {
     image: { src: hotelMorning, alt: "A woman in a robe sipping from a mug on a hotel bed" },
     tag: "Habits",
-    title: "How much water do you actually need?",
+    title: "How much water do you need? A realistic guide",
     author: "Easytive Team",
     date: "28 Sep 2026",
   },
@@ -296,11 +296,11 @@ export const faq: { group: string; items: { q: string; a: string }[] }[] = [
     items: [
       {
         q: "Which Easytive is right for me?",
-        a: "Start with **Easytive Daily** if you want everyday comfort; it suits both women and men. **Flow** is made for men, **Pro-Flora** for women's urinary flora, **Comfort** sachets are for travel days and late nights, and **Hydrate+** goes in your water bottle. Not sure? The **Easy Start Bundle** covers the three most popular.",
+        a: "Start with **Easytive Daily** if you want everyday comfort; it suits both women and men. **Flow** is made for men, **Pro-Flora** for women's urinary flora, **Comfort** sachets are for travel days and late nights, and **Hydrate+** goes in your water bottle. Not sure? The Easy Start Bundle covers the three most popular.",
       },
       {
         q: "How long before I notice a difference?",
-        a: "Supplements take time. Take your product every day for at least eight weeks before you decide whether it's working. Taking it daily matters more than the dose on any one day.",
+        a: "Supplements work gradually, not overnight. Take your product every day and give it at least eight weeks before you judge it. Consistency matters more than the dose on any single day.",
       },
       {
         q: "Is Easytive a treatment for UTIs?",

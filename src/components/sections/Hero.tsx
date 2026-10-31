@@ -50,7 +50,7 @@ export function Hero() {
           <div className="hero-copy">
             <span className="tag">{lifestyle.tag}</span>
             <h1>
-              Stop counting <em>washroom breaks.</em>
+              Comfort, built into <em>every</em> day.
             </h1>
             <div className="ctas">
               <a className="btn btn-light" href="#shop" tabIndex={tab("lifestyle")}>
@@ -67,7 +67,7 @@ export function Hero() {
           <div className="hero-copy">
             <span className="tag">{proof.tag}</span>
             <p role="heading" aria-level={2} className="h1">
-              The doses from the studies. <em>Every</em> batch tested.
+              Clinically studied doses. <em>Tested</em> every batch.
             </p>
             <ul className="proof-row">
               {proof.stats.map((s) => (
