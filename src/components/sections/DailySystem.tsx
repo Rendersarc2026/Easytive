@@ -104,11 +104,11 @@ export function DailySystem() {
           <div className="mb-10 flex flex-wrap items-end justify-between gap-6">
             <div className="max-w-xl">
               <Title id="system-title">
-                A daily system, <em>precisely applied</em>
+                What goes <em>into it</em>
               </Title>
               <p className="mt-4 max-w-md text-[15px] leading-relaxed text-ink-soft">
-                Foundational support for your urinary tract, built from a few studied ingredients that each do one job
-                well.
+                A short list of ingredients, each with research behind it, at the doses that research used. Here is
+                what each one is for.
               </p>
             </div>
             <div className="flex gap-6 text-[11px] uppercase tracking-[0.24em]">
@@ -134,7 +134,7 @@ export function DailySystem() {
           <div ref={frame}>
             <ul
               ref={track}
-              aria-label="The Easytive daily system"
+              aria-label="Easytive ingredients"
               tabIndex={pinned ? undefined : 0}
               className={
                 pinned

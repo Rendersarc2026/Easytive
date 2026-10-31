@@ -9,9 +9,9 @@ const playfair = Playfair_Display({
 });
 
 export const metadata: Metadata = {
-  title: "Easytive — Everyday urinary wellness",
+  title: "Easytive | Daily urinary support",
   description:
-    "Doctor-guided, third-party tested supplements for everyday bladder and urinary tract comfort.",
+    "Daily supplements for bladder and urinary tract health. An independent lab tests every batch.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

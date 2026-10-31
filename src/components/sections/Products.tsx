@@ -8,11 +8,10 @@ export function Products() {
       <Container>
         <div className="grid items-end gap-6 lg:grid-cols-[1.2fr_1fr_auto] lg:gap-12">
           <Title>
-            Designed around <em>your everyday</em>
+            Shop the <em>range</em>
           </Title>
           <p className="max-w-sm text-[15px] leading-relaxed text-ink-soft">
-            Gentle daily formulas for bladder and urinary tract comfort, each one made to be taken without a second
-            thought.
+            Four products. Most people start with Daily and add the others only if they need them.
           </p>
           <a
             href="#"

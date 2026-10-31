@@ -39,54 +39,54 @@ export const nav = [
 // Short quotes for the ticker under the hero.
 export const reviewCount = "12,400+";
 export const quickReviews = [
-  { quote: "Stopped planning around washrooms", name: "Priya S." },
-  { quote: "Easiest habit I've kept", name: "Neha K." },
-  { quote: "Finally sleeping through", name: "Rajesh M." },
-  { quote: "Love that they publish test reports", name: "Farah A." },
-  { quote: "Discreet, simple, works for me", name: "Sneha R." },
+  { quote: "I don't look for washrooms first anymore", name: "Priya S." },
+  { quote: "Nine-hour drive, one stop", name: "Neha K." },
+  { quote: "Sleeping through most nights now", name: "Rajesh M." },
+  { quote: "They actually post the lab reports", name: "Farah A." },
+  { quote: "Fits in my bag, nobody asks", name: "Sneha R." },
 ];
 
-// "A daily system, precisely applied" — slides sideways on scroll.
+// Ingredient cards that slide sideways on scroll.
 export const system: { tag: string; title: string; body: string; image: StaticImageData; alt: string }[] = [
   {
-    tag: "Clinically studied",
-    title: "Urinary tract support",
-    body: "36 mg cranberry PACs, the dose most studies use.",
+    tag: "Urinary tract",
+    title: "Cranberry PACs",
+    body: "36 mg a day, the amount used in most of the studies.",
     image: bottlesLight,
     alt: "Two clear Easytive bottles glowing in warm light",
   },
   {
-    tag: "Fast-acting",
-    title: "Everyday comfort",
-    body: "D-Mannose sachets for the days you need a little more.",
+    tag: "Comfort",
+    title: "D-Mannose",
+    body: "A sachet stirred into water, for the days you need more help.",
     image: bottleHand,
     alt: "A hand holding a clear Easytive bottle",
   },
   {
-    tag: "Botanical",
-    title: "Bladder control",
-    body: "Pumpkin seed and Punarnava, rooted in Ayurveda.",
+    tag: "Bladder",
+    title: "Pumpkin seed + Punarnava",
+    body: "Pumpkin seed extract with Punarnava, a herb long used in Ayurveda.",
     image: sunsetRocks,
     alt: "Two friends sitting on rocks by the sea at sunset",
   },
   {
-    tag: "Probiotic",
-    title: "Flora balance",
-    body: "Lactobacillus strains chosen for women's urinary flora.",
+    tag: "Flora",
+    title: "Lactobacillus",
+    body: "Probiotic strains picked for women's urinary flora.",
     image: balconyReading,
     alt: "A woman reading in the sun on a balcony by the water",
   },
   {
-    tag: "No added sugar",
-    title: "Smart hydration",
-    body: "Electrolytes that make drinking enough water easier.",
+    tag: "Hydration",
+    title: "Electrolytes",
+    body: "Makes it easier to drink the water you meant to. No added sugar.",
     image: windowBlur,
     alt: "A woman relaxing by a window overlooking the sea",
   },
   {
-    tag: "Third-party tested",
-    title: "Nothing hidden",
-    body: "Every batch tested, every report published.",
+    tag: "Testing",
+    title: "Lab reports",
+    body: "An outside lab tests each batch. We post the results on our site.",
     image: iconEmboss,
     alt: "The Easytive mark embossed on a dark pack",
   },
@@ -142,17 +142,17 @@ export type ReelOverlay =
 export const reels: { image: StaticImageData; overlay: ReelOverlay; creator: string; product: string; caption: string }[] = [
   {
     image: hotelMorning,
-    overlay: { kind: "title", lines: ["Morning", "Ritual"] },
+    overlay: { kind: "title", lines: ["With my", "morning chai"] },
     creator: "Wellness creator",
     product: "Easytive Daily",
-    caption: "Morning ritual",
+    caption: "With my morning chai",
   },
   {
     image: friendsCar,
-    overlay: { kind: "pill", text: "Road-trip ready" },
+    overlay: { kind: "pill", text: "8 hours, 1 stop" },
     creator: "Travel creator",
     product: "Easytive Daily",
-    caption: "Road-trip ready",
+    caption: "8 hours, 1 stop",
   },
   {
     image: bottleHand,
@@ -170,10 +170,10 @@ export const reels: { image: StaticImageData; overlay: ReelOverlay; creator: str
   },
   {
     image: beachLaugh,
-    overlay: { kind: "pill", text: "Beach day, all day" },
+    overlay: { kind: "pill", text: "At the beach till sunset" },
     creator: "Fitness creator",
     product: "Easytive Hydrate+",
-    caption: "Beach day, all day",
+    caption: "At the beach till sunset",
   },
   {
     image: bedJump,
@@ -186,22 +186,22 @@ export const reels: { image: StaticImageData; overlay: ReelOverlay; creator: str
 
 export const moments: { image: StaticImageData; alt: string; label: string; line: string }[] = [
   { image: friendsCar, alt: "Two friends laughing in a convertible", label: "The road trip", line: "No pit-stop maths." },
-  { image: sunsetDance, alt: "A couple dancing on a deck at sunset", label: "The party", line: "Stay for the last song." },
-  { image: balconyReading, alt: "A woman reading on a sunny balcony", label: "The morning", line: "A slow one, uninterrupted." },
-  { image: beachLaugh, alt: "A woman laughing on a sunny beach", label: "The beach day", line: "All day, all yours." },
-  { image: windowBlur, alt: "A woman relaxing by a window over the sea", label: "The pause", line: "Nowhere you need to be." },
+  { image: sunsetDance, alt: "A couple dancing on a deck at sunset", label: "The sangeet", line: "Stay till the DJ packs up." },
+  { image: balconyReading, alt: "A woman reading on a sunny balcony", label: "The morning", line: "Chai, the paper, no rush." },
+  { image: beachLaugh, alt: "A woman laughing on a sunny beach", label: "The beach day", line: "No hunting for a loo." },
+  { image: windowBlur, alt: "A woman relaxing by a window over the sea", label: "The afternoon", line: "A nap that runs its full length." },
 ];
 
 export const articles = [
   {
-    title: "Cranberry vs D-Mannose: what the research says",
+    title: "Cranberry or D-Mannose? What the studies found",
     author: "Dr. Ananya Rao",
     date: "12 Oct 2026",
     tag: "Ingredients",
     image: bottleHand,
   },
   {
-    title: "How much water do you need? A realistic guide",
+    title: "How much water do you actually need?",
     author: "Easytive Team",
     date: "28 Sep 2026",
     tag: "Habits",

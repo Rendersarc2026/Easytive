@@ -1,11 +1,11 @@
 import Image from "next/image";
 import sunsetDance from "@/assets/brand/sunset-dance.jpg";
-import { reels, type ReelOverlay } from "@/data/site";
+import { reels, reviewCount, type ReelOverlay } from "@/data/site";
 import { Carousel } from "../Carousel";
 import { ReelActions } from "../ReelActions";
 import { ArrowRight, buttonStyles, Container, Eyebrow, Title } from "../ui";
 
-// "Easy, in their words": creator reels with the product each one features.
+// Creator reels with the product each one features.
 export function Reels() {
   return (
     <section id="reviews" className="scroll-mt-24 py-20 sm:py-28">
@@ -14,14 +14,14 @@ export function Reels() {
           label="Creator reels"
           aside={
             <p className="hidden max-w-[26ch] text-right text-[13px] leading-relaxed text-muted md:block">
-              Real routines from people who stopped planning around it. Tap any reel to watch.
+              Creators who take Easytive, showing when and how. Tap a reel to watch.
             </p>
           }
           heading={
             <>
               <Eyebrow>Creators</Eyebrow>
               <Title className="mt-4">
-                Easy, in <em>their</em> words
+                How they <em>take it</em>
               </Title>
             </>
           }
@@ -113,10 +113,10 @@ export function WallOfLove() {
           <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-t from-ink/70 via-ink/25 to-ink/5" />
           <div className="relative flex min-h-[420px] flex-col items-center justify-end px-6 pb-12 text-center sm:min-h-[520px] sm:pb-16">
             <p className="max-w-lg text-balance text-3xl leading-tight tracking-tight sm:text-[40px]">
-              Thousands of quiet wins, shared out loud.
+              {reviewCount} reviews, mostly from people who never talk about this.
             </p>
             <a href="#" className={`${buttonStyles.light} mt-7`}>
-              Head to our wall of love <ArrowRight />
+              Read the reviews <ArrowRight />
             </a>
           </div>
         </div>

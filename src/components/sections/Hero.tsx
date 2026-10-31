@@ -23,16 +23,16 @@ export function Hero() {
 
       <div className="relative px-4 pb-16 text-center sm:pb-20 lg:pb-24">
         <h1 className="font-display text-[44px] leading-[1.05] tracking-tight sm:text-6xl lg:text-[76px]">
-          Built for days
+          Stop counting
           <br />
-          <em>without detours.</em>
+          <em>washroom breaks.</em>
         </h1>
         <a
           href="#system"
           className="mt-7 inline-flex min-h-11 items-center gap-2.5 text-[11px] uppercase tracking-[0.28em] text-paper/90 transition-opacity hover:opacity-70"
         >
           <span aria-hidden="true" className="size-1.5 rounded-full bg-paper" />
-          Discover our approach
+          See what&rsquo;s inside
         </a>
       </div>
     </section>
@@ -53,7 +53,7 @@ export function ReviewTicker() {
             ★★★★★
           </span>
           <span className="border-b border-ink pb-0.5 text-[10px] uppercase tracking-[0.2em] sm:text-[11px]">
-            {reviewCount} <span className="hidden sm:inline">trusted </span>reviews
+            {reviewCount} reviews
           </span>
         </a>
         <div className="relative min-w-0 flex-1 overflow-hidden [mask-image:linear-gradient(90deg,transparent,#000_6%,#000_94%,transparent)]">

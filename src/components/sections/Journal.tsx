@@ -2,7 +2,7 @@ import Image from "next/image";
 import { articles } from "@/data/site";
 import { Container, Eyebrow, TextLink, Title } from "../ui";
 
-// "Know your body better": three latest articles with tag, author and date.
+// Three latest articles with tag, author and date.
 export function Journal() {
   return (
     <section id="journal" className="scroll-mt-24 pb-4 pt-20 sm:pt-28">
@@ -11,7 +11,7 @@ export function Journal() {
           <div>
             <Eyebrow>Journal</Eyebrow>
             <Title className="mt-4">
-              Know your body <em>better</em>
+              Questions you <em>didn&rsquo;t want to ask</em>
             </Title>
           </div>
           <TextLink href="#">All articles</TextLink>

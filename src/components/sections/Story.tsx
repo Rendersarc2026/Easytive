@@ -21,15 +21,15 @@ export function Statement() {
       <Container className="text-center">
         <Eyebrow>Easy does it</Eyebrow>
         <p className="mx-auto mt-6 max-w-4xl text-balance font-display text-3xl leading-[1.25] tracking-tight sm:text-5xl sm:leading-[1.2]">
-          A daily <Dot src={statementImages.a} /> approach to urinary wellness — designed <Dot src={statementImages.b} />{" "}
-          for consistency <Dot src={statementImages.c} />, <em>not emergencies.</em>
+          One capsule <Dot src={statementImages.a} /> with breakfast. Then <Dot src={statementImages.b} /> you get on{" "}
+          <Dot src={statementImages.c} /> <em>with your day.</em>
         </p>
       </Container>
     </section>
   );
 }
 
-// "Life, without the washroom map": everyday moments, square-cornered photos running off the edge.
+// Everyday moments: square-cornered photos running off the edge.
 export function Moments() {
   return (
     <section id="moments" className="scroll-mt-24 py-20 sm:py-28">
@@ -37,12 +37,12 @@ export function Moments() {
         <Carousel
           label="Easy moments"
           controls={false}
-          aside={<TextLink href="#">Read their stories</TextLink>}
+          aside={<TextLink href="#">More stories</TextLink>}
           heading={
             <>
               <Eyebrow>Easy moments</Eyebrow>
               <Title className="mt-4">
-                Life, without the <em>washroom map</em>
+                Long drives, <em>late nights</em>
               </Title>
             </>
           }
@@ -77,17 +77,16 @@ export function Sourcing() {
     <section className="border-y border-line py-20 sm:py-24">
       <Container className="grid gap-10 lg:grid-cols-2 lg:gap-24">
         <p className="text-2xl leading-snug text-ink sm:text-[32px] sm:leading-[1.35]">
-          At Easytive, we use studied ingredients at the doses research supports. Every extract is standardised, so
-          the integrity of each ingredient is kept from field to capsule.
+          We only use ingredients that have been studied, at the doses the studies used. Each extract is
+          standardised, so every capsule has the same amount in it.
         </p>
         <div className="lg:pt-2">
           <p className="text-[15px] leading-loose text-ink-soft">
-            We work with suppliers who share full test data for every ingredient we buy. Each finished batch is then
-            checked by an independent lab for purity and potency, and the reports are published so you can see them
-            for yourself.
+            Our suppliers send test data for every ingredient we buy. Then an independent lab checks each finished
+            batch for purity and strength, and we put the reports on our site.
           </p>
           <a href="#" className={`${buttonStyles.outline} mt-8 px-10`}>
-            Learn more
+            Read the lab reports
           </a>
         </div>
       </Container>
