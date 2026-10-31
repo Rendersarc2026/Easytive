@@ -27,7 +27,7 @@ export function Reels() {
           }
         >
           {reels.map((r) => (
-            <article key={r.caption} className="w-[62%] shrink-0 snap-start sm:w-[36%] lg:w-[calc((100%-64px)/5.3)]">
+            <article key={r.caption} className="w-[62%] shrink-0 snap-start sm:w-[36%] lg:w-[calc((100%-64px)/4.3)] 2xl:w-[calc((100%-80px)/5.3)]">
               <div className="relative aspect-[9/16] overflow-hidden rounded-xl bg-ink text-paper">
                 <a href="#" aria-label={`Watch reel: ${r.caption}`} className="group absolute inset-0">
                   <Image
@@ -35,7 +35,7 @@ export function Reels() {
                     alt=""
                     fill
                     placeholder="blur"
-                    sizes="(min-width: 1024px) 19vw, (min-width: 640px) 36vw, 62vw"
+                    sizes="(min-width: 1536px) 280px, (min-width: 1024px) 22vw, (min-width: 640px) 36vw, 62vw"
                     className="object-cover transition-transform duration-700 group-hover:scale-105"
                   />
                   <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-t from-ink/70 via-transparent to-ink/30" />
@@ -107,7 +107,7 @@ export function WallOfLove() {
             alt=""
             fill
             placeholder="blur"
-            sizes="(min-width: 1320px) 1240px, 100vw"
+            sizes="(min-width: 1600px) 1520px, 100vw"
             className="object-cover object-[50%_30%]"
           />
           <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-t from-ink/70 via-ink/25 to-ink/5" />

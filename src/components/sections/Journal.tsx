@@ -26,7 +26,7 @@ export function Journal() {
                     alt=""
                     fill
                     placeholder="blur"
-                    sizes="(min-width: 1320px) 400px, (min-width: 768px) 33vw, 100vw"
+                    sizes="(min-width: 1600px) 500px, (min-width: 768px) 33vw, 100vw"
                     className="object-cover transition-transform duration-700 group-hover:scale-105"
                   />
                 </div>

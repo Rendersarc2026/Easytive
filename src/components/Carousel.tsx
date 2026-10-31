@@ -11,8 +11,8 @@ type Props = {
   controls?: boolean;
 };
 
-// Horizontal scroll-snap track. It starts on the container's left edge and runs off the right
-// edge of the screen on desktop, so the last card peeks in.
+// Horizontal scroll-snap track. On phones and tablets it bleeds to both screen edges; on desktop it
+// stays inside the centred container, so the margins match on both sides.
 export function Carousel({ heading, children, label, aside, controls = true }: Props) {
   const track = useRef<HTMLDivElement>(null);
   const [atStart, setAtStart] = useState(true);
@@ -65,7 +65,7 @@ export function Carousel({ heading, children, label, aside, controls = true }: P
         aria-label={label}
         tabIndex={0}
         // `relative` keeps absolutely positioned children (e.g. sr-only labels) clipped by the track.
-        className="no-scrollbar relative -mx-4 flex snap-x snap-mandatory scroll-px-4 gap-3 overflow-x-auto overscroll-x-contain px-4 pb-2 focus-visible:outline-none sm:-mx-6 sm:scroll-px-6 sm:gap-4 sm:px-6 lg:-mr-[max(2.5rem,calc((100vw-1320px)/2+2.5rem))] lg:ml-0 lg:scroll-px-0 lg:pl-0 lg:pr-10"
+        className="no-scrollbar relative -mx-4 flex snap-x snap-mandatory scroll-px-4 gap-3 overflow-x-auto overscroll-x-contain px-4 pb-2 focus-visible:outline-none sm:-mx-6 sm:scroll-px-6 sm:gap-4 sm:px-6 lg:mx-0 lg:scroll-px-0 lg:px-0"
       >
         {children}
       </div>

@@ -48,14 +48,14 @@ export function Moments() {
           }
         >
           {moments.map((m) => (
-            <figure key={m.label} className="w-[72%] shrink-0 snap-start sm:w-[40%] lg:w-[calc((100%-64px)/4.6)]">
+            <figure key={m.label} className="w-[72%] shrink-0 snap-start sm:w-[40%] lg:w-[calc((100%-48px)/3.6)] 2xl:w-[calc((100%-64px)/4.3)]">
               <div className="relative aspect-[3/4] overflow-hidden bg-stone">
                 <Image
                   src={m.image}
                   alt={m.alt}
                   fill
                   placeholder="blur"
-                  sizes="(min-width: 1024px) 22vw, (min-width: 640px) 40vw, 72vw"
+                  sizes="(min-width: 1536px) 350px, (min-width: 1024px) 26vw, (min-width: 640px) 40vw, 72vw"
                   className="object-cover"
                 />
               </div>

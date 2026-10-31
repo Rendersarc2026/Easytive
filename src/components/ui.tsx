@@ -12,7 +12,7 @@ export const toneInk: Record<Tone, string> = {
 };
 
 export function Container({ children, className = "" }: { children: ReactNode; className?: string }) {
-  return <div className={`mx-auto w-full max-w-[1320px] px-4 sm:px-6 lg:px-10 ${className}`}>{children}</div>;
+  return <div className={`mx-auto w-full max-w-[1600px] px-4 sm:px-6 lg:px-10 ${className}`}>{children}</div>;
 }
 
 export function Eyebrow({ children, className = "" }: { children: ReactNode; className?: string }) {
