@@ -1,13 +1,14 @@
 "use client";
 
-import Image from "next/image";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { heroSlides } from "@/data/site";
+import { heroCopy, heroPhotos } from "@/data/site";
 import { Arrow } from "../icons";
+import { PhotoStack } from "../PhotoStack";
 
-// How long each slide stays up (ms): lifestyle first, then the numbers. Loops; pauses on hover.
-const HOLD = [2000, 5000];
+const SIZES = "(min-width: 1440px) 1296px, 100vw";
 
+// Photos change on their own (each photo's `hold` in data/site.ts) and loop.
+// The copy switches between the lifestyle line and the numbers. Pauses on hover.
 export function Hero() {
   const [active, setActive] = useState(0);
   const paused = useRef(false);
@@ -16,7 +17,7 @@ export function Hero() {
   const schedule = useCallback((i: number) => {
     window.clearTimeout(timer.current);
     if (paused.current || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    timer.current = window.setTimeout(() => setActive((i + 1) % HOLD.length), HOLD[i]);
+    timer.current = window.setTimeout(() => setActive((i + 1) % heroPhotos.length), heroPhotos[i].hold);
   }, []);
 
   useEffect(() => {
@@ -24,7 +25,9 @@ export function Hero() {
     return () => window.clearTimeout(timer.current);
   }, [active, schedule]);
 
-  const { lifestyle, proof } = heroSlides;
+  const slide = heroPhotos[active].slide;
+  const { lifestyle, proof } = heroCopy;
+  const tab = (s: typeof slide) => (slide === s ? undefined : -1);
 
   return (
     <div className="wrap" style={{ paddingTop: "clamp(8px,1vw,16px)" }}>
@@ -41,26 +44,26 @@ export function Hero() {
           schedule(active);
         }}
       >
-        <div className={`hs${active === 0 ? " on" : ""}`} aria-hidden={active !== 0}>
-          <Image src={lifestyle.image.src} alt={lifestyle.image.alt} fill preload placeholder="blur" sizes="(min-width: 1440px) 1296px, 100vw" />
+        <PhotoStack photos={heroPhotos} active={active} sizes={SIZES} preloadFirst />
+
+        <div className={`hs${slide === "lifestyle" ? " on" : ""}`} aria-hidden={slide !== "lifestyle"}>
           <div className="hero-copy">
             <span className="tag">{lifestyle.tag}</span>
             <h1>
               Stop counting <em>washroom breaks.</em>
             </h1>
             <div className="ctas">
-              <a className="btn btn-light" href="#shop" tabIndex={active === 0 ? undefined : -1}>
+              <a className="btn btn-light" href="#shop" tabIndex={tab("lifestyle")}>
                 Shop the range <Arrow />
               </a>
-              <a className="btn" href="#system" tabIndex={active === 0 ? undefined : -1}>
+              <a className="btn" href="#system" tabIndex={tab("lifestyle")}>
                 How it works
               </a>
             </div>
           </div>
         </div>
 
-        <div className={`hs proof${active === 1 ? " on" : ""}`} aria-hidden={active !== 1}>
-          <Image src={proof.image.src} alt={proof.image.alt} fill placeholder="blur" sizes="(min-width: 1440px) 1296px, 100vw" />
+        <div className={`hs proof${slide === "proof" ? " on" : ""}`} aria-hidden={slide !== "proof"}>
           <div className="hero-copy">
             <span className="tag">{proof.tag}</span>
             <p role="heading" aria-level={2} className="h1">
@@ -75,22 +78,22 @@ export function Hero() {
               ))}
             </ul>
             <div className="ctas">
-              <a className="btn btn-light" href="#shop" tabIndex={active === 1 ? undefined : -1}>
+              <a className="btn btn-light" href="#shop" tabIndex={tab("proof")}>
                 Shop Easytive Daily <Arrow />
               </a>
-              <a className="btn" href="#experts" tabIndex={active === 1 ? undefined : -1}>
+              <a className="btn" href="#experts" tabIndex={tab("proof")}>
                 Meet the doctors
               </a>
             </div>
           </div>
         </div>
 
-        <div className="hero-dots" role="group" aria-label="Hero slides">
-          {["Lifestyle slide", "Numbers slide"].map((label, i) => (
+        <div className="hero-dots" role="group" aria-label="Hero photos">
+          {heroPhotos.map((p, i) => (
             <button
-              key={label}
+              key={i}
               type="button"
-              aria-label={label}
+              aria-label={`Show photo ${i + 1} of ${heroPhotos.length}`}
               aria-pressed={active === i}
               className={active === i ? "on" : undefined}
               onClick={() => setActive(i)}

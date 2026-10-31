@@ -94,7 +94,14 @@ header.site.lined { box-shadow: 0 1px 0 var(--hair); }
 
 /* hero: two slides that cross-fade on their own */
 .hero { position: relative; overflow: hidden; height: clamp(460px, 78svh, 780px); background: #3a2716; color: var(--white); }
-.hero img { object-fit: cover; object-position: 50% 40%; }
+.hero img, .band img { object-fit: cover; }
+/* stacked banner photos that cross-fade (hero + bottom band) */
+.bph { position: absolute; inset: 0; opacity: 0; transition: opacity 0.9s ease; }
+.bph.on { opacity: 1; }
+.hero .bph.on img { animation: settle 2.4s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+.band .bph { transition-duration: 1.2s; }
+.band .bph.on img { animation: drift 6s linear both; }
+@keyframes drift { from { transform: scale(1); } to { transform: scale(1.06); } }
 .hero-copy {
   position: absolute; left: 0; right: 0; bottom: clamp(28px, 5vw, 64px); z-index: 2; display: grid; justify-items: center; text-align: center;
   gap: 16px; padding-inline: 20px;
@@ -111,7 +118,6 @@ header.site.lined { box-shadow: 0 1px 0 var(--hair); }
 .hs::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgb(20 14 8 / 0) 45%, rgb(20 14 8 / 0.55) 100%); }
 .hs.proof::after { background: linear-gradient(180deg, rgb(20 14 8 / 0.2) 0%, rgb(20 14 8 / 0.48) 35%, rgb(20 14 8 / 0.82) 100%); }
 .hs.proof .hero-copy { text-shadow: 0 1px 18px rgb(0 0 0 / 0.35); }
-.hs.on img { animation: settle 2.4s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
 .hs:not(.on) .tag { animation: none; }
 .proof-row {
   list-style: none; margin: 6px 0 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); max-width: 900px; width: 100%;
@@ -410,7 +416,6 @@ header.site.lined { box-shadow: 0 1px 0 var(--hair); }
 
 /* image band */
 .band { position: relative; overflow: hidden; min-height: clamp(420px, 58vw, 640px); display: grid; place-items: center; text-align: center; color: var(--white); background: #3a2716; }
-.band img { object-fit: cover; object-position: 50% 55%; }
 .band::after { content: ""; position: absolute; inset: 0; background: rgb(20 14 8 / 0.32); }
 .band .in { position: relative; z-index: 2; display: grid; gap: 22px; justify-items: center; padding-inline: 20px; }
 .band h2 { font-size: clamp(2rem, 4.4vw, 3.8rem); max-width: 16ch; }

@@ -1,10 +1,11 @@
 "use client";
 
 import Image from "next/image";
-import { useState, type SubmitEvent } from "react";
-import { band, moments, reviewCount } from "@/data/site";
+import { useEffect, useState, type SubmitEvent } from "react";
+import { BAND_MS, bandPhotos, moments, reviewCount } from "@/data/site";
 import { useBag } from "../Bag";
 import { Arrow } from "../icons";
+import { PhotoStack } from "../PhotoStack";
 
 export function Moments() {
   return (
@@ -104,11 +105,21 @@ export function Note() {
   );
 }
 
+// Bottom banner: the photo behind the text changes every BAND_MS. Pauses on hover.
 export function Band() {
+  const [active, setActive] = useState(0);
+  const [hover, setHover] = useState(false);
+
+  useEffect(() => {
+    if (hover || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const t = window.setTimeout(() => setActive((a) => (a + 1) % bandPhotos.length), BAND_MS);
+    return () => window.clearTimeout(t);
+  }, [active, hover]);
+
   return (
     <div className="wrap" style={{ paddingBottom: "clamp(16px,2vw,24px)" }}>
-      <section className="band" aria-label="Community">
-        <Image src={band.src} alt={band.alt} fill placeholder="blur" sizes="(min-width: 1440px) 1296px, 100vw" />
+      <section className="band" aria-label="Community" onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}>
+        <PhotoStack photos={bandPhotos} active={active} sizes="(min-width: 1440px) 1296px, 100vw" />
         <div className="in">
           <span className="label" style={{ color: "#fff" }}>
             {reviewCount} reviews

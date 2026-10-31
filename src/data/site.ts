@@ -61,15 +61,22 @@ export const products = {
 export type ProductKey = keyof typeof products;
 export const shopGrid: ProductKey[] = ["daily", "flow", "comfort", "proFlora"];
 
-// ---- Hero (two slides, switch automatically) -------------------------------
+// ---- Hero: photos change automatically --------------------------------------
+// Lifestyle photos share the lifestyle copy; the last photo carries the numbers.
+// `hold` is how long each photo stays up (ms). `pos` is the CSS object-position.
 
-export const heroSlides = {
-  lifestyle: {
-    image: { src: bedJump, alt: "A woman in a white robe leaps onto a hotel bed in warm lamplight" },
-    tag: "Easy does it",
-  },
+export type BannerPhoto = Photo & { pos?: string };
+
+export const heroPhotos: (BannerPhoto & { slide: "lifestyle" | "proof"; hold: number })[] = [
+  { src: bedJump, alt: "A woman in a white robe leaps onto a hotel bed in warm lamplight", slide: "lifestyle", hold: 3000 },
+  { src: hotelMorning, alt: "A woman in a robe sipping from a mug on the edge of a hotel bed", slide: "lifestyle", hold: 3000 },
+  { src: sunsetDance, alt: "A couple dancing on a lakeside deck at sunset", slide: "lifestyle", hold: 3000, pos: "50% 30%" },
+  { src: bottlesLight, alt: "Two clear Easytive bottles with brushed metal caps in warm light", slide: "proof", hold: 5000 },
+];
+
+export const heroCopy = {
+  lifestyle: { tag: "Easy does it" },
   proof: {
-    image: { src: bottlesLight, alt: "Two clear Easytive bottles with brushed metal caps in warm light" },
     tag: "The numbers",
     stats: [
       { value: "36 mg", label: "cranberry PACs, the dose used in published studies" },
@@ -271,7 +278,14 @@ export const articles: { image: Photo; tag: string; title: string; author: strin
   },
 ];
 
-export const band: Photo = { src: sunsetRocks, alt: "Two friends on sunlit rocks by the sea at golden hour" };
+// Bottom banner: photos cross-fade every BAND_MS.
+export const BAND_MS = 4000;
+export const bandPhotos: BannerPhoto[] = [
+  { src: sunsetRocks, alt: "Two friends on sunlit rocks by the sea at golden hour", pos: "50% 55%" },
+  { src: beachLaugh, alt: "A woman laughing on the beach, framed by a straw hat brim", pos: "50% 40%" },
+  { src: sunsetDance, alt: "A couple dancing on a lakeside deck at sunset", pos: "50% 35%" },
+  { src: balconyReading, alt: "Someone reading on a sunny balcony over the water", pos: "50% 55%" },
+];
 
 // ---- FAQ -----------------------------------------------------------------------
 // Answers are plain strings; **word** is shown in bold.
