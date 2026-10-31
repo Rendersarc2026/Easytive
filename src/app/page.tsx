@@ -1,31 +1,39 @@
+import { BagProvider } from "@/components/Bag";
 import { Header } from "@/components/Header";
+import { Board } from "@/components/sections/Board";
+import { Creators } from "@/components/sections/Creators";
 import { DailySystem } from "@/components/sections/DailySystem";
+import { Faq } from "@/components/sections/Faq";
 import { Footer, WhatsAppFloat } from "@/components/sections/Footer";
-import { Hero, ReviewTicker } from "@/components/sections/Hero";
+import { Hero } from "@/components/sections/Hero";
+import { PressBar, Statement } from "@/components/sections/Intro";
 import { Journal } from "@/components/sections/Journal";
 import { Products } from "@/components/sections/Products";
-import { Reels, WallOfLove } from "@/components/sections/Reviews";
-import { Moments, Sourcing, Statement } from "@/components/sections/Story";
+import { Reviews } from "@/components/sections/Reviews";
+import { Band, Moments, Note } from "@/components/sections/Story";
 
-// Section order follows the reference slide: left column top-to-bottom, then the right column.
+// Section order follows the "Easytive Website" reference page.
 export default function Home() {
   return (
-    <>
+    <BagProvider>
       <Header />
-      <main>
+      <main id="top">
         <Hero />
-        <ReviewTicker />
-        <DailySystem />
+        <PressBar />
         <Statement />
         <Products />
-        <Reels />
+        <DailySystem />
+        <Board />
+        <Creators />
+        <Reviews />
         <Moments />
-        <Sourcing />
+        <Note />
         <Journal />
-        <WallOfLove />
+        <Band />
+        <Faq />
       </main>
       <Footer />
       <WhatsAppFloat />
-    </>
+    </BagProvider>
   );
 }

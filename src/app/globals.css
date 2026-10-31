@@ -1,58 +1,11 @@
 @import "tailwindcss";
 
-/* Brand guidelines 2026: #22211F / #E4E3DF / #FFFFFF, serif display + Helvetica text. */
+/* Brand guidelines 2026: #22211F / #E4E3DF / #FFFFFF, serif display + Helvetica text.
+   Page styles live in site.css. */
 @theme {
   --color-ink: #22211f;
-  --color-ink-soft: #46443f;
-  --color-muted: #75736e;
   --color-line: #e4e3df;
-  --color-stone: #e4e3df;
-  --color-stone-50: #f3f2ef;
   --color-paper: #ffffff;
-  --color-sage: #5b7b5a;
-  --color-sage-dark: #3f5a3f;
-  --color-whatsapp: #25d366;
-
-  /* Playfair Display stands in for "Serif Prototype" until the licensed font files arrive. */
   --font-display: var(--font-playfair), ui-serif, Georgia, serif;
   --font-sans: "Helvetica Neue", Helvetica, Arial, ui-sans-serif, system-ui, sans-serif;
-
-  --animate-marquee: marquee 40s linear infinite;
-
-  @keyframes marquee {
-    to {
-      transform: translateX(-50%);
-    }
-  }
-}
-
-html {
-  scroll-behavior: smooth;
-  /* No rubber-band bounce past the page edges, in any direction. */
-  overscroll-behavior: none;
-}
-
-body {
-  /* clip (not hidden) so sticky elements keep working */
-  overflow-x: clip;
-  overscroll-behavior: none;
-  background: var(--color-paper);
-  color: var(--color-ink);
-  font-family: var(--font-sans);
-}
-
-.no-scrollbar {
-  scrollbar-width: none;
-}
-.no-scrollbar::-webkit-scrollbar {
-  display: none;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  html {
-    scroll-behavior: auto;
-  }
-  .animate-marquee {
-    animation: none;
-  }
 }
