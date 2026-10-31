@@ -1,31 +1,31 @@
 import { Header } from "@/components/Header";
-import { Footer } from "@/components/sections/Footer";
-import { Hero } from "@/components/sections/Hero";
-import { Journal, LearnHub } from "@/components/sections/Learn";
-import { PressStrip } from "@/components/sections/PressStrip";
+import { DailySystem } from "@/components/sections/DailySystem";
+import { Footer, WhatsAppFloat } from "@/components/sections/Footer";
+import { Hero, ReviewTicker } from "@/components/sections/Hero";
+import { Journal } from "@/components/sections/Journal";
 import { Products } from "@/components/sections/Products";
-import { Reviews } from "@/components/sections/Reviews";
-import { Doctors, Rigor } from "@/components/sections/Science";
-import { Formula, Intro, Lifestyle } from "@/components/sections/Story";
+import { Reels, WallOfLove } from "@/components/sections/Reviews";
+import { Moments, Sourcing, Statement } from "@/components/sections/Story";
 
+// Section order follows the reference slide: left column top-to-bottom, then the right column.
 export default function Home() {
   return (
     <>
       <Header />
       <main>
         <Hero />
-        <PressStrip />
-        <Intro />
-        <Lifestyle />
+        <ReviewTicker />
+        <DailySystem />
+        <Statement />
         <Products />
-        <Formula />
-        <Rigor />
-        <Doctors />
-        <Reviews />
-        <LearnHub />
+        <Reels />
+        <Moments />
+        <Sourcing />
         <Journal />
+        <WallOfLove />
       </main>
       <Footer />
+      <WhatsAppFloat />
     </>
   );
 }

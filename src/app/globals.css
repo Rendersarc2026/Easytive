@@ -1,25 +1,23 @@
 @import "tailwindcss";
 
-/* Palette drawn from gunambeauty.com: near-black ink, sage green, soft neutrals. */
+/* Brand guidelines 2026: #22211F / #E4E3DF / #FFFFFF, serif display + Helvetica text. */
 @theme {
-  --color-ink: #151515;
-  --color-ink-soft: #3a3a3a;
-  --color-muted: #6f6f6f;
-  --color-line: #e4e1da;
-  --color-cream: #f7f4ee;
+  --color-ink: #22211f;
+  --color-ink-soft: #46443f;
+  --color-muted: #75736e;
+  --color-line: #e4e3df;
+  --color-stone: #e4e3df;
+  --color-stone-50: #f3f2ef;
   --color-paper: #ffffff;
-  --color-sage: #597b58;
+  --color-sage: #5b7b5a;
   --color-sage-dark: #3f5a3f;
-  --color-sage-50: #eaf0e7;
-  --color-aqua-50: #e7f2f2;
-  --color-rose-50: #f6e9e6;
-  --color-lilac-50: #ece9f4;
-  --color-sand-50: #f1e9dc;
+  --color-whatsapp: #25d366;
 
-  --font-display: var(--font-syne), ui-sans-serif, system-ui, sans-serif;
-  --font-sans: var(--font-dm-sans), ui-sans-serif, system-ui, sans-serif;
+  /* Playfair Display stands in for "Serif Prototype" until the licensed font files arrive. */
+  --font-display: var(--font-playfair), ui-serif, Georgia, serif;
+  --font-sans: "Helvetica Neue", Helvetica, Arial, ui-sans-serif, system-ui, sans-serif;
 
-  --animate-marquee: marquee 32s linear infinite;
+  --animate-marquee: marquee 40s linear infinite;
 
   @keyframes marquee {
     to {
@@ -35,10 +33,10 @@ html {
 }
 
 body {
-  /* clip (not hidden) so sticky header keeps working */
+  /* clip (not hidden) so sticky elements keep working */
   overflow-x: clip;
   overscroll-behavior: none;
-  background: var(--color-cream);
+  background: var(--color-paper);
   color: var(--color-ink);
   font-family: var(--font-sans);
 }

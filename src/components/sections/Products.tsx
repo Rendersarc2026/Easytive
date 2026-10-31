@@ -1,65 +1,64 @@
 import { products } from "@/data/site";
-import { Carousel } from "../Carousel";
 import { Bottle } from "../Illustrations";
-import { Container, Eyebrow, formatPrice, toneBg } from "../ui";
+import { Container, formatPrice, Title } from "../ui";
 
 export function Products() {
   return (
-    <section id="shop" className="scroll-mt-20 py-20 sm:py-28">
+    <section id="shop" className="scroll-mt-24 bg-stone-50 py-20 sm:py-28">
       <Container>
-        <Carousel
-          label="Products"
-          heading={
-            <>
-              <Eyebrow>Shop</Eyebrow>
-              <h2 className="mt-3 font-display text-3xl font-medium tracking-tight sm:text-5xl">Find your easy</h2>
-            </>
-          }
-        >
-          {products.map((p) => {
-            const off = p.compareAt ? Math.round((1 - p.price / p.compareAt) * 100) : 0;
-            return (
-              <article key={p.slug} className="group w-[78%] shrink-0 snap-start sm:w-[44%] lg:w-[calc((100%-72px)/4)]">
-                <a href="#" className="block">
-                  <div className={`relative aspect-[4/5] overflow-hidden rounded-2xl ${toneBg[p.tone]}`}>
-                    {p.badge && (
-                      <span className="absolute left-4 top-4 z-10 rounded-full bg-paper px-3 py-1 text-xs font-medium">
-                        {p.badge}
-                      </span>
-                    )}
-                    <Bottle
-                      tone={p.tone}
-                      name={p.name}
-                      className="absolute inset-x-0 bottom-[6%] mx-auto w-[62%] transition-transform duration-500 group-hover:-translate-y-2"
-                    />
-                  </div>
-                  <h3 className="mt-5 font-display text-lg font-medium">{p.name}</h3>
-                  <p className="mt-1 text-sm text-muted">{p.tagline}</p>
-                </a>
-                <div className="mt-3 flex items-center justify-between gap-3">
-                  <p className="flex flex-wrap items-baseline gap-x-2 text-sm">
+        <div className="grid items-end gap-6 lg:grid-cols-[1.2fr_1fr_auto] lg:gap-12">
+          <Title>
+            Designed around <em>your everyday</em>
+          </Title>
+          <p className="max-w-sm text-[15px] leading-relaxed text-ink-soft">
+            Gentle daily formulas for bladder and urinary tract comfort, each one made to be taken without a second
+            thought.
+          </p>
+          <a
+            href="#"
+            className="inline-flex min-h-11 items-center gap-2.5 text-[11px] uppercase tracking-[0.24em] transition-opacity hover:opacity-60"
+          >
+            Shop all <span aria-hidden="true" className="size-1.5 rounded-full bg-ink" />
+          </a>
+        </div>
+
+        <ul className="mt-12 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4 lg:gap-5">
+          {products.map((p) => (
+            <li key={p.slug}>
+              <a
+                href="#"
+                className="group flex h-full flex-col rounded-2xl bg-paper p-3 transition-shadow hover:shadow-[0_18px_40px_-24px_rgb(0_0_0/0.35)] sm:p-4"
+              >
+                <div className="relative aspect-square overflow-hidden rounded-xl bg-stone-50">
+                  {p.badge && (
+                    <span className="absolute left-3 top-3 z-10 rounded-full bg-stone px-2.5 py-1 text-[9px] uppercase tracking-[0.18em] sm:text-[10px]">
+                      {p.badge}
+                    </span>
+                  )}
+                  <Bottle
+                    tone={p.tone}
+                    name={p.name}
+                    className="absolute inset-x-0 bottom-[6%] mx-auto w-[52%] transition-transform duration-500 group-hover:-translate-y-2"
+                  />
+                </div>
+                <div className="flex flex-1 flex-col px-1 pb-1 pt-4">
+                  <h3 className="font-display text-lg leading-snug sm:text-xl">{p.name}</h3>
+                  <p className="mt-1 flex-1 text-[13px] leading-snug text-muted">{p.tagline}</p>
+                  <p className="mt-3 flex flex-wrap items-baseline gap-x-2 text-sm">
                     <span className="sr-only">Sale price </span>
-                    <span className="whitespace-nowrap font-medium">{formatPrice(p.price)}</span>
+                    <span className="whitespace-nowrap">{formatPrice(p.price)}</span>
                     {p.compareAt && (
                       <>
                         <span className="sr-only"> Regular price </span>
                         <s className="whitespace-nowrap text-muted">{formatPrice(p.compareAt)}</s>
-                        <span className="whitespace-nowrap text-sage">{off}% off</span>
                       </>
                     )}
                   </p>
-                  <button
-                    type="button"
-                    aria-label={`Add ${p.name} to cart`}
-                    className="grid size-9 shrink-0 place-items-center rounded-full border border-ink text-lg leading-none transition hover:bg-ink hover:text-paper"
-                  >
-                    +
-                  </button>
                 </div>
-              </article>
-            );
-          })}
-        </Carousel>
+              </a>
+            </li>
+          ))}
+        </ul>
       </Container>
     </section>
   );

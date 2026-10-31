@@ -1,117 +1,93 @@
 import Image, { type StaticImageData } from "next/image";
-import beachLaugh from "@/assets/brand/beach-laugh.jpg";
-import bottleHand from "@/assets/brand/bottle-hand.jpg";
-import bottlesLight from "@/assets/brand/bottles-light.jpg";
-import hotelMorning from "@/assets/brand/hotel-morning.jpg";
-import sunsetRocks from "@/assets/brand/sunset-rocks.jpg";
-import { ingredients } from "@/data/site";
-import { ArrowRight, Container, Eyebrow } from "../ui";
+import { moments, statementImages } from "@/data/site";
+import { Carousel } from "../Carousel";
+import { buttonStyles, Container, Eyebrow, TextLink, Title } from "../ui";
 
-// Gunam-style large statement line, followed by a text + image split.
-export function Intro() {
+function Dot({ src }: { src: StaticImageData }) {
   return (
-    <section className="bg-paper py-20 sm:py-28">
-      <Container>
-        <p className="mx-auto max-w-4xl text-center font-display text-2xl font-medium leading-snug tracking-tight sm:text-4xl">
-          Urinary health is personal. We make it simple: clean formulas, honest labels, and doctors you can
-          actually hear from.
+    <span
+      aria-hidden="true"
+      className="relative mx-[0.12em] inline-block size-[0.82em] overflow-hidden rounded-full align-[-0.08em]"
+    >
+      <Image src={src} alt="" fill sizes="64px" className="object-cover" />
+    </span>
+  );
+}
+
+// Centred statement line with small round photos set into the text.
+export function Statement() {
+  return (
+    <section className="py-24 sm:py-32">
+      <Container className="text-center">
+        <Eyebrow>Easy does it</Eyebrow>
+        <p className="mx-auto mt-6 max-w-4xl text-balance font-display text-3xl leading-[1.25] tracking-tight sm:text-5xl sm:leading-[1.2]">
+          A daily <Dot src={statementImages.a} /> approach to urinary wellness — designed <Dot src={statementImages.b} />{" "}
+          for consistency <Dot src={statementImages.c} />, <em>not emergencies.</em>
         </p>
       </Container>
     </section>
   );
 }
 
-// Brand photography from the guidelines deck, under the "Easy does it" tagline.
-const moments: { src: StaticImageData; alt: string; className: string; sizes: string }[] = [
-  {
-    src: bottlesLight,
-    alt: "Two clear Easytive bottles glowing in warm light",
-    className: "col-span-2 lg:col-span-2",
-    sizes: "(min-width: 1024px) 50vw, 100vw",
-  },
-  {
-    src: sunsetRocks,
-    alt: "Two friends sitting on rocks by the sea at sunset",
-    className: "row-span-2",
-    sizes: "(min-width: 1024px) 25vw, 50vw",
-  },
-  {
-    src: beachLaugh,
-    alt: "A woman laughing on a sunny beach",
-    className: "row-span-2",
-    sizes: "(min-width: 1024px) 25vw, 50vw",
-  },
-  {
-    src: hotelMorning,
-    alt: "A woman sipping coffee on the edge of a bed in a calm hotel room",
-    className: "col-span-2 lg:col-span-2",
-    sizes: "(min-width: 1024px) 50vw, 100vw",
-  },
-];
-
-export function Lifestyle() {
+// "Life, without the washroom map": everyday moments, square-cornered photos running off the edge.
+export function Moments() {
   return (
-    <section aria-labelledby="easy-does-it" className="py-20 sm:py-28">
+    <section id="moments" className="scroll-mt-24 py-20 sm:py-28">
       <Container>
-        <div className="flex flex-wrap items-end justify-between gap-6">
-          <h2 id="easy-does-it" className="font-display text-4xl font-medium tracking-tight sm:text-6xl">
-            Easy does it.
-          </h2>
-          <p className="max-w-sm text-lg leading-relaxed text-ink-soft">
-            Fewer detours, longer evenings, uninterrupted sleep. That&apos;s the whole idea.
-          </p>
-        </div>
-        <ul className="mt-12 grid auto-rows-[180px] grid-cols-2 gap-3 sm:auto-rows-[260px] sm:gap-4 lg:auto-rows-[300px] lg:grid-cols-4 lg:gap-6">
+        <Carousel
+          label="Easy moments"
+          controls={false}
+          aside={<TextLink href="#">Read their stories</TextLink>}
+          heading={
+            <>
+              <Eyebrow>Easy moments</Eyebrow>
+              <Title className="mt-4">
+                Life, without the <em>washroom map</em>
+              </Title>
+            </>
+          }
+        >
           {moments.map((m) => (
-            <li key={m.alt} className={`relative overflow-hidden rounded-2xl bg-sand-50 ${m.className}`}>
-              <Image src={m.src} alt={m.alt} fill placeholder="blur" sizes={m.sizes} className="object-cover" />
-            </li>
+            <figure key={m.label} className="w-[72%] shrink-0 snap-start sm:w-[40%] lg:w-[calc((100%-64px)/4.6)]">
+              <div className="relative aspect-[3/4] overflow-hidden bg-stone">
+                <Image
+                  src={m.image}
+                  alt={m.alt}
+                  fill
+                  placeholder="blur"
+                  sizes="(min-width: 1024px) 22vw, (min-width: 640px) 40vw, 72vw"
+                  className="object-cover"
+                />
+              </div>
+              <figcaption className="mt-4">
+                <span className="block text-[10px] uppercase tracking-[0.24em] text-muted">{m.label}</span>
+                <span className="mt-1.5 block font-display text-lg">{m.line}</span>
+              </figcaption>
+            </figure>
           ))}
-        </ul>
+        </Carousel>
       </Container>
     </section>
   );
 }
 
-export function Formula() {
+// Two-column sourcing note: large lead on the left, detail and a button on the right.
+export function Sourcing() {
   return (
-    <section id="science" className="scroll-mt-20 py-20 sm:py-28">
-      <Container className="grid items-center gap-12 lg:grid-cols-2 lg:gap-20">
-        <div className="relative order-last aspect-square overflow-hidden rounded-3xl bg-sand-50 lg:order-first">
-          <Image
-            src={bottleHand}
-            alt="A hand holding a clear Easytive bottle against a warm backdrop"
-            fill
-            placeholder="blur"
-            sizes="(min-width: 1320px) 580px, (min-width: 1024px) 45vw, 100vw"
-            className="object-cover object-[48%_50%]"
-          />
-          <span className="absolute left-[6%] top-[8%] rounded-full bg-paper px-3 py-1.5 text-xs shadow-sm sm:left-[8%] sm:top-[14%] sm:px-4 sm:py-2 sm:text-sm">36 mg PACs</span>
-          <span className="absolute right-[6%] top-[20%] rounded-full bg-paper px-3 py-1.5 text-xs shadow-sm sm:right-[8%] sm:top-[34%] sm:px-4 sm:py-2 sm:text-sm">2 g D-Mannose</span>
-          <span className="absolute bottom-[6%] left-[6%] rounded-full bg-paper px-3 py-1.5 text-xs shadow-sm sm:bottom-[10%] sm:left-[10%] sm:px-4 sm:py-2 sm:text-sm">No added sugar</span>
-        </div>
-
-        <div>
-          <Eyebrow>The formula</Eyebrow>
-          <h2 className="mt-3 font-display text-4xl font-medium leading-[1.05] tracking-tight sm:text-6xl">
-            Formulated for
-            <br />
-            comfort &amp; confidence
-          </h2>
-          <p className="mt-6 max-w-lg text-lg leading-relaxed text-ink-soft">
-            Studied key ingredients at meaningful doses, paired with botanicals with roots in Ayurveda. Nothing you
-            don&apos;t need.
+    <section className="border-y border-line py-20 sm:py-24">
+      <Container className="grid gap-10 lg:grid-cols-2 lg:gap-24">
+        <p className="text-2xl leading-snug text-ink sm:text-[32px] sm:leading-[1.35]">
+          At Easytive, we use studied ingredients at the doses research supports. Every extract is standardised, so
+          the integrity of each ingredient is kept from field to capsule.
+        </p>
+        <div className="lg:pt-2">
+          <p className="text-[15px] leading-loose text-ink-soft">
+            We work with suppliers who share full test data for every ingredient we buy. Each finished batch is then
+            checked by an independent lab for purity and potency, and the reports are published so you can see them
+            for yourself.
           </p>
-          <ul className="mt-10 grid gap-x-8 sm:grid-cols-2">
-            {ingredients.map((i) => (
-              <li key={i.name} className="border-t border-line py-4">
-                <p className="font-display font-medium">{i.name}</p>
-                <p className="mt-0.5 text-sm text-muted">{i.note}</p>
-              </li>
-            ))}
-          </ul>
-          <a href="#" className="mt-8 inline-flex items-center gap-2 border-b border-ink pb-1 text-sm font-medium hover:text-sage">
-            Explore every ingredient <ArrowRight />
+          <a href="#" className={`${buttonStyles.outline} mt-8 px-10`}>
+            Learn more
           </a>
         </div>
       </Container>
