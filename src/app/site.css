@@ -189,10 +189,9 @@ header.site.lined { box-shadow: 0 1px 0 var(--hair); }
 .bottle.sachet .body { border-radius: 3px; margin-top: 0; }
 .bottle.sachet .body::before { content: ""; position: absolute; inset: 0 0 auto; height: 9px; background: repeating-linear-gradient(90deg, rgb(34 33 31 / 0.18) 0 2px, transparent 2px 5px); }
 .meta { padding: 16px 18px 18px; display: grid; gap: 4px; flex: 1; align-content: start; }
-.meta .row { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
 .meta h3 { font-size: 1.2rem; }
 .meta .sub { color: var(--muted); font-size: 0.84rem; line-height: 1.5; }
-.price { font-variant-numeric: tabular-nums; font-size: 0.9rem; white-space: nowrap; }
+.price { font-variant-numeric: tabular-nums; font-size: 0.95rem; white-space: nowrap; margin-bottom: 4px; }
 .add {
   margin-top: 12px; height: 40px; width: 100%; border: 1px solid var(--ink); background: transparent; border-radius: 99px; font-size: 0.64rem;
   letter-spacing: 0.22em; text-transform: uppercase; cursor: pointer; transition: background 0.2s, color 0.2s;

@@ -49,10 +49,8 @@ export function Products() {
                     </div>
                   </div>
                   <div className="meta">
-                    <div className="row">
-                      <h3>{p.name}</h3>
-                      <span className="price">{formatPrice(p.price)}</span>
-                    </div>
+                    <h3>{p.name}</h3>
+                    <span className="price">{formatPrice(p.price)}</span>
                     <span className="sub">{p.desc}</span>
                     <AddButton product={key} className="add">
                       Add to bag
