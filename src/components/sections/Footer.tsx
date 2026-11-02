@@ -1,9 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { footerCols } from "@/data/site";
-import { WhatsAppButton } from "../Bag";
-import { WhatsApp } from "../icons";
 import { Logo } from "../Logo";
 
 export function Footer() {
@@ -11,24 +8,12 @@ export function Footer() {
   return (
     <footer className="site-foot">
       <div className="wrap">
-        <div className="ftop">
+        <div className="ftop solo">
           <div className="fbrand">
             <Logo tagline title="easytive, urinary health" />
             <p>Doctor-guided, third-party tested urinary wellness. Made in India.</p>
           </div>
-          {footerCols.map((c) => (
-            <div className="fcol" key={c.title}>
-              <h4>{c.title}</h4>
-              <ul>
-                {c.links.map(([label, href]) => (
-                  <li key={label}>
-                    <a href={href}>{label}</a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
-          <div className="fnews">
+          <div className="fnews" id="letter">
             <h4>The Easy Letter</h4>
             <p>One short email a fortnight on bladder health, hydration and habits.</p>
             <form
@@ -60,13 +45,5 @@ export function Footer() {
         </div>
       </div>
     </footer>
-  );
-}
-
-export function WhatsAppFloat() {
-  return (
-    <WhatsAppButton className="wa" label="Chat with us on WhatsApp">
-      <WhatsApp />
-    </WhatsAppButton>
   );
 }

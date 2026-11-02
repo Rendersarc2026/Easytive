@@ -94,6 +94,8 @@ header.site.lined { box-shadow: 0 1px 0 var(--hair); }
 
 /* hero: two slides that cross-fade on their own */
 .hero { position: relative; overflow: hidden; height: clamp(460px, 78svh, 780px); background: #3a2716; color: var(--white); }
+/* Pre-launch: edge-to-edge hero filling the screen */
+.hero.full { height: 100svh; min-height: 520px; }
 .hero img, .band img { object-fit: cover; }
 /* stacked banner photos that cross-fade (hero + bottom band) */
 .bph { position: absolute; inset: 0; opacity: 0; transition: opacity 0.9s ease; }
@@ -440,6 +442,10 @@ footer.site-foot .wrap { padding-block: clamp(56px, 6vw, 96px) 28px; }
 .fine p { max-width: 84ch; }
 @media (max-width: 1100px) { .ftop { grid-template-columns: repeat(3, minmax(0, 1fr)); } .fbrand, .fnews { grid-column: 1 / -1; } }
 @media (max-width: 560px) { .ftop { grid-template-columns: 1fr 1fr; } }
+/* Pre-launch footer: brand + newsletter only */
+.ftop.solo { grid-template-columns: 1fr minmax(0, 420px); align-items: end; }
+@media (max-width: 760px) { .ftop.solo { grid-template-columns: 1fr; } }
+#letter { scroll-margin-top: 24px; }
 
 /* whatsapp, toast, drawer */
 .wa {

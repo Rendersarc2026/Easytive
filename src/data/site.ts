@@ -68,9 +68,9 @@ export const shopGrid: ProductKey[] = ["daily", "flow", "comfort", "proFlora"];
 export type BannerPhoto = Photo & { pos?: string };
 
 export const heroPhotos: (BannerPhoto & { slide: "lifestyle" | "proof"; hold: number })[] = [
-  { src: bedJump, alt: "A woman in a white robe leaps onto a hotel bed in warm lamplight", slide: "lifestyle", hold: 3000 },
-  { src: hotelMorning, alt: "A woman in a robe sipping from a mug on the edge of a hotel bed", slide: "lifestyle", hold: 3000 },
-  { src: sunsetDance, alt: "A couple dancing on a lakeside deck at sunset", slide: "lifestyle", hold: 3000, pos: "50% 30%" },
+  { src: bedJump, alt: "A woman in a white robe leaps onto a hotel bed in warm lamplight", slide: "lifestyle", hold: 5000 },
+  { src: hotelMorning, alt: "A woman in a robe sipping from a mug on the edge of a hotel bed", slide: "lifestyle", hold: 5000 },
+  { src: sunsetDance, alt: "A couple dancing on a lakeside deck at sunset", slide: "lifestyle", hold: 5000, pos: "50% 30%" },
   { src: bottlesLight, alt: "Two clear Easytive bottles with brushed metal caps in warm light", slide: "proof", hold: 5000 },
 ];
 
