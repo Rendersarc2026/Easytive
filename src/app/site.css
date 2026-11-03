@@ -91,11 +91,13 @@ header.site.lined { box-shadow: 0 1px 0 var(--hair); }
 .hright { display: flex; justify-content: flex-end; gap: clamp(16px, 2vw, 28px); align-items: center; }
 .menu-btn { display: none; }
 @media (max-width: 900px) { .hbar nav { display: none; } .menu-btn { display: block; justify-self: start; } .hide-sm { display: none; } }
+/* Slim pre-launch header: the single link stays visible on mobile (no menu button). */
+@media (max-width: 900px) { .hbar.slim nav { display: flex; } }
 
 /* hero: two slides that cross-fade on their own */
 .hero { position: relative; overflow: hidden; height: clamp(460px, 78svh, 780px); background: #3a2716; color: var(--white); }
-/* Pre-launch: edge-to-edge hero filling the screen */
-.hero.full { height: 100svh; min-height: 520px; }
+/* Pre-launch hero: fills the screen under the 68px sticky header */
+.hero.full { height: calc(100svh - 68px); min-height: 520px; }
 .hero img, .band img { object-fit: cover; }
 /* stacked banner photos that cross-fade (hero + bottom band) */
 .bph { position: absolute; inset: 0; opacity: 0; transition: opacity 0.9s ease; }
@@ -388,6 +390,10 @@ header.site.lined { box-shadow: 0 1px 0 var(--hair); }
 .post:hover img { transform: scale(1.04); }
 .post h3 { font-size: 1.3rem; line-height: 1.2; }
 .post .by { font-size: 0.8rem; color: var(--muted); }
+
+/* blog page (pre-launch) */
+.bloglist .shead h1 { font-size: var(--t-h2); }
+.bloglist .post h2 { font-size: 1.55rem; }
 
 /* faq */
 .faq { padding-block: var(--sec); border-top: 1px solid var(--hair); }

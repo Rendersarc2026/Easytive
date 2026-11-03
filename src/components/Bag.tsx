@@ -65,3 +65,22 @@ export function WhatsAppButton({ className, label, children }: { className: stri
     </button>
   );
 }
+
+/** Header bag button: shows the count and says what's in the bag. */
+export function BagButton() {
+  const { count, say } = useBag();
+  return (
+    <button
+      type="button"
+      onClick={() =>
+        say(
+          count
+            ? `${count} ${count > 1 ? "items" : "item"} in your bag. Checkout opens at launch.`
+            : "Your bag is empty. Start with Easytive Daily.",
+        )
+      }
+    >
+      Bag ({count})
+    </button>
+  );
+}

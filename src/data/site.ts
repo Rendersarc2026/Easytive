@@ -21,14 +21,16 @@ type Photo = { src: StaticImageData; alt: string };
 
 export const announcement = ["Free shipping above Rs. 999", "Discreet packaging", "Cash on delivery"];
 
-export const nav = [
+export type NavItem = { label: string; href: string };
+
+export const nav: NavItem[] = [
   { label: "Shop", href: "#shop" },
   { label: "How it works", href: "#system" },
   { label: "Doctors", href: "#experts" },
   { label: "Creators", href: "#creators" },
   { label: "Journal", href: "#journal" },
 ];
-export const drawerNav = [
+export const drawerNav: NavItem[] = [
   ...nav.slice(0, 2),
   { label: "Creators", href: "#creators" },
   { label: "Doctors", href: "#experts" },
@@ -36,6 +38,8 @@ export const drawerNav = [
   { label: "Journal", href: "#journal" },
   { label: "FAQ", href: "#faq" },
 ];
+// Pre-launch header: wordmark + a link to the blog, nothing else.
+export const prelaunchNav: NavItem[] = [{ label: "Blog", href: "/blog" }];
 
 // ---- Products -------------------------------------------------------------
 

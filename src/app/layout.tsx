@@ -17,7 +17,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" className={`${playfair.variable} antialiased`}>
+    <html lang="en" data-scroll-behavior="smooth" className={`${playfair.variable} antialiased`}>
       <body className="min-h-screen">{children}</body>
     </html>
   );
