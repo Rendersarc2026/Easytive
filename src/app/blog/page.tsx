@@ -6,7 +6,6 @@ import { articles, prelaunchNav } from "@/data/site";
 
 // Pre-launch blog: a listing for now; article pages arrive with the real posts.
 export const metadata: Metadata = {
-  title: "Blog | Easytive",
   description: "Notes on everyday urinary health from the Easytive team and advisory board.",
 };
 

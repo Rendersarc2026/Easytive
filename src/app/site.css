@@ -86,7 +86,10 @@ header.site.lined { box-shadow: 0 1px 0 var(--hair); }
 .hbar nav a, .hright a, .hright button, .menu-btn {
   font-size: 0.66rem; letter-spacing: 0.24em; text-transform: uppercase; background: none; border: 0; padding: 0; cursor: pointer; color: var(--ink);
 }
-.hbar nav a:hover, .hright a:hover { text-decoration: underline; text-underline-offset: 6px; }
+.hbar nav a { color: var(--muted); transition: color 0.15s; }
+.hbar nav a:hover { color: #000; text-decoration: none; }
+.hright a:hover { text-decoration: underline; text-underline-offset: 6px; }
+.hbar nav a.on { color: #000; }
 .logo svg { height: 20px; width: auto; display: block; color: var(--ink); }
 .hright { display: flex; justify-content: flex-end; gap: clamp(16px, 2vw, 28px); align-items: center; }
 .menu-btn { display: none; }

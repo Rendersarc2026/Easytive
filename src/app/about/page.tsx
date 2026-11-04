@@ -6,7 +6,6 @@ import { prelaunchNav } from "@/data/site";
 
 // Pre-launch About page. Story copy is placeholder; replace before launch.
 export const metadata: Metadata = {
-  title: "About us | Easytive",
   description: "Why Easytive exists: doctor-guided daily urinary care, tested doses and discreet packaging, made in India.",
 };
 

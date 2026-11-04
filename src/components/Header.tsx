@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { announcement, drawerNav, nav, type NavItem } from "@/data/site";
 import { BagButton } from "./Bag";
@@ -18,6 +19,10 @@ type Props = {
 export function Header({ items = nav, slim = false }: Props) {
   const [lined, setLined] = useState(false);
   const [open, setOpen] = useState(false);
+  const pathname = usePathname();
+
+  // "#" links are homepage anchors, so they count as the current page only on "/".
+  const isActive = (href: string) => (href.startsWith("#") ? pathname === "/" : pathname === href);
 
   useEffect(() => {
     const onScroll = () => setLined(window.scrollY > 20);
@@ -45,11 +50,11 @@ export function Header({ items = nav, slim = false }: Props) {
           <nav aria-label="Primary">
             {items.map((n) =>
               n.href.startsWith("#") ? (
-                <a key={n.href} href={n.href}>
+                <a key={n.href} href={n.href} className={isActive(n.href) ? "on" : undefined} aria-current={isActive(n.href) ? "page" : undefined}>
                   {n.label}
                 </a>
               ) : (
-                <Link key={n.href} href={n.href}>
+                <Link key={n.href} href={n.href} className={isActive(n.href) ? "on" : undefined} aria-current={isActive(n.href) ? "page" : undefined}>
                   {n.label}
                 </Link>
               ),
