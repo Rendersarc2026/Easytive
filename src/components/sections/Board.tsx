@@ -1,9 +1,12 @@
+import Link from "next/link";
 import { doctors } from "@/data/site";
 import { Arrow, Silhouette } from "../icons";
 import { LogoIcon } from "../Logo";
 
+type Props = { link?: { label: string; href: string } | null };
+
 // Medical advisory board. Hover or focus a card to see what that doctor checks.
-export function Board() {
+export function Board({ link = { label: "About the board", href: "#experts" } }: Props) {
   return (
     <section className="board" id="experts" aria-label="Medical advisory board">
       <div className="wrap">
@@ -17,9 +20,16 @@ export function Board() {
               you.
             </p>
           </div>
-          <a className="link" href="#experts">
-            About the board <Arrow />
-          </a>
+          {link &&
+            (link.href.startsWith("#") ? (
+              <a className="link" href={link.href}>
+                {link.label} <Arrow />
+              </a>
+            ) : (
+              <Link className="link" href={link.href}>
+                {link.label} <Arrow />
+              </Link>
+            ))}
         </div>
         <div className="docs">
           {doctors.map((d) => (

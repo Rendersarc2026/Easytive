@@ -38,8 +38,12 @@ export const drawerNav: NavItem[] = [
   { label: "Journal", href: "#journal" },
   { label: "FAQ", href: "#faq" },
 ];
-// Pre-launch header: wordmark + a link to the blog, nothing else.
-export const prelaunchNav: NavItem[] = [{ label: "Blog", href: "/blog" }];
+// Pre-launch header: Home, About us and the blog, nothing else.
+export const prelaunchNav: NavItem[] = [
+  { label: "Home", href: "/" },
+  { label: "About us", href: "/about" },
+  { label: "Blogs", href: "/blog" },
+];
 
 // ---- Products -------------------------------------------------------------
 
