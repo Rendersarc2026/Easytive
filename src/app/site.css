@@ -86,7 +86,7 @@ header.site.lined { box-shadow: 0 1px 0 var(--hair); }
 .hbar nav a, .hright a, .hright button, .menu-btn {
   font-size: 0.66rem; letter-spacing: 0.24em; text-transform: uppercase; background: none; border: 0; padding: 0; cursor: pointer; color: var(--ink);
 }
-.hbar nav a { color: var(--muted); transition: color 0.15s; }
+.hbar nav a { color: var(--muted); white-space: nowrap; transition: color 0.15s; }
 .hbar nav a:hover { color: #000; text-decoration: none; }
 .hright a:hover { text-decoration: underline; text-underline-offset: 6px; }
 .hbar nav a.on { color: #000; }
@@ -94,8 +94,15 @@ header.site.lined { box-shadow: 0 1px 0 var(--hair); }
 .hright { display: flex; justify-content: flex-end; gap: clamp(16px, 2vw, 28px); align-items: center; }
 .menu-btn { display: none; }
 @media (max-width: 900px) { .hbar nav { display: none; } .menu-btn { display: block; justify-self: start; } .hide-sm { display: none; } }
-/* Slim pre-launch header: the single link stays visible on mobile (no menu button). */
-@media (max-width: 900px) { .hbar.slim nav { display: flex; } }
+/* Slim pre-launch header on phones: links stay inline on the left, wordmark moves right. */
+@media (max-width: 900px) {
+  .hbar.slim { grid-template-columns: 1fr auto; }
+  .hbar.slim nav { display: flex; gap: clamp(12px, 3vw, 22px); }
+}
+/* Very narrow phones: tighten the type so all three links still fit on one line. */
+@media (max-width: 400px) {
+  .hbar.slim nav a { font-size: 0.6rem; letter-spacing: 0.16em; }
+}
 
 /* hero: two slides that cross-fade on their own */
 .hero { position: relative; overflow: hidden; height: clamp(460px, 78svh, 780px); background: #3a2716; color: var(--white); }
