@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { announcement, drawerNav, nav, type NavItem } from "@/data/site";
 import { BagButton } from "./Bag";
 import { Logo } from "./Logo";
@@ -20,6 +20,7 @@ export function Header({ items = nav, slim = false }: Props) {
   const [lined, setLined] = useState(false);
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
+  const headerRef = useRef<HTMLElement | null>(null);
 
   // "#" links are homepage anchors, so they count as the current page only on "/".
   const isActive = (href: string) => (href.startsWith("#") ? pathname === "/" : pathname === href);
@@ -35,17 +36,28 @@ export function Header({ items = nav, slim = false }: Props) {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
     document.addEventListener("keydown", onKey);
-    document.body.style.overflow = "hidden";
+    // Only the full-site drawer locks the page; the slim dropdown must not.
+    if (!slim) document.body.style.overflow = "hidden";
     return () => {
       document.removeEventListener("keydown", onKey);
-      document.body.style.overflow = "";
+      if (!slim) document.body.style.overflow = "";
     };
-  }, [open]);
+  }, [open, slim]);
+
+  // Slim header: a click outside the open dropdown closes it.
+  useEffect(() => {
+    if (!open || !slim) return;
+    const onClick = (e: MouseEvent) => {
+      if (headerRef.current && !headerRef.current.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener("click", onClick);
+    return () => document.removeEventListener("click", onClick);
+  }, [open, slim]);
 
   return (
     <>
       {!slim && <div className="ann">{announcement.join("  ·  ")}</div>}
-      <header className={`site${lined ? " lined" : ""}`}>
+      <header className={`site${lined ? " lined" : ""}`} ref={headerRef}>
         <div className={`wrap hbar${slim ? " slim" : ""}`}>
           <nav aria-label="Primary">
             {items.map((n) =>
@@ -60,11 +72,24 @@ export function Header({ items = nav, slim = false }: Props) {
               ),
             )}
           </nav>
-          {!slim && (
-            <button className="menu-btn" type="button" aria-expanded={open} aria-controls="drawer" onClick={() => setOpen(true)}>
-              Menu
-            </button>
-          )}
+          <button
+            className={`menu-btn${slim ? " icon-btn" : ""}`}
+            type="button"
+            aria-expanded={open}
+            aria-controls={slim ? "slim-menu" : "drawer"}
+            aria-label="Menu"
+            onClick={() => setOpen((o) => !o)}
+          >
+            {slim ? (
+              <>
+                <span />
+                <span />
+                <span />
+              </>
+            ) : (
+              "Menu"
+            )}
+          </button>
           {slim ? (
             <Link className="logo" href="/">
               <Logo title="Easytive home" />
@@ -83,6 +108,15 @@ export function Header({ items = nav, slim = false }: Props) {
             </div>
           )}
         </div>
+        {slim && open && (
+          <nav className="slim-drop" id="slim-menu" aria-label="Menu">
+            {items.map((n) => (
+              <Link key={n.href} href={n.href} className={isActive(n.href) ? "on" : undefined} aria-current={isActive(n.href) ? "page" : undefined} onClick={() => setOpen(false)}>
+                {n.label}
+              </Link>
+            ))}
+          </nav>
+        )}
       </header>
 
       {!slim && open && (
