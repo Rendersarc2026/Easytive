@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Logo } from "../Logo";
+import Image from "next/image";
 
 export function Footer() {
   const [note, setNote] = useState("");
@@ -10,7 +10,7 @@ export function Footer() {
       <div className="wrap">
         <div className="ftop solo">
           <div className="fbrand">
-            <Logo tagline title="easytive, urinary health" />
+            <Image src="/easytive-logo.png" alt="Easytive" width={3202} height={700} sizes="300px" />
             <p>Doctor-guided, third-party tested urinary wellness. Made in India.</p>
           </div>
           <div className="fnews" id="letter">

@@ -466,7 +466,7 @@ header.site.lined { box-shadow: 0 1px 0 var(--hair); }
 footer.site-foot { background: var(--obsidian); color: #e4e3df; }
 footer.site-foot .wrap { padding-block: clamp(56px, 6vw, 96px) 28px; }
 .ftop { display: grid; grid-template-columns: 1.3fr repeat(3, minmax(0, 1fr)) 1.4fr; gap: 32px; }
-.fbrand svg { width: min(100%, 300px); height: auto; color: #fff; }
+.fbrand img { display: block; width: min(100%, 300px); height: auto; filter: brightness(0) invert(1); }
 .fbrand p { color: #a3a09a; margin-top: 16px; font-size: 0.9rem; max-width: 28ch; }
 .fcol h4 { margin: 0 0 16px; font-weight: 400; font-size: var(--t-label); letter-spacing: 0.28em; text-transform: uppercase; color: #a3a09a; }
 .fcol ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; font-size: 0.9rem; }
