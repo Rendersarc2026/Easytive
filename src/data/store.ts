@@ -1,17 +1,18 @@
 // Server-side content store for the admin panel.
 //
-// All site defaults live in site.ts. The admin writes edits to overrides.json
-// (git-friendly JSON next to site.ts), and every getter in here merges the
-// overrides over the defaults and hands back fully-resolved content.
+// All site defaults live in site.ts. The admin writes edits to the database
+// (easytive.site_content, one row per section), and every getter in here
+// merges those overrides over the defaults and hands back fully-resolved
+// content.
 //
 // Public pages call getSiteData() (cached with `use cache`; the tag
 // "site-content" lets admin saves update it immediately via updateTag).
 // Admin pages call readOverrides() directly (uncached) to prefill their forms.
 
-import fs from "node:fs/promises";
-import path from "node:path";
 import { cacheLife, cacheTag } from "next/cache";
 import type { StaticImageData } from "next/image";
+import { requireUser } from "@/lib/auth";
+import { db } from "@/lib/db";
 import { slugify, doctors as defaultDoctors, faq as defaultFaq, heroCopy, press as defaultPress, products as defaultProducts, reviews as defaultReviews, articles as defaultArticles, moments as defaultMoments, steps as defaultSteps, announcement as defaultAnnouncement, reviewCount as defaultReviewCount, type Product, type ProductKey } from "./site";
 
 // Brand photo bank: every image the site ships, addressable by key. The admin
@@ -73,7 +74,7 @@ export type ProductsMap = Record<ProductKey, Product>;
 
 const PRODUCT_KEYS = Object.keys(defaultProducts) as ProductKey[];
 
-// ---- Overrides on disk ------------------------------------------------------
+// ---- Overrides in the database ----------------------------------------------
 
 export type Overrides = {
   announcement?: string[];
@@ -89,24 +90,56 @@ export type Overrides = {
   reviewCount?: string;
 };
 
-const OVERRIDES_PATH = path.join(process.cwd(), "src", "data", "overrides.json");
+// The sections that may be stored: one row each, keyed by these names.
+const OVERRIDE_KEYS = ["announcement", "hero", "products", "articles", "reviews", "faq", "doctors", "moments", "steps", "press", "reviewCount"] as const satisfies readonly (keyof Overrides)[];
 
-async function readOverridesFile(): Promise<Overrides> {
-  try {
-    return JSON.parse(await fs.readFile(OVERRIDES_PATH, "utf8")) as Overrides;
-  } catch {
-    return {};
+// What each section looked like when it was read, so a save only touches the
+// sections that actually changed (two people editing different sections at
+// the same moment don't overwrite each other).
+const loaded = new WeakMap<Overrides, Map<string, string>>();
+
+async function readOverridesRows(): Promise<Overrides> {
+  const rows = await db()<{ key: string; value: unknown }[]>`select key, value from easytive.site_content`;
+  const o: Record<string, unknown> = {};
+  const seen = new Map<string, string>();
+  for (const row of rows) {
+    if (!(OVERRIDE_KEYS as readonly string[]).includes(row.key)) continue;
+    o[row.key] = row.value;
+    seen.set(row.key, JSON.stringify(row.value));
   }
+  loaded.set(o as Overrides, seen);
+  return o as Overrides;
 }
 
-/** Uncached read: used by admin pages/actions so they always see what's on disk. */
+/** Uncached read: used by admin pages/actions so they always see what's saved. */
 export async function readOverrides(): Promise<Overrides> {
-  return readOverridesFile();
+  return readOverridesRows();
 }
 
-/** List edit saver. Call inside admin actions after mutating. */
+/**
+ * Saves the overrides object an admin action just mutated. Checks the session
+ * itself, so no code path can write content without a signed-in account.
+ */
 export async function writeOverrides(o: Overrides): Promise<void> {
-  await fs.writeFile(OVERRIDES_PATH, `${JSON.stringify(o, null, 2)}\n`, "utf8");
+  const user = await requireUser();
+  const before = loaded.get(o) ?? new Map<string, string>();
+  const sql = db();
+  await sql.begin(async (tx) => {
+    for (const key of OVERRIDE_KEYS) {
+      const value = o[key];
+      if (value === undefined) {
+        if (before.has(key)) await tx`delete from easytive.site_content where key = ${key}`;
+        continue;
+      }
+      const json = JSON.stringify(value);
+      if (before.get(key) === json) continue;
+      await tx`
+        insert into easytive.site_content (key, value, updated_by)
+        values (${key}, ${json}::jsonb, ${user.id})
+        on conflict (key) do update set value = excluded.value, updated_at = now(), updated_by = excluded.updated_by
+      `;
+    }
+  });
 }
 
 // ---- Merge helpers (pure; shared by the public cache and admin forms) -------
@@ -280,13 +313,13 @@ export function siteDataOf(o: Overrides): SiteData {
 }
 
 /**
- * All site content with overrides applied. Cached: public pages read the JSON
- * at most once per profile window; admin saves call updateTag("site-content")
- * so the next render is fresh immediately.
+ * All site content with overrides applied. Cached: public pages query the
+ * database at most once per profile window; admin saves call
+ * updateTag("site-content") so the next render is fresh immediately.
  */
 export async function getSiteData(): Promise<SiteData> {
   "use cache";
   cacheLife("hours");
   cacheTag("site-content");
-  return siteDataOf(await readOverridesFile());
+  return siteDataOf(await readOverridesRows());
 }

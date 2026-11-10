@@ -1,12 +1,16 @@
 import Link from "next/link";
-import { doctors } from "@/data/site";
+import { doctors as siteDoctors } from "@/data/site";
 import { Arrow, Silhouette } from "../icons";
 import { LogoIcon } from "../Logo";
 
-type Props = { link?: { label: string; href: string } | null };
+type Props = {
+  link?: { label: string; href: string } | null;
+  /** Board members; pass the admin's merged list (data/store) to show edits. */
+  doctors?: typeof siteDoctors;
+};
 
 // Medical advisory board. Hover or focus a card to see what that doctor checks.
-export function Board({ link = { label: "About the board", href: "#experts" } }: Props) {
+export function Board({ link = { label: "About the board", href: "#experts" }, doctors = siteDoctors }: Props) {
   return (
     <section className="board" id="experts" aria-label="Medical advisory board">
       <div className="wrap">

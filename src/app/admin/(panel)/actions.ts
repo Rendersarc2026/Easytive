@@ -1,9 +1,9 @@
 "use server";
 
 // Every admin mutation lives here. Each one:
-//   1. verifies the session (requireAdmin),
-//   2. re-reads overrides.json (uncached, so it sees what's on disk),
-//   3. mutates the in-memory object and writes it back in one go,
+//   1. verifies the session (requireUser),
+//   2. re-reads the saved overrides from the database (uncached),
+//   3. mutates the in-memory object and writes back the sections that changed,
 //   4. expires the "site-content" tag so public pages re-render immediately.
 //
 // Lists avoid nested <form>s: each row/sub-entity gets its own form with a
@@ -24,12 +24,15 @@ import {
   type Overrides,
 } from "@/data/store";
 import { products, heroCopy, type ProductKey } from "@/data/site";
-import { requireAdmin } from "@/lib/auth";
+import { requireUser } from "@/lib/auth";
 
 const PRODUCT_KEYS = Object.keys(products) as ProductKey[];
 
+// Hard cap on any single field, so one request can't stuff the database.
+const MAX_FIELD = 20_000;
+
 function str(fd: FormData, key: string): string {
-  return String(fd.get(key) ?? "").trim();
+  return String(fd.get(key) ?? "").trim().slice(0, MAX_FIELD);
 }
 
 function id(fd: FormData): number {
@@ -45,7 +48,7 @@ const VALID = new Set(PRODUCT_KEYS);
 // ---- Products ---------------------------------------------------------------
 
 export async function saveProduct(fd: FormData) {
-  await requireAdmin();
+  await requireUser();
   const key = str(fd, "key") as ProductKey;
   if (!VALID.has(key)) return;
   const price = Number.parseInt(str(fd, "price"), 10);
@@ -69,7 +72,7 @@ export async function saveProduct(fd: FormData) {
 // ---- Hero ---------------------------------------------------------------------
 
 export async function saveHero(fd: FormData) {
-  await requireAdmin();
+  await requireUser();
   const o = await readOverrides();
   o.hero = {
     lifestyle: { tag: str(fd, "lifestyleTag"), line: str(fd, "lifestyleLine") },
@@ -84,7 +87,7 @@ export async function saveHero(fd: FormData) {
 }
 
 export async function addHeroStat() {
-  await requireAdmin();
+  await requireUser();
   const o = await readOverrides();
   const stats = o.hero?.proof?.stats ?? heroCopy.proof.stats.map((s) => ({ ...s }));
   o.hero = { ...(o.hero ?? {}), proof: { tag: o.hero?.proof?.tag ?? "", line: o.hero?.proof?.line ?? "", stats: [...stats, { value: "", label: "" }] } };
@@ -93,7 +96,7 @@ export async function addHeroStat() {
 }
 
 export async function saveHeroStat(fd: FormData) {
-  await requireAdmin();
+  await requireUser();
   const i = id(fd);
   const o = await readOverrides();
   const stats = o.hero?.proof?.stats ?? heroCopy.proof.stats.map((s) => ({ ...s }));
@@ -106,7 +109,7 @@ export async function saveHeroStat(fd: FormData) {
 }
 
 export async function deleteHeroStat(fd: FormData) {
-  await requireAdmin();
+  await requireUser();
   const i = id(fd);
   const o = await readOverrides();
   const stats = o.hero?.proof?.stats ?? heroCopy.proof.stats.map((s) => ({ ...s }));
@@ -121,7 +124,7 @@ export async function deleteHeroStat(fd: FormData) {
 // ---- One-liner strings ---------------------------------------------------------
 
 export async function saveAnnouncement(fd: FormData) {
-  await requireAdmin();
+  await requireUser();
   const o = await readOverrides();
   o.announcement = str(fd, "lines")
     .split("\n")
@@ -132,7 +135,7 @@ export async function saveAnnouncement(fd: FormData) {
 }
 
 export async function savePress(fd: FormData) {
-  await requireAdmin();
+  await requireUser();
   const o = await readOverrides();
   o.press = str(fd, "lines")
     .split("\n")
@@ -143,7 +146,7 @@ export async function savePress(fd: FormData) {
 }
 
 export async function saveReviewCount(fd: FormData) {
-  await requireAdmin();
+  await requireUser();
   const o = await readOverrides();
   o.reviewCount = str(fd, "reviewCount");
   await writeOverrides(o);
@@ -153,7 +156,7 @@ export async function saveReviewCount(fd: FormData) {
 // ---- Advisory board ------------------------------------------------------------
 
 export async function addDoctor() {
-  await requireAdmin();
+  await requireUser();
   const o = await readOverrides();
   o.doctors = [...(o.doctors ?? defaultDoctorDrafts()), { name: "", role: "", reviews: "" }];
   await writeOverrides(o);
@@ -161,7 +164,7 @@ export async function addDoctor() {
 }
 
 export async function saveDoctor(fd: FormData) {
-  await requireAdmin();
+  await requireUser();
   const i = id(fd);
   const o = await readOverrides();
   const list = o.doctors ?? defaultDoctorDrafts();
@@ -174,7 +177,7 @@ export async function saveDoctor(fd: FormData) {
 }
 
 export async function deleteDoctor(fd: FormData) {
-  await requireAdmin();
+  await requireUser();
   const i = id(fd);
   const o = await readOverrides();
   const list = o.doctors ?? defaultDoctorDrafts();
@@ -189,7 +192,7 @@ export async function deleteDoctor(fd: FormData) {
 // ---- Moments & steps ------------------------------------------------------------
 
 export async function addMoment() {
-  await requireAdmin();
+  await requireUser();
   const o = await readOverrides();
   o.moments = [...(o.moments ?? defaultMomentDrafts()), { photo: "", label: "", line: "" }];
   await writeOverrides(o);
@@ -197,7 +200,7 @@ export async function addMoment() {
 }
 
 export async function saveMoment(fd: FormData) {
-  await requireAdmin();
+  await requireUser();
   const i = id(fd);
   const o = await readOverrides();
   const list = o.moments ?? defaultMomentDrafts();
@@ -210,7 +213,7 @@ export async function saveMoment(fd: FormData) {
 }
 
 export async function deleteMoment(fd: FormData) {
-  await requireAdmin();
+  await requireUser();
   const i = id(fd);
   const o = await readOverrides();
   const list = o.moments ?? defaultMomentDrafts();
@@ -223,7 +226,7 @@ export async function deleteMoment(fd: FormData) {
 }
 
 export async function addStep() {
-  await requireAdmin();
+  await requireUser();
   const o = await readOverrides();
   o.steps = [...(o.steps ?? defaultStepDrafts()), { photo: "", pill: "", title: "", body: "" }];
   await writeOverrides(o);
@@ -231,7 +234,7 @@ export async function addStep() {
 }
 
 export async function saveStep(fd: FormData) {
-  await requireAdmin();
+  await requireUser();
   const i = id(fd);
   const o = await readOverrides();
   const list = o.steps ?? defaultStepDrafts();
@@ -244,7 +247,7 @@ export async function saveStep(fd: FormData) {
 }
 
 export async function deleteStep(fd: FormData) {
-  await requireAdmin();
+  await requireUser();
   const i = id(fd);
   const o = await readOverrides();
   const list = o.steps ?? defaultStepDrafts();
@@ -259,7 +262,7 @@ export async function deleteStep(fd: FormData) {
 // ---- Journal articles ------------------------------------------------------------
 
 export async function addArticle() {
-  await requireAdmin();
+  await requireUser();
   const o = await readOverrides();
   o.articles = [...(o.articles ?? defaultArticleDrafts()), { photo: "", tag: "", title: "", author: "", date: "", body: [] }];
   await writeOverrides(o);
@@ -267,7 +270,7 @@ export async function addArticle() {
 }
 
 export async function saveArticle(fd: FormData) {
-  await requireAdmin();
+  await requireUser();
   const i = id(fd);
   const o = await readOverrides();
   const list = o.articles ?? defaultArticleDrafts();
@@ -278,7 +281,7 @@ export async function saveArticle(fd: FormData) {
       title: str(fd, "title"),
       author: str(fd, "author"),
       date: str(fd, "date"),
-      body: textToBody(String(fd.get("body") ?? "")),
+      body: textToBody(String(fd.get("body") ?? "").slice(0, 100_000)),
     };
     o.articles = list;
     await writeOverrides(o);
@@ -287,7 +290,7 @@ export async function saveArticle(fd: FormData) {
 }
 
 export async function deleteArticle(fd: FormData) {
-  await requireAdmin();
+  await requireUser();
   const i = id(fd);
   const o = await readOverrides();
   const list = o.articles ?? defaultArticleDrafts();
@@ -302,7 +305,7 @@ export async function deleteArticle(fd: FormData) {
 // ---- Reviews ----------------------------------------------------------------------
 
 export async function addReview(fd: FormData) {
-  await requireAdmin();
+  await requireUser();
   const o = await readOverrides();
   const product = str(fd, "product");
   o.reviews = [
@@ -319,7 +322,7 @@ export async function addReview(fd: FormData) {
 }
 
 export async function saveReview(fd: FormData) {
-  await requireAdmin();
+  await requireUser();
   const i = id(fd);
   const o = await readOverrides();
   const list = o.reviews ?? defaultReviewDrafts();
@@ -338,7 +341,7 @@ export async function saveReview(fd: FormData) {
 }
 
 export async function deleteReview(fd: FormData) {
-  await requireAdmin();
+  await requireUser();
   const i = id(fd);
   const o = await readOverrides();
   const list = o.reviews ?? defaultReviewDrafts();
@@ -353,7 +356,7 @@ export async function deleteReview(fd: FormData) {
 // ---- FAQ -----------------------------------------------------------------------------
 
 export async function addFaqGroup(fd: FormData) {
-  await requireAdmin();
+  await requireUser();
   const o = await readOverrides();
   o.faq = [...(o.faq ?? defaultFaqDrafts()), { group: str(fd, "group"), items: [] }];
   await writeOverrides(o);
@@ -361,7 +364,7 @@ export async function addFaqGroup(fd: FormData) {
 }
 
 export async function saveFaqGroup(fd: FormData) {
-  await requireAdmin();
+  await requireUser();
   const i = id(fd);
   const o = await readOverrides();
   const list = o.faq ?? defaultFaqDrafts();
@@ -380,7 +383,7 @@ export async function saveFaqGroup(fd: FormData) {
 }
 
 export async function addFaqItem(fd: FormData) {
-  await requireAdmin();
+  await requireUser();
   const i = id(fd);
   const o = await readOverrides();
   const list = o.faq ?? defaultFaqDrafts();
@@ -393,7 +396,7 @@ export async function addFaqItem(fd: FormData) {
 }
 
 export async function deleteFaqGroup(fd: FormData) {
-  await requireAdmin();
+  await requireUser();
   const i = id(fd);
   const o = await readOverrides();
   const list = o.faq ?? defaultFaqDrafts();

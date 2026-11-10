@@ -1,7 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { heroCopy, heroPhotos } from "@/data/site";
+import { heroPhotos } from "@/data/site";
+import type { HeroCopy } from "@/data/store";
 import { Arrow } from "../icons";
 import { PhotoStack } from "../PhotoStack";
 
@@ -9,7 +10,8 @@ const SIZES = "100vw";
 
 // Photos change on their own (each photo's `hold` in data/site.ts) and loop.
 // The copy switches between the lifestyle line and the numbers. Pauses on hover.
-export function Hero() {
+// `copy` comes from data/store (admin-editable); photos are static bank assets.
+export function Hero({ copy }: { copy: HeroCopy }) {
   const [active, setActive] = useState(0);
   const paused = useRef(false);
   const timer = useRef<number | undefined>(undefined);
@@ -26,7 +28,7 @@ export function Hero() {
   }, [active, schedule]);
 
   const slide = heroPhotos[active].slide;
-  const { lifestyle, proof } = heroCopy;
+  const { lifestyle, proof } = copy;
   const tab = (s: typeof slide) => (slide === s ? undefined : -1);
 
   return (
@@ -48,9 +50,7 @@ export function Hero() {
       <div className={`hs${slide === "lifestyle" ? " on" : ""}`} aria-hidden={slide !== "lifestyle"}>
         <div className="hero-copy">
           <span className="tag">{lifestyle.tag}</span>
-          <h1>
-            Comfort, built into <em>every</em> day.
-          </h1>
+          <h1>{lifestyle.line}</h1>
           <div className="ctas">
             <a className="btn btn-light" href="#letter" tabIndex={tab("lifestyle")}>
               Get launch updates <Arrow />
@@ -63,7 +63,7 @@ export function Hero() {
         <div className="hero-copy">
           <span className="tag">{proof.tag}</span>
           <p role="heading" aria-level={2} className="h1">
-            Clinically studied doses. <em>Tested</em> every batch.
+            {proof.line}
           </p>
           <ul className="proof-row">
             {proof.stats.map((s) => (

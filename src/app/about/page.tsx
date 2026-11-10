@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Header } from "@/components/Header";
 import { Board } from "@/components/sections/Board";
 import { Footer } from "@/components/sections/Footer";
+import { getSiteData } from "@/data/store";
 import { prelaunchNav } from "@/data/site";
 
 // Pre-launch About page. Story copy is placeholder; replace before launch.
@@ -9,7 +10,8 @@ export const metadata: Metadata = {
   description: "Why Easytive exists: doctor-guided daily urinary care, tested doses and discreet packaging, made in India.",
 };
 
-export default function AboutPage() {
+export default async function AboutPage() {
+  const { doctors } = await getSiteData();
   return (
     <>
       <Header slim items={prelaunchNav} />
@@ -81,7 +83,7 @@ export default function AboutPage() {
           </div>
         </section>
 
-        <Board link={{ label: "Read the Easy Journal", href: "/blog" }} />
+        <Board doctors={doctors} link={{ label: "Read the Easy Journal", href: "/blog" }} />
       </main>
       <Footer />
     </>

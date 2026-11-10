@@ -1,0 +1,435 @@
+/* Admin panel styles. Scoped under .a-shell so the public site is untouched.
+   Palette follows the brand tokens in globals.css. */
+
+.a-shell {
+  min-height: 100vh;
+  display: flex;
+  background: #faf9f6;
+  color: #22211f;
+  font-family: "Helvetica Neue", Helvetica, Arial, ui-sans-serif, system-ui, sans-serif;
+  font-size: 15px;
+  line-height: 1.45;
+}
+
+/* ---- Sidebar ------------------------------------------------------------- */
+
+.a-side {
+  width: 216px;
+  flex: none;
+  border-right: 1px solid #e4e3df;
+  background: #fff;
+  padding: 24px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+}
+
+.a-brand {
+  font-family: var(--font-playfair), Georgia, serif;
+  font-size: 22px;
+  letter-spacing: 0.01em;
+  padding: 0 10px 18px;
+  border-bottom: 1px solid #e4e3df;
+  margin-bottom: 10px;
+}
+
+.a-navlink {
+  display: block;
+  padding: 9px 12px;
+  border-radius: 9px;
+  color: #4c4842;
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.a-navlink:hover {
+  background: #f4f1eb;
+  color: #22211f;
+}
+
+.a-navlink.on {
+  background: #22211f;
+  color: #fff;
+}
+
+.a-sidetail {
+  margin-top: auto;
+  padding-top: 16px;
+  border-top: 1px solid #e4e3df;
+  display: grid;
+  gap: 6px;
+  font-size: 13px;
+}
+
+.a-sidetail a,
+.logout-btn {
+  color: #4c4842;
+  background: none;
+  border: 0;
+  padding: 0;
+  font: inherit;
+  cursor: pointer;
+  text-align: left;
+}
+
+.a-sidetail a:hover,
+.logout-btn:hover {
+  color: #22211f;
+  text-decoration: underline;
+}
+
+/* ---- Main ------------------------------------------------------------------ */
+
+.a-main {
+  flex: 1;
+  min-width: 0;
+  padding: 40px 48px 72px;
+}
+
+.a-main > * {
+  max-width: 880px;
+}
+
+.a-toplabel {
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #7a7168;
+  margin-bottom: 6px;
+}
+
+.a-main h1 {
+  font-family: var(--font-playfair), Georgia, serif;
+  font-size: 34px;
+  font-weight: 500;
+  margin: 0 0 10px;
+}
+
+.a-lede {
+  color: #5c5650;
+  margin: 0 0 28px;
+  max-width: 640px;
+}
+
+/* ---- Cards & forms ----------------------------------------------------------- */
+
+.a-cards {
+  display: grid;
+  gap: 16px;
+}
+
+.a-card {
+  background: #fff;
+  border: 1px solid #e4e3df;
+  border-radius: 14px;
+  padding: 20px 22px;
+}
+
+.a-card > h2,
+.a-card > .a-cardhead h2 {
+  font-family: var(--font-playfair), Georgia, serif;
+  font-size: 21px;
+  font-weight: 500;
+  margin: 0 0 4px;
+}
+
+.a-cardhead {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.a-cardhint {
+  color: #7a7168;
+  font-size: 13px;
+  margin: 0;
+}
+
+.a-field {
+  display: grid;
+  gap: 5px;
+}
+
+.a-label {
+  font-size: 11px;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: #7a7168;
+}
+
+.a-input {
+  width: 100%;
+  border: 1px solid #e4e3df;
+  border-radius: 10px;
+  padding: 10px 12px;
+  font: inherit;
+  color: inherit;
+  background: #fff;
+  box-sizing: border-box;
+}
+
+.a-input:focus {
+  outline: 2px solid #22211f;
+  outline-offset: 1px;
+}
+
+.a-input.area {
+  resize: vertical;
+  min-height: 92px;
+}
+
+.a-input.area.tall {
+  min-height: 150px;
+}
+
+.a-check {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  padding: 10px 0 0;
+}
+
+.a-grid2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.a-grid3 {
+  display: grid;
+  grid-template-columns: 1.2fr 1.2fr 2fr;
+  gap: 12px;
+}
+
+.a-form {
+  display: grid;
+  gap: 12px;
+}
+
+.a-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+/* ---- Buttons ------------------------------------------------------------------- */
+
+.a-btn {
+  justify-self: start;
+  border: 1px solid #22211f;
+  background: #22211f;
+  color: #fff;
+  border-radius: 999px;
+  padding: 9px 20px;
+  font: inherit;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.a-btn:hover {
+  background: #3a3833;
+}
+
+.a-btn.ghost {
+  background: transparent;
+  color: #22211f;
+}
+
+.a-btn.ghost:hover {
+  background: #f4f1eb;
+}
+
+.a-btn.small {
+  padding: 6px 14px;
+  font-size: 13px;
+}
+
+.a-btn.subtle {
+  border-color: #e4e3df;
+  background: #fff;
+  color: #7a7168;
+}
+
+.a-btn.subtle:hover {
+  color: #22211f;
+  border-color: #c9c4ba;
+  background: #faf9f6;
+}
+
+/* ---- Item rows ----------------------------------------------------------------- */
+
+.a-rows {
+  display: grid;
+  gap: 12px;
+}
+
+.a-row {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  border: 1px solid #f0ede6;
+  border-radius: 12px;
+  padding: 14px 16px;
+  background: #fdfcfa;
+}
+
+.a-row form {
+  flex: 1;
+  min-width: 0;
+}
+
+.a-rowmain {
+  flex: 1;
+  min-width: 0;
+}
+
+.a-rowside {
+  flex: none;
+  display: grid;
+  gap: 6px;
+  justify-items: stretch;
+}
+
+.a-idx {
+  font-size: 11px;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: #a39a8f;
+}
+
+/* Tiny colour swatch next to hex inputs. */
+.a-swatch {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border-radius: 4px;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  vertical-align: -2px;
+}
+
+/* ---- Login ----------------------------------------------------------------------- */
+
+.a-login {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  background: #faf9f6;
+  padding: 24px;
+}
+
+.a-logincard {
+  width: 360px;
+  max-width: 100%;
+  background: #fff;
+  border: 1px solid #e4e3df;
+  border-radius: 16px;
+  padding: 34px 30px 30px;
+  display: grid;
+  gap: 16px;
+}
+
+.a-logincard .brand {
+  font-family: var(--font-playfair), Georgia, serif;
+  font-size: 27px;
+  text-align: center;
+}
+
+.a-ok {
+  border: 1px solid #cfe0cf;
+  background: #f1f8f1;
+  color: #2c5a34;
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 13.5px;
+  display: grid;
+  gap: 8px;
+}
+
+.a-ok p {
+  margin: 0;
+}
+
+.a-secret {
+  display: block;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 16px;
+  letter-spacing: 0.04em;
+  background: #fff;
+  border: 1px solid #cfe0cf;
+  border-radius: 8px;
+  padding: 10px 12px;
+  user-select: all;
+  overflow-wrap: anywhere;
+}
+
+.a-whoami {
+  color: #7a7168;
+  font-size: 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding: 2px 0 6px;
+}
+
+.a-btn:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.a-rowmain > form {
+  margin-top: 10px;
+  display: grid;
+  gap: 10px;
+}
+
+.a-error {
+  border: 1px solid #eccfb9;
+  background: #fdf3ec;
+  color: #8a3d1d;
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 13.5px;
+}
+
+/* ---- Responsive ------------------------------------------------------------------- */
+
+@media (max-width: 760px) {
+  .a-shell {
+    flex-direction: column;
+  }
+  .a-side {
+    position: static;
+    height: auto;
+    width: 100%;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    border-right: 0;
+    border-bottom: 1px solid #e4e3df;
+  }
+  .a-sidetail {
+    margin-top: 0;
+    margin-left: auto;
+    border-top: 0;
+    padding-top: 0;
+  }
+  .a-brand {
+    padding: 0 10px;
+    border-bottom: 0;
+    margin-bottom: 0;
+  }
+  .a-main {
+    padding: 24px 18px 56px;
+  }
+  .a-grid2,
+  .a-grid3 {
+    grid-template-columns: 1fr;
+  }
+}

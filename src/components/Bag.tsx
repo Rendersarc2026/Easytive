@@ -2,6 +2,7 @@
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { products, type ProductKey } from "@/data/site";
+import type { ProductsMap } from "@/data/store";
 
 // Preview-only bag: counts items and shows a toast. Checkout is not wired up yet.
 type Bag = { count: number; add: (p: ProductKey) => void; say: (msg: string) => void };
@@ -14,7 +15,7 @@ export function useBag() {
   return bag;
 }
 
-export function BagProvider({ children }: { children: ReactNode }) {
+export function BagProvider({ children, products: list = products }: { children: ReactNode; products?: ProductsMap }) {
   const [count, setCount] = useState(0);
   const [toast, setToast] = useState({ msg: "", on: false });
   const timer = useRef<number | undefined>(undefined);
@@ -30,9 +31,9 @@ export function BagProvider({ children }: { children: ReactNode }) {
   const add = useCallback(
     (p: ProductKey) => {
       setCount((c) => c + 1);
-      say(`${products[p].name} added to your bag`);
+      say(`${list[p].name} added to your bag`);
     },
-    [say],
+    [say, list],
   );
 
   const value = useMemo(() => ({ count, add, say }), [count, add, say]);

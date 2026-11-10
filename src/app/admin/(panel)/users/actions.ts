@@ -1,0 +1,126 @@
+"use server";
+
+// Account management. Every action re-checks the session *and* the admin role
+// (requireAdminRole), validates what the form sent, and writes an audit entry.
+// No action here can target the signed-in admin's own account, so there is
+// always at least one working admin left to undo a mistake.
+
+import { refresh } from "next/cache";
+import { audit, requireAdminRole, revokeUserSessions, type Role } from "@/lib/auth";
+import { db } from "@/lib/db";
+import { generateTempPassword, hashPassword, normalizeEmail } from "@/lib/password";
+import { clearLimit, hit, limitKey } from "@/lib/rate-limit";
+
+/** What the add/reset forms show after submitting. The temporary password is returned once and stored nowhere readable. */
+export type UserFormState = { error?: string; email?: string; tempPassword?: string } | null;
+
+const TEMP_PASSWORD_HOURS = 72;
+
+function targetId(fd: FormData): string | null {
+  const id = String(fd.get("id") ?? "");
+  return /^\d{1,18}$/.test(id) ? id : null;
+}
+
+const roleOf = (fd: FormData): Role => (fd.get("role") === "admin" ? "admin" : "editor");
+
+/** Caps how fast one admin session can churn accounts (also bounds password hashing work). */
+async function withinWriteLimit(actorId: string): Promise<boolean> {
+  return (await hit(limitKey("users:write", actorId), 30, 15 * 60)).ok;
+}
+
+export async function createUser(_prev: UserFormState, fd: FormData): Promise<UserFormState> {
+  const actor = await requireAdminRole();
+  if (!(await withinWriteLimit(actor.id))) return { error: "Too many changes at once. Wait a few minutes." };
+
+  const email = normalizeEmail(String(fd.get("email") ?? ""));
+  if (!email) return { error: "Enter a valid email address." };
+  const role = roleOf(fd);
+
+  const tempPassword = generateTempPassword();
+  const sql = db();
+  const created = await sql`
+    insert into easytive.admin_users (email, password_hash, role, must_change_password, temp_password_expires_at, created_by)
+    values (${email}, ${await hashPassword(tempPassword)}, ${role}, true, now() + make_interval(hours => ${TEMP_PASSWORD_HOURS}), ${actor.id})
+    on conflict (email) do nothing
+    returning id
+  `;
+  if (created.length === 0) return { error: "An account with that email already exists." };
+
+  await audit("user.create", actor.id, { target: email, role });
+  refresh();
+  return { email, tempPassword };
+}
+
+export async function resetUserPassword(_prev: UserFormState, fd: FormData): Promise<UserFormState> {
+  const actor = await requireAdminRole();
+  if (!(await withinWriteLimit(actor.id))) return { error: "Too many changes at once. Wait a few minutes." };
+
+  const id = targetId(fd);
+  if (!id) return { error: "That account no longer exists." };
+  if (id === actor.id) return { error: "Change your own password from the Account page." };
+
+  const tempPassword = generateTempPassword();
+  const sql = db();
+  const [user] = await sql<{ email: string }[]>`
+    update easytive.admin_users
+    set password_hash = ${await hashPassword(tempPassword)},
+        must_change_password = true,
+        temp_password_expires_at = now() + make_interval(hours => ${TEMP_PASSWORD_HOURS}),
+        password_changed_at = now()
+    where id = ${id}
+    returning email
+  `;
+  if (!user) return { error: "That account no longer exists." };
+
+  await revokeUserSessions(id); // the old password's sessions end now
+  await clearLimit(limitKey("login:email", user.email)); // and any sign-in lockout
+  await audit("user.reset_password", actor.id, { target: user.email });
+  refresh();
+  return { email: user.email, tempPassword };
+}
+
+export async function setUserDisabled(fd: FormData): Promise<void> {
+  const actor = await requireAdminRole();
+  const id = targetId(fd);
+  if (!id || id === actor.id) return;
+  const disable = fd.get("disabled") === "1";
+
+  const [user] = await db()<{ email: string }[]>`
+    update easytive.admin_users
+    set disabled_at = case when ${disable} then now() else null end
+    where id = ${id}
+    returning email
+  `;
+  if (!user) return;
+  if (disable) await revokeUserSessions(id);
+  await audit(disable ? "user.disable" : "user.enable", actor.id, { target: user.email });
+  refresh();
+}
+
+export async function setUserRole(fd: FormData): Promise<void> {
+  const actor = await requireAdminRole();
+  const id = targetId(fd);
+  if (!id || id === actor.id) return;
+  const role = roleOf(fd);
+
+  const [user] = await db()<{ email: string }[]>`
+    update easytive.admin_users set role = ${role} where id = ${id} and role <> ${role} returning email
+  `;
+  if (!user) return;
+  await audit("user.role", actor.id, { target: user.email, role });
+  refresh();
+}
+
+/** Permanent. Only a disabled account can be deleted, so it always takes two deliberate steps. */
+export async function deleteUser(fd: FormData): Promise<void> {
+  const actor = await requireAdminRole();
+  const id = targetId(fd);
+  if (!id || id === actor.id) return;
+
+  const [user] = await db()<{ email: string }[]>`
+    delete from easytive.admin_users where id = ${id} and disabled_at is not null returning email
+  `;
+  if (!user) return;
+  await audit("user.delete", actor.id, { target: user.email });
+  refresh();
+}
