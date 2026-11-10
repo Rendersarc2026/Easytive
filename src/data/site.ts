@@ -262,13 +262,31 @@ export const moments: { image: Photo; label: string; line: string }[] = [
 
 // ---- Journal -----------------------------------------------------------------
 
-export const articles: { image: Photo; tag: string; title: string; author: string; date: string }[] = [
+// Turns an article title into its /blog/<slug> path segment.
+export function slugify(title: string): string {
+  return (
+    title
+      .toLowerCase()
+      .normalize("NFKD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "") || "article"
+  );
+}
+
+// PLACEHOLDER: article bodies are sample copy; replace with board-reviewed text before launch.
+export const articles: { image: Photo; tag: string; title: string; author: string; date: string; body: string[] }[] = [
   {
     image: { src: bottleHand, alt: "A hand holding a clear Easytive bottle in warm light" },
     tag: "Ingredients",
     title: "Cranberry vs D-Mannose: what the research says",
     author: "Dr. Ananya Rao",
     date: "12 Oct 2026",
+    body: [
+      "Cranberry and D-Mannose are the two names you will see most often on urinary care labels. They are often sold as if they do the same job, but they work in different ways, and the research behind each one looks different too.",
+      "Cranberry has been studied for decades, mostly as juice or as concentrated extract. D-Mannose is a simple sugar that the body handles differently from table sugar. Studies on both vary a lot in dose, form and who took part, which is why reading the label matters as much as the ingredient name.",
+      "Our advisory board looks at the dose used in each study and matches it on the label, rather than adding a small amount for show. In the coming weeks we will publish the full reading list behind our formulas, so you can check the work yourself.",
+    ],
   },
   {
     image: { src: hotelMorning, alt: "A woman in a robe sipping from a mug on a hotel bed" },
@@ -276,6 +294,11 @@ export const articles: { image: Photo; tag: string; title: string; author: strin
     title: "How much water do you need? A realistic guide",
     author: "Easytive Team",
     date: "28 Sep 2026",
+    body: [
+      "Eight glasses a day is easy to remember, but it is not a rule that fits everyone. How much water you need depends on the weather, how active you are, what you eat and your own body.",
+      "A simpler check is to look at the colour of your urine through the day: pale straw usually means you are doing fine, darker means it is time for a glass. Spreading water across the day also tends to be easier on the bladder than drinking a lot at once.",
+      "If you find yourself drinking less to avoid trips to the washroom, you are not alone. It is one of the most common habits we hear about, and one of the first worth talking to your doctor about.",
+    ],
   },
   {
     image: { src: logoSketch, alt: "A pencil construction sketch of the Easytive mark" },
@@ -283,6 +306,11 @@ export const articles: { image: Photo; tag: string; title: string; author: strin
     title: "Five pelvic floor exercises you can do at your desk",
     author: "Dr. Meera Nair",
     date: "09 Sep 2026",
+    body: [
+      "The pelvic floor is a group of muscles that supports the bladder, and like any muscle it responds to regular, gentle training. The good news is that most of these exercises can be done sitting down, without anyone noticing.",
+      "Start by finding the right muscles: they are the ones you would use to stop the flow of urine. Squeeze them gently, hold for a slow count of three, then relax for the same count. Ten of these, a few times a day, is a good place to begin.",
+      "Go slowly and keep breathing normally. If an exercise causes pain, or you are not sure you are doing it right, a pelvic health physiotherapist can guide you through it in a single visit.",
+    ],
   },
 ];
 

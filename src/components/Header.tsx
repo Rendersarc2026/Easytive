@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { announcement, drawerNav, nav, type NavItem } from "@/data/site";
+import { drawerNav, nav, type NavItem } from "@/data/site";
 import { BagButton } from "./Bag";
 import { Logo } from "./Logo";
 
@@ -12,18 +12,22 @@ type Props = {
   items?: NavItem[];
   /** Slim pre-launch header: links + wordmark only (no announcement bar, bag or drawer). */
   slim?: boolean;
+  /** Announcement bar lines; required when the non-slim header shows the strip. */
+  announcement?: string[];
 };
 
 // Announcement bar, then a sticky white bar: links left, logo centre, stories + bag right.
 // `slim` renders just the links and the logo, for the pre-launch teaser pages.
-export function Header({ items = nav, slim = false }: Props) {
+export function Header({ items = nav, slim = false, announcement = [] }: Props) {
   const [lined, setLined] = useState(false);
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
   const headerRef = useRef<HTMLElement | null>(null);
 
   // "#" links are homepage anchors, so they count as the current page only on "/".
-  const isActive = (href: string) => (href.startsWith("#") ? pathname === "/" : pathname === href);
+  // Other links also stay lit on their sub-pages (/blog → /blog/<slug>).
+  const isActive = (href: string) =>
+    href.startsWith("#") ? pathname === "/" : pathname === href || (href !== "/" && pathname.startsWith(`${href}/`));
 
   useEffect(() => {
     const onScroll = () => setLined(window.scrollY > 20);

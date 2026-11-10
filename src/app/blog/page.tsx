@@ -1,15 +1,19 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+import Link from "next/link";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/sections/Footer";
-import { articles, prelaunchNav } from "@/data/site";
+import { getSiteData } from "@/data/store";
+import { prelaunchNav } from "@/data/site";
 
-// Pre-launch blog: a listing for now; article pages arrive with the real posts.
+// Pre-launch blog listing; each card opens its article at /blog/<slug>.
+// Articles come from the admin's merged content (data/store).
 export const metadata: Metadata = {
   description: "Notes on everyday urinary health from the Easytive team and advisory board.",
 };
 
-export default function BlogPage() {
+export default async function BlogPage() {
+  const { articles } = await getSiteData();
   return (
     <>
       <Header slim items={prelaunchNav} />
@@ -29,7 +33,7 @@ export default function BlogPage() {
             </div>
             <div className="posts">
               {articles.map((a) => (
-                <article className="post" key={a.title}>
+                <Link className="post" href={`/blog/${a.slug}`} key={a.slug}>
                   <div className="ph">
                     <Image src={a.image.src} alt={a.image.alt} fill placeholder="blur" sizes="(min-width: 860px) 33vw, 100vw" />
                   </div>
@@ -38,7 +42,7 @@ export default function BlogPage() {
                   <span className="by">
                     {a.author} · {a.date}
                   </span>
-                </article>
+                </Link>
               ))}
             </div>
           </div>
