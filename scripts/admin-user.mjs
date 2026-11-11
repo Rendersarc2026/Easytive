@@ -2,7 +2,7 @@
 //
 //   npm run admin:user -- someone@example.com
 //
-// If the email is new, an admin account is created. If it already exists, its
+// If the email is new, an account is created. If it already exists, its
 // password is reset, it is reactivated, signed out everywhere, and any sign-in
 // lockout is cleared. Either way a temporary password is printed once; the
 // person must choose their own at first sign-in (within 72 hours).
@@ -44,25 +44,27 @@ try {
   const hash = await hashPassword(tempPassword);
 
   const [row] = await sql`
-    insert into easytive.admin_users as u (email, password_hash, role, must_change_password, temp_password_expires_at)
-    values (${email}, ${hash}, 'admin', true, now() + interval '72 hours')
+    insert into easytive.admin_users as u (email, password_hash, must_change_password, temp_password_expires_at)
+    values (${email}, ${hash}, true, now() + interval '72 hours')
     on conflict (email) do update set
       password_hash = excluded.password_hash,
       must_change_password = true,
       temp_password_expires_at = excluded.temp_password_expires_at,
       password_changed_at = now(),
       is_active = true
-    returning id, role, (xmax = 0) as created
+    returning id, (xmax = 0) as created
   `;
   await sql`delete from easytive.admin_sessions where user_id = ${row.id}`;
-  const lockKey = `login:email:${createHash("sha256").update(email).digest("hex")}`;
-  await sql`delete from easytive.rate_limits where key = ${lockKey}`;
+  // Clear any failed-sign-in lockout (src/lib/login-guard.ts keys it by the email's hash).
+  const emailHash = createHash("sha256").update(email).digest("hex");
+  await sql`delete from easytive.account_locks where email_hash = ${emailHash}`;
+  await sql`delete from easytive.login_failures where email_hash = ${emailHash}`;
   await sql`
     insert into easytive.admin_audit_log (actor_id, action, detail, ip)
     values (null, ${row.created ? "user.create" : "user.reset_password"}, ${sql.json({ target: email, via: "cli" })}, 'cli')
   `;
 
-  console.log(row.created ? `Created admin account: ${email}` : `Reset password for ${email} (role: ${row.role})`);
+  console.log(row.created ? `Created account: ${email}` : `Reset password for ${email}`);
   console.log("");
   console.log(`  Temporary password:  ${tempPassword}`);
   console.log("");

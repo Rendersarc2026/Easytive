@@ -11,7 +11,8 @@
     "start": "next start",
     "lint": "eslint",
     "db:migrate": "node scripts/migrate.mjs",
-    "admin:user": "node scripts/admin-user.mjs"
+    "admin:user": "node scripts/admin-user.mjs",
+    "admin:unblock": "node scripts/unblock.mjs"
   },
   "dependencies": {
     "aws4fetch": "1.0.20",

@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { getAllPosts, lastBlogEdit } from "@/data/blog";
 import { requireUser } from "@/lib/auth";
-import { db } from "@/lib/db";
 
 // Dashboard: the blog tile (what's in it, when it was last changed, a link to
 // the public page) plus the signed-in account.
@@ -10,12 +9,7 @@ const when = (d: Date) => d.toLocaleString("en-GB", { day: "numeric", month: "sh
 
 export default async function DashboardPage() {
   const user = await requireUser();
-  const sql = db();
-  const [posts, blogEdit, [counts]] = await Promise.all([
-    getAllPosts(),
-    lastBlogEdit(),
-    sql<{ active: number }[]>`select count(*) filter (where is_active)::int as active from easytive.admin_users`,
-  ]);
+  const [posts, blogEdit] = await Promise.all([getAllPosts(), lastBlogEdit()]);
 
 
   const tiles = [
@@ -53,18 +47,11 @@ export default async function DashboardPage() {
         <div className="a-tile">
           <span className="a-tile-label">Your profile</span>
           <span className="a-tile-count small">{user.email}</span>
-          <span className="a-tile-hint">
-            {user.role === "admin" ? `Admin · ${counts.active} active ${counts.active === 1 ? "account" : "accounts"}` : "Editor"}
-          </span>
+          <span className="a-tile-hint">Change your password or sign out everywhere</span>
           <span className="a-tile-links">
             <Link className="a-btn small ghost" href="/admin/profile" prefetch={false}>
               Profile
             </Link>
-            {user.role === "admin" && (
-              <Link className="a-btn small ghost" href="/admin/users" prefetch={false}>
-                Users
-              </Link>
-            )}
           </span>
         </div>
       </div>

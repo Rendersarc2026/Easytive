@@ -14,10 +14,8 @@ import { db } from "./db";
 import { clientIp } from "./rate-limit";
 import { ADMIN_COOKIE, SESSION_IDLE_SECONDS, SESSION_MAX_SECONDS, looksLikeSessionToken } from "./session";
 
-export type Role = "admin" | "editor";
-
 /** The narrow view of an account that pages and actions get. Never the hash. */
-export type AdminUser = { id: string; email: string; role: Role; mustChangePassword: boolean };
+export type AdminUser = { id: string; email: string; mustChangePassword: boolean };
 
 const sha256 = (value: string) => createHash("sha256").update(value).digest();
 
@@ -33,8 +31,8 @@ export const getCurrentUser = cache(async (): Promise<AdminUser | null> => {
   const sql = db();
   const tokenHash = sha256(token);
   const ip = await clientIp();
-  const [row] = await sql<{ id: string; email: string; role: Role; must_change_password: boolean; stale: boolean }[]>`
-    select u.id, u.email, u.role, u.must_change_password,
+  const [row] = await sql<{ id: string; email: string; must_change_password: boolean; stale: boolean }[]>`
+    select u.id, u.email, u.must_change_password,
            s.last_seen_at < now() - interval '5 minutes' as stale
     from easytive.admin_sessions s
     join easytive.admin_users u on u.id = s.user_id
@@ -51,7 +49,7 @@ export const getCurrentUser = cache(async (): Promise<AdminUser | null> => {
   if (row.stale) {
     await sql`update easytive.admin_sessions set last_seen_at = now() where token_hash = ${tokenHash}`;
   }
-  return { id: row.id, email: row.email, role: row.role, mustChangePassword: row.must_change_password };
+  return { id: row.id, email: row.email, mustChangePassword: row.must_change_password };
 });
 
 /**
@@ -63,13 +61,6 @@ export async function requireUser(): Promise<AdminUser> {
   const user = await getCurrentUser();
   if (!user) redirect("/admin/login");
   if (user.mustChangePassword) redirect("/admin/set-password");
-  return user;
-}
-
-/** Gate for account management: signed in *and* holding the admin role. */
-export async function requireAdminRole(): Promise<AdminUser> {
-  const user = await requireUser();
-  if (user.role !== "admin") redirect("/admin");
   return user;
 }
 

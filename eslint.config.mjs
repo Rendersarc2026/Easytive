@@ -4,9 +4,9 @@ import nextTs from "eslint-config-next/typescript";
 
 // Admin pages check the session themselves: the panel layout doesn't, so that
 // navigation can show loading.tsx at once. This rule fails the lint if a page's
-// first statement isn't `await requireUser()` / `await requireAdminRole()`
-// (on its own or assigned to a variable).
-const GUARDS = new Set(["requireUser", "requireAdminRole"]);
+// first statement isn't `await requireUser()` (on its own or assigned to a
+// variable).
+const GUARDS = new Set(["requireUser"]);
 
 function guardCall(stmt) {
   const expr =
@@ -28,7 +28,7 @@ const adminGuard = {
             const fn = node.declaration;
             const first = fn.type === "FunctionDeclaration" ? fn.body.body[0] : null;
             if (!guardCall(first)) {
-              context.report({ node, message: "Admin pages must start with `await requireUser()` or `await requireAdminRole()`; the panel layout doesn't check the session." });
+              context.report({ node, message: "Admin pages must start with `await requireUser()`; the panel layout doesn't check the session." });
             }
           },
         };

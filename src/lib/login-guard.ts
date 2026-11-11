@@ -13,8 +13,8 @@
 //                    24 hours); the count resets after 30 quiet days.
 //
 // Accounts are keyed by a hash of the typed email, so an email with no
-// account behaves exactly like a real one. Admins can lift locks and blocks
-// from the Users page.
+// account behaves exactly like a real one. To lift a lock or block early,
+// run `npm run admin:unblock` (scripts/unblock.mjs).
 
 import { createHash } from "node:crypto";
 import { db } from "./db";
@@ -120,20 +120,6 @@ export async function clearFailures(hash: string): Promise<void> {
   await Promise.all([
     sql`delete from easytive.login_failures where email_hash = ${hash}`,
     sql`delete from easytive.account_locks where email_hash = ${hash}`,
-  ]);
-}
-
-/** Admin: unlock an account. */
-export async function unlockAccount(email: string): Promise<void> {
-  await clearFailures(emailHash(email));
-}
-
-/** Admin: lift a block (the strike count is kept, so a repeat still escalates). */
-export async function unblockIp(ip: string): Promise<void> {
-  const sql = db();
-  await Promise.all([
-    sql`update easytive.ip_blocks set blocked_until = now(), updated_at = now() where ip = ${ip}`,
-    sql`delete from easytive.login_failures where ip = ${ip}`,
   ]);
 }
 

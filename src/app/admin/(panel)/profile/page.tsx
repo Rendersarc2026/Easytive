@@ -16,7 +16,7 @@ export default async function ProfilePage({ searchParams }: { searchParams: Prom
       <div className="a-toplabel">Profile</div>
       <h1>Your profile</h1>
       <p className="a-lede">
-        Signed in as <strong>{user.email}</strong> ({user.role === "admin" ? "admin: content and users" : "editor: content only"}).
+        Signed in as <strong>{user.email}</strong>.
       </p>
 
       <div className="a-cards">

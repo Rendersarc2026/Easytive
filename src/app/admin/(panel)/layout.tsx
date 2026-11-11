@@ -8,7 +8,7 @@ import "../admin.css";
 import { ConfirmButton } from "@/app/admin/buttons";
 
 // The sidebar is static and prerenders. Each page checks the session itself
-// (requireUser / requireAdminRole as its first await), and each page folder's
+// (`await requireUser()` as its first statement), and each page folder's
 // loading.tsx gives it its own Suspense boundary, so a click shows the loading
 // state at once instead of waiting on the session lookup. The session read
 // also aborts prerendering at that point, so no page body lands in the shell.
@@ -18,7 +18,7 @@ import { ConfirmButton } from "@/app/admin/buttons";
 async function AccountLinks() {
   const user = await getCurrentUser();
   if (!user) return null;
-  const links = [...(user.role === "admin" ? [{ href: "/admin/users", label: "Users" }] : []), { href: "/admin/profile", label: "Profile" }];
+  const links = [{ href: "/admin/profile", label: "Profile" }];
   return (
     <>
       <div className="a-account" title={user.email}>
@@ -27,7 +27,7 @@ async function AccountLinks() {
         </span>
         <span className="a-accountmeta">
           <span className="a-accountemail">{user.email}</span>
-          <span className="a-accountrole">{user.role === "admin" ? "Admin" : "Editor"}</span>
+          <span className="a-accountrole">Signed in</span>
         </span>
       </div>
       <AdminNav links={links} label="Account" />

@@ -686,25 +686,6 @@
   font-size: 13px;
 }
 
-/* ---- Activity log (users page) -------------------------------------------------- */
-
-.a-log {
-  gap: 0;
-}
-
-.a-log .a-row {
-  border: 0;
-  border-bottom: 1px solid #f0ede6;
-  border-radius: 0;
-  background: none;
-  padding: 9px 2px;
-  font-size: 14px;
-}
-
-.a-log .a-row:last-child {
-  border-bottom: 0;
-}
-
 /* ---- Responsive ------------------------------------------------------------------- */
 
 @media (max-width: 760px) {
@@ -949,26 +930,3 @@
   }
 }
 
-/* ---- Users: account lock notice ------------------------------------------------- */
-
-.a-lockline {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px;
-  margin-top: 8px;
-}
-
-.a-badge {
-  display: inline-block;
-  padding: 3px 10px;
-  border-radius: 999px;
-  font-size: 12px;
-  background: #f4f1eb;
-  color: #4c4842;
-}
-
-.a-badge.warn {
-  background: #fbeee4;
-  color: #8a4b1f;
-}

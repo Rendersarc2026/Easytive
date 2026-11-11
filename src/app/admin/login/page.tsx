@@ -10,8 +10,8 @@ export const metadata: Metadata = { title: "Admin · Easytive", robots: { index:
 
 const errors: Record<string, string> = {
   rate: "Too many sign-in attempts. Wait a minute and try again.",
-  locked: "Too many failed sign-ins. This account is locked for 15 minutes. Ask an admin to unlock it sooner.",
-  blocked: "Sign-in from your network is blocked for a while after suspicious activity. Ask an admin if you need access now.",
+  locked: "Too many failed sign-ins. This account is locked for 15 minutes; try again after that.",
+  blocked: "Sign-in from your network is blocked for a while after suspicious activity. Try again later.",
   expired: "That temporary password has expired. Ask an admin to reset it.",
 };
 
