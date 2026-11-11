@@ -54,11 +54,11 @@ try {
       is_active = true
     returning id, (xmax = 0) as created
   `;
-  await sql`delete from easytive.admin_sessions where user_id = ${row.id}`;
+  await sql`update easytive.admin_sessions set is_active = false where user_id = ${row.id} and is_active`;
   // Clear any failed-sign-in lockout (src/lib/login-guard.ts keys it by the email's hash).
   const emailHash = createHash("sha256").update(email).digest("hex");
-  await sql`delete from easytive.account_locks where email_hash = ${emailHash}`;
-  await sql`delete from easytive.login_failures where email_hash = ${emailHash}`;
+  await sql`update easytive.account_locks set is_active = false where email_hash = ${emailHash} and is_active`;
+  await sql`update easytive.login_failures set is_active = false where email_hash = ${emailHash} and is_active`;
   await sql`
     insert into easytive.admin_audit_log (actor_id, action, detail, ip)
     values (null, ${row.created ? "user.create" : "user.reset_password"}, ${sql.json({ target: email, via: "cli" })}, 'cli')

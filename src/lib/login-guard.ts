@@ -37,7 +37,7 @@ export async function accountLockMinutes(hash: string): Promise<number> {
   const [row] = await db()<{ mins: number }[]>`
     select ceil(extract(epoch from (locked_until - now())) / 60)::int as mins
     from easytive.account_locks
-    where email_hash = ${hash} and locked_until > now()
+    where email_hash = ${hash} and is_active and locked_until > now()
   `;
   return row?.mins ?? 0;
 }
@@ -45,7 +45,7 @@ export async function accountLockMinutes(hash: string): Promise<number> {
 /** True while this address is blocked. */
 export async function isIpBlocked(ip: string): Promise<boolean> {
   if (!blockable(ip)) return false;
-  const [row] = await db()`select 1 from easytive.ip_blocks where ip = ${ip} and blocked_until > now()`;
+  const [row] = await db()`select 1 from easytive.ip_blocks where ip = ${ip} and is_active and blocked_until > now()`;
   return Boolean(row);
 }
 
@@ -62,6 +62,7 @@ export async function blockIp(ip: string, reason: string): Promise<void> {
         make_interval(hours => ${BLOCK_BASE_HOURS}) * power(2, case when b.updated_at < now() - interval '30 days' then 0 else b.strikes end)
       ),
       reason = excluded.reason,
+      is_active = true,
       updated_at = now()
   `;
 }
@@ -82,12 +83,12 @@ export async function recordFailure(hash: string, ip: string): Promise<FailureOu
     )
     select
       (select count(*) from easytive.login_failures
-        where email_hash = ${hash} and at > now() - make_interval(mins => ${WINDOW_MINUTES}))::int + 1 as account_failures,
+        where email_hash = ${hash} and is_active and at > now() - make_interval(mins => ${WINDOW_MINUTES}))::int + 1 as account_failures,
       (select count(*) from easytive.login_failures
-        where ip = ${ip} and at > now() - make_interval(mins => ${WINDOW_MINUTES}))::int + 1 as ip_failures,
+        where ip = ${ip} and is_active and at > now() - make_interval(mins => ${WINDOW_MINUTES}))::int + 1 as ip_failures,
       (select count(distinct email_hash) from (
         select email_hash from easytive.login_failures
-        where ip = ${ip} and at > now() - make_interval(mins => ${WINDOW_MINUTES})
+        where ip = ${ip} and is_active and at > now() - make_interval(mins => ${WINDOW_MINUTES})
         union select ${hash}::text
       ) e)::int as ip_accounts
   `;
@@ -106,7 +107,7 @@ export async function recordFailure(hash: string, ip: string): Promise<FailureOu
       ? sql`
           insert into easytive.account_locks (email_hash, locked_until)
           values (${hash}, now() + make_interval(mins => ${LOCK_MINUTES}))
-          on conflict (email_hash) do update set locked_until = excluded.locked_until, locked_at = now()
+          on conflict (email_hash) do update set locked_until = excluded.locked_until, locked_at = now(), is_active = true
         `
       : null,
     blocked ? blockIp(ip, reason) : null,
@@ -114,21 +115,24 @@ export async function recordFailure(hash: string, ip: string): Promise<FailureOu
   return { locked, blocked };
 }
 
-/** A successful sign-in: forget this account's failures and any lock. */
+/** A successful sign-in: switch off this account's failures and any lock. */
 export async function clearFailures(hash: string): Promise<void> {
   const sql = db();
   await Promise.all([
-    sql`delete from easytive.login_failures where email_hash = ${hash}`,
-    sql`delete from easytive.account_locks where email_hash = ${hash}`,
+    sql`update easytive.login_failures set is_active = false where email_hash = ${hash} and is_active`,
+    sql`update easytive.account_locks set is_active = false where email_hash = ${hash} and is_active`,
   ]);
 }
 
-/** Housekeeping (daily cron): drop old failures, expired locks, long-quiet blocks. */
+/**
+ * Housekeeping (daily cron): switch off (soft-delete) old failures, expired
+ * locks and long-quiet blocks. Nothing is removed from the database.
+ */
 export async function pruneLoginGuard(): Promise<void> {
   const sql = db();
   await Promise.all([
-    sql`delete from easytive.login_failures where at < now() - interval '1 day'`,
-    sql`delete from easytive.account_locks where locked_until < now()`,
-    sql`delete from easytive.ip_blocks where blocked_until < now() - interval '30 days'`,
+    sql`update easytive.login_failures set is_active = false where is_active and at < now() - interval '1 day'`,
+    sql`update easytive.account_locks set is_active = false where is_active and locked_until < now()`,
+    sql`update easytive.ip_blocks set is_active = false where is_active and blocked_until < now() - interval '30 days'`,
   ]);
 }

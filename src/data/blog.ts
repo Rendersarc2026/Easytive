@@ -2,6 +2,10 @@
 // are objects in the storage bucket; a post keeps the object key and the site
 // serves it at /media/<key>.
 //
+// Deleting is a soft delete: the row's is_active goes false and every read
+// here only sees active rows. Nothing is removed from the database or the
+// bucket, so a deleted post (and its cover) can be brought back.
+//
 // Reads are cached under the "blog" tag; every admin save calls
 // updateTag("blog") so the blog and the admin list are fresh straight away.
 // Writes check the session themselves, so no code path can change a post
@@ -86,6 +90,7 @@ async function readPosts(): Promise<BlogPost[]> {
   const rows = await db()<BlogPostRow[]>`
     select id, slug, title, tag, author, published_on::text as published_on, body, cover_key, cover_alt
     from easytive.blog_posts
+    where is_active
     order by published_on desc nulls first, id desc
   `;
   return rows.map(toPost);
@@ -138,7 +143,7 @@ async function freeSlug(title: string, id: number): Promise<string> {
     (
       await db()<{ slug: string }[]>`
         select slug from easytive.blog_posts
-        where id <> ${id} and (slug = ${base} or slug like ${base + "-%"})
+        where is_active and id <> ${id} and (slug = ${base} or slug like ${base + "-%"})
       `
     ).map((r) => r.slug),
   );
@@ -146,15 +151,12 @@ async function freeSlug(title: string, id: number): Promise<string> {
   for (let n = 2; ; n++) if (!taken.has(`${base}-${n}`)) return `${base}-${n}`;
 }
 
-/**
- * Saves a post. Returns the cover key it replaced (so the caller can remove
- * the old image from the bucket), or null. Returns false if the post is gone.
- */
-export async function updatePost(id: number, input: PostInput): Promise<string | null | false> {
+/** Saves a post. Returns false if the post is gone (deleted meanwhile). */
+export async function updatePost(id: number, input: PostInput): Promise<boolean> {
   const user = await requireUser();
   const slug = input.title ? await freeSlug(input.title, id) : null;
   const date = /^\d{4}-\d{2}-\d{2}$/.test(input.publishedOn) ? input.publishedOn : null;
-  const [row] = await db()<{ old_cover: string | null }[]>`
+  const [row] = await db()`
     update easytive.blog_posts p set
       slug = ${slug},
       title = ${input.title},
@@ -166,27 +168,26 @@ export async function updatePost(id: number, input: PostInput): Promise<string |
       cover_alt = ${input.title},
       updated_at = now(),
       updated_by = ${user.id}
-    from (select cover_key from easytive.blog_posts where id = ${id} for update) old
-    where p.id = ${id}
-    returning old.cover_key as old_cover
+    where p.id = ${id} and p.is_active
+    returning p.id
   `;
-  if (!row) return false;
-  return input.coverKey && row.old_cover !== input.coverKey ? row.old_cover : null;
+  return Boolean(row);
 }
 
 /** True if the post already has a cover image. */
 export async function hasCover(id: number): Promise<boolean> {
-  const [row] = await db()`select 1 from easytive.blog_posts where id = ${id} and cover_key is not null`;
+  const [row] = await db()`select 1 from easytive.blog_posts where id = ${id} and is_active and cover_key is not null`;
   return Boolean(row);
 }
 
-/** Deletes a post and returns its cover key (to remove from the bucket), or null. */
-export async function deletePost(id: number): Promise<string | null> {
-  await requireUser();
-  const [row] = await db()<{ cover_key: string | null }[]>`
-    delete from easytive.blog_posts where id = ${id} returning cover_key
+/** Soft-deletes a post: it disappears from the blog and the admin, but the row and its cover stay. */
+export async function deletePost(id: number): Promise<void> {
+  const user = await requireUser();
+  await db()`
+    update easytive.blog_posts
+    set is_active = false, updated_at = now(), updated_by = ${user.id}
+    where id = ${id} and is_active
   `;
-  return row?.cover_key ?? null;
 }
 
 /** When the blog last changed, and who changed it. For the dashboard. */
@@ -195,6 +196,7 @@ export async function lastBlogEdit(): Promise<{ at: Date; email: string | null }
     select p.updated_at as at, u.email
     from easytive.blog_posts p
     left join easytive.admin_users u on u.id = p.updated_by
+    where p.is_active
     order by p.updated_at desc
     limit 1
   `;

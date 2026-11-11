@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+import { cookies } from "next/headers";
 import { ConfirmButton, Spinner, SubmitButton } from "@/app/admin/buttons";
 import { bodyToText, getAllPosts, type BlogPost } from "@/data/blog";
 import { requireUser } from "@/lib/auth";
 import { addArticle, deleteArticle, saveArticle } from "../actions";
 import { Notice, PhotoField } from "../fields";
+import { BlogViewProvider, PostList, ViewToggle } from "./view";
 
 export const metadata: Metadata = { title: "Blog · Easytive admin" };
 
@@ -44,11 +46,12 @@ function Cover({ post }: { post: BlogPost }) {
 export default async function BlogAdminPage({ searchParams }: { searchParams: Promise<{ error?: string }> }) {
   await requireUser();
   const posts = await getAllPosts();
+  const view = (await cookies()).get("blog-view")?.value === "grid" ? "grid" : "list";
   const live = posts.filter((p) => p.slug).length;
   const drafts = posts.length - live;
 
   return (
-    <>
+    <BlogViewProvider initial={view}>
       <header className="bp-head">
         <div>
           <h1>Blog posts</h1>
@@ -57,7 +60,10 @@ export default async function BlogAdminPage({ searchParams }: { searchParams: Pr
             {drafts > 0 && <>, {drafts} {drafts === 1 ? "draft" : "drafts"}</>}
           </p>
         </div>
-        <NewPostButton />
+        <div className="bp-tools">
+          {posts.length > 0 && <ViewToggle />}
+          <NewPostButton />
+        </div>
       </header>
       <p className="a-lede">Newest first, by the post date. A post goes live once it has a title, and every save shows on the site straight away.</p>
       <Notice searchParams={searchParams} />
@@ -69,7 +75,7 @@ export default async function BlogAdminPage({ searchParams }: { searchParams: Pr
           <NewPostButton label="Write a post" />
         </div>
       ) : (
-        <div className="bp-list">
+        <PostList>
           {posts.map((d) => (
             <article className="bp" key={d.id}>
               <details className="bp-main" open={!d.title}>
@@ -158,7 +164,7 @@ export default async function BlogAdminPage({ searchParams }: { searchParams: Pr
                   <ConfirmButton
                     className="bp-icon danger"
                     title={`Delete "${d.title || "this post"}"?`}
-                    message="It comes off the blog straight away, with its cover photo. This can't be undone."
+                    message="It comes off the blog and this list straight away. It's kept in the database, so it can be restored there if needed."
                     confirmLabel="Delete"
                     pendingLabel={<Spinner label="Deleting" />}
                     danger
@@ -172,8 +178,8 @@ export default async function BlogAdminPage({ searchParams }: { searchParams: Pr
               </div>
             </article>
           ))}
-        </div>
+        </PostList>
       )}
-    </>
+    </BlogViewProvider>
   );
 }

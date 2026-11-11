@@ -886,72 +886,98 @@
   font-size: 13px;
 }
 
+/* ---- Phone top bar and drawer (hidden on desktop) ------------------------------ */
+
+.a-topbar,
+.a-drawerclose,
+.a-scrim {
+  display: none;
+}
+
+.a-topbrand {
+  font-family: var(--font-playfair), Georgia, serif;
+  font-size: 20px;
+}
+
+.a-menubtn,
+.a-drawerclose {
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border: 1px solid #e4e3df;
+  border-radius: 12px;
+  background: #fff;
+  color: #22211f;
+  cursor: pointer;
+}
+
+.a-menubtn {
+  display: grid;
+}
+
+.a-drawerclose {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+}
+
+.a-menubtn:focus-visible,
+.a-drawerclose:focus-visible {
+  outline: 2px solid #22211f;
+  outline-offset: 2px;
+}
+
+/* No page scrolling behind the open drawer. */
+html:has(.a-shell[data-menu="open"]) {
+  overflow: hidden;
+}
+
 /* ---- Responsive ------------------------------------------------------------------- */
 
 @media (max-width: 760px) {
   .a-shell {
     flex-direction: column;
   }
-  .a-side {
+  /* Slim bar on top; the sidebar becomes a drawer (shell.tsx). */
+  .a-topbar {
+    display: flex;
     position: sticky;
     top: 0;
-    z-index: 5;
-    height: auto;
-    width: 100%;
-    padding: 12px 16px 10px;
-    gap: 8px;
-    border-right: 0;
+    z-index: 20;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 12px 10px 16px;
+    background: #fff;
     border-bottom: 1px solid #e4e3df;
   }
-  .a-brand {
-    padding: 0 2px;
-    border-bottom: 0;
-    margin-bottom: 0;
-    font-size: 20px;
+  .a-side {
+    position: fixed;
+    inset: 0 auto 0 0;
+    z-index: 40;
+    width: min(300px, 86vw);
+    height: 100dvh;
+    padding-top: 16px;
+    box-shadow: 0 0 40px rgb(34 33 31 / 0.18);
+    transform: translateX(-100%);
+    visibility: hidden;
+    transition:
+      transform 0.25s ease,
+      visibility 0s linear 0.25s;
   }
-  /* Section links: one row that scrolls sideways instead of wrapping. */
-  .a-side > nav {
-    display: flex;
-    gap: 4px;
-    overflow-x: auto;
-    margin-inline: -16px;
-    padding-inline: 16px;
-    scrollbar-width: none;
+  .a-shell[data-menu="open"] .a-side {
+    transform: none;
+    visibility: visible;
+    transition: transform 0.25s ease;
   }
-  .a-side > nav .a-navlink {
-    flex: none;
-    padding: 7px 12px;
-    border-radius: 999px;
-    font-size: 13.5px;
+  .a-drawerclose {
+    display: grid;
   }
-  /* Account links, address, public site and log out: one compact wrapped line. */
-  .a-sidetail {
-    margin-top: 0;
-    padding-top: 8px;
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 4px 14px;
-  }
-  .a-sidetail nav {
-    display: flex;
-    gap: 4px;
-  }
-  .a-sidetail .a-navlink {
-    padding: 4px 10px;
-    border-radius: 999px;
-    font-size: 13px;
-  }
-  .a-account {
-    display: none;
-  }
-  .a-sideactions {
-    display: flex;
-    margin-top: 0;
-  }
-  .a-sideaction {
-    padding: 4px 10px;
-    border-radius: 999px;
+  .a-scrim {
+    position: fixed;
+    inset: 0;
+    z-index: 30;
+    background: rgb(20 19 18 / 0.42);
+    animation: a-sk-in 0.2s ease;
   }
   .a-main {
     padding: 24px 16px 56px;
@@ -1332,4 +1358,123 @@
 
 .bp-icon:disabled {
   cursor: default;
+}
+
+/* ---- Blog list: layout switch and grid ----------------------------------------- */
+
+.bp-tools {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.bp-views {
+  display: inline-flex;
+  padding: 3px;
+  border: 1px solid #e4e3df;
+  border-radius: 999px;
+  background: #fff;
+}
+
+.bp-views button {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 30px;
+  border: 0;
+  border-radius: 999px;
+  background: none;
+  color: #7a7168;
+  cursor: pointer;
+}
+
+.bp-views button:hover {
+  color: #22211f;
+}
+
+.bp-views button[aria-pressed="true"] {
+  background: #22211f;
+  color: #fff;
+}
+
+.bp-views button:focus-visible {
+  outline: 2px solid #22211f;
+  outline-offset: 2px;
+}
+
+.bp-list[data-view="grid"] {
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+}
+
+/* A card: cover on top, text under it, Edit at the bottom; View and Delete
+   float over the cover's corner. */
+.bp-list[data-view="grid"] .bp:not(:has(details[open])) {
+  position: relative;
+  padding: 10px;
+}
+
+.bp-list[data-view="grid"] .bp:not(:has(details[open])) .bp-sum {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 12px;
+  height: 100%;
+}
+
+.bp-list[data-view="grid"] .bp:not(:has(details[open])) .bp-main {
+  display: flex;
+  flex-direction: column;
+}
+
+.bp-list[data-view="grid"] .bp:not(:has(details[open])) .bp-cover {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 10;
+}
+
+.bp-list[data-view="grid"] .bp:not(:has(details[open])) .bp-text {
+  flex: 1;
+  align-content: start;
+  padding: 0 4px;
+}
+
+.bp-list[data-view="grid"] .bp:not(:has(details[open])) .bp-title {
+  font-size: 19px;
+}
+
+.bp-list[data-view="grid"] .bp:not(:has(details[open])) .bp-edit {
+  align-self: flex-start;
+  margin: 0 4px 4px;
+}
+
+.bp-list[data-view="grid"] .bp:not(:has(details[open])) .bp-side {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  height: auto;
+}
+
+.bp-list[data-view="grid"] .bp:not(:has(details[open])) .bp-icon {
+  background: rgb(255 255 255 / 0.92);
+  border-color: rgb(0 0 0 / 0.06);
+  color: #22211f;
+}
+
+/* Editing a post in the grid: the card widens to the full row, in the list layout. */
+.bp-list[data-view="grid"] .bp:has(details[open]) {
+  grid-column: 1 / -1;
+}
+
+@media (max-width: 760px) {
+  .bp-tools {
+    width: 100%;
+    justify-content: space-between;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .a-side,
+  .a-shell[data-menu="open"] .a-side {
+    transition: none;
+  }
 }

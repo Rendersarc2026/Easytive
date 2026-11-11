@@ -74,7 +74,7 @@ async function uploadBankPhoto(key) {
 }
 
 try {
-  const [{ n }] = await sql`select count(*)::int as n from easytive.blog_posts`;
+  const [{ n }] = await sql`select count(*)::int as n from easytive.blog_posts where is_active`;
   if (n > 0) {
     console.log(`blog_posts already has ${n} post(s): nothing to import.`);
     process.exit(0);

@@ -6,13 +6,14 @@
 //
 // Rows are addressed by their database id (a hidden `id` field). A post's
 // cover changes only when a new file is uploaded (`upload`); the image goes
-// to the storage bucket and the replaced one is removed from it.
+// to the storage bucket. Deleting is a soft delete (is_active = false), and
+// no image is ever removed from the bucket, so a post can be restored.
 
 import { updateTag } from "next/cache";
 import { redirect } from "next/navigation";
 import { createDraft, deletePost, hasCover, textToBody, updatePost } from "@/data/blog";
 import { requireUser } from "@/lib/auth";
-import { deleteObject, mediaKey, uploadImage, UploadError } from "@/lib/media";
+import { mediaKey, uploadImage, UploadError } from "@/lib/media";
 import { hit, limitKey } from "@/lib/rate-limit";
 
 const PAGE = "/admin/blog";
@@ -67,13 +68,7 @@ export async function saveArticle(fd: FormData) {
   if (!complete || (!sentFile && !(await hasCover(id)))) redirect(`${PAGE}?error=post-missing`);
 
   const coverKey = await uploadedKey(fd, user.id);
-  const replaced = await updatePost(id, { ...input, coverKey });
-  // Post deleted meanwhile: the new upload has nowhere to go.
-  if (replaced === false) {
-    if (coverKey) await deleteObject(coverKey);
-  } else if (replaced) {
-    await deleteObject(replaced);
-  }
+  await updatePost(id, { ...input, coverKey });
   updateTag("blog");
 }
 
@@ -81,7 +76,6 @@ export async function deleteArticle(fd: FormData) {
   await requireUser();
   const id = postId(fd);
   if (!id) return;
-  const cover = await deletePost(id);
-  if (cover) await deleteObject(cover);
+  await deletePost(id);
   updateTag("blog");
 }

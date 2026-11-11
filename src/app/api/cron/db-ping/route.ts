@@ -1,7 +1,7 @@
 // Daily keep-alive for the Supabase database, called by Vercel Cron (see
 // vercel.json). Supabase pauses free-tier projects after about a week with no
-// activity; one small query a day prevents that. The same run clears out
-// expired sessions, old rate-limit counters and old sign-in failures,
+// activity; one small query a day prevents that. The same run switches off
+// (soft-deletes) expired sessions, old rate-limit counters and old sign-in failures,
 // locks and blocks.
 //
 // Vercel sends "Authorization: Bearer <CRON_SECRET>" when CRON_SECRET is set
@@ -32,7 +32,7 @@ export async function GET(): Promise<Response> {
 
   try {
     // Touch a real app table, not just "select 1", so it counts as project activity.
-    const [row] = await db()<{ at: Date }[]>`select now() as at, (select count(*) from easytive.site_content) as sections`;
+    const [row] = await db()<{ at: Date }[]>`select now() as at, (select count(*) from easytive.site_content where is_active) as sections`;
     await Promise.all([pruneSessions(), pruneLimits(), pruneLoginGuard()]);
     return Response.json({ ok: true, at: row.at.toISOString() });
   } catch (err) {

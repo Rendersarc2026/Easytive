@@ -37,11 +37,12 @@ export const getCurrentUser = cache(async (): Promise<AdminUser | null> => {
     from easytive.admin_sessions s
     join easytive.admin_users u on u.id = s.user_id
     where s.token_hash = ${tokenHash}
+      and s.is_active
       and s.expires_at > now()
       and s.last_seen_at > now() - make_interval(secs => ${SESSION_IDLE_SECONDS})
       and u.is_active
       -- A blocked address (lib/login-guard.ts) is shut out of existing sessions too.
-      and not exists (select 1 from easytive.ip_blocks b where b.ip = ${ip} and b.blocked_until > now())
+      and not exists (select 1 from easytive.ip_blocks b where b.ip = ${ip} and b.is_active and b.blocked_until > now())
   `;
   if (!row) return null;
 
@@ -86,21 +87,22 @@ export async function destroyCurrentSession(): Promise<void> {
   const jar = await cookies();
   const token = jar.get(ADMIN_COOKIE)?.value;
   if (looksLikeSessionToken(token)) {
-    await db()`delete from easytive.admin_sessions where token_hash = ${sha256(token)}`;
+    await db()`update easytive.admin_sessions set is_active = false where token_hash = ${sha256(token)}`;
   }
   jar.delete(ADMIN_COOKIE);
 }
 
 /** Sign an account out everywhere (password change, reset, disable). */
 export async function revokeUserSessions(userId: string): Promise<void> {
-  await db()`delete from easytive.admin_sessions where user_id = ${userId}`;
+  await db()`update easytive.admin_sessions set is_active = false where user_id = ${userId} and is_active`;
 }
 
-/** Housekeeping: drop sessions that can no longer be used. */
+/** Housekeeping: switch off sessions that can no longer be used (soft delete). */
 export async function pruneSessions(): Promise<void> {
   await db()`
-    delete from easytive.admin_sessions
-    where expires_at < now() or last_seen_at < now() - make_interval(secs => ${SESSION_IDLE_SECONDS})
+    update easytive.admin_sessions set is_active = false
+    where is_active
+      and (expires_at < now() or last_seen_at < now() - make_interval(secs => ${SESSION_IDLE_SECONDS}))
   `;
 }
 

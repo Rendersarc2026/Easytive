@@ -131,7 +131,7 @@ function hasExpectedShape(key: OverrideKey, value: unknown): boolean {
 }
 
 async function readOverridesRows(): Promise<Overrides> {
-  const rows = await db()<{ key: string; value: unknown }[]>`select key, value from easytive.site_content`;
+  const rows = await db()<{ key: string; value: unknown }[]>`select key, value from easytive.site_content where is_active`;
   const o: Record<string, unknown> = {};
   for (const row of rows) {
     if (!(OVERRIDE_KEYS as readonly string[]).includes(row.key)) continue;

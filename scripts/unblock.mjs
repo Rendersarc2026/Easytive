@@ -35,13 +35,13 @@ const audit = (action, detail) =>
 try {
   if (!target) {
     const blocks = await sql`
-      select ip, reason, strikes, blocked_until from easytive.ip_blocks where blocked_until > now() order by blocked_until desc
+      select ip, reason, strikes, blocked_until from easytive.ip_blocks where is_active and blocked_until > now() order by blocked_until desc
     `;
     const locks = await sql`
       select l.locked_until, u.email
       from easytive.account_locks l
-      left join easytive.admin_users u on encode(sha256(convert_to(u.email, 'UTF8')), 'hex') = l.email_hash
-      where l.locked_until > now()
+      left join easytive.admin_users u on encode(sha256(convert_to(u.email, 'UTF8')), 'hex') = l.email_hash and u.is_active
+      where l.is_active and l.locked_until > now()
     `;
     console.log(blocks.length ? "Blocked addresses:" : "No blocked addresses.");
     for (const b of blocks) console.log(`  ${b.ip}  until ${b.blocked_until.toISOString()}  (${b.reason}; strike ${b.strikes})`);
@@ -49,16 +49,19 @@ try {
     for (const l of locks) console.log(`  ${l.email ?? "(an email with no account)"}  until ${l.locked_until.toISOString()}`);
   } else if (target.includes("@")) {
     const hash = createHash("sha256").update(target).digest("hex");
-    const [lock] = await sql`delete from easytive.account_locks where email_hash = ${hash} returning 1`;
-    await sql`delete from easytive.login_failures where email_hash = ${hash}`;
+    const [lock] = await sql`
+      update easytive.account_locks set is_active = false
+      where email_hash = ${hash} and is_active and locked_until > now() returning 1
+    `;
+    await sql`update easytive.login_failures set is_active = false where email_hash = ${hash} and is_active`;
     await audit("account.unlock", { target });
     console.log(lock ? `Unlocked ${target}.` : `${target} wasn't locked; its failed sign-ins are cleared.`);
   } else {
     const [block] = await sql`
-      update easytive.ip_blocks set blocked_until = now(), updated_at = now()
-      where ip = ${target} and blocked_until > now() returning ip
+      update easytive.ip_blocks set is_active = false, updated_at = now()
+      where ip = ${target} and is_active and blocked_until > now() returning ip
     `;
-    await sql`delete from easytive.login_failures where ip = ${target}`;
+    await sql`update easytive.login_failures set is_active = false where ip = ${target} and is_active`;
     await audit("ip.unblock", { target });
     console.log(block ? `Unblocked ${target}.` : `${target} wasn't blocked; its failed sign-ins are cleared.`);
   }

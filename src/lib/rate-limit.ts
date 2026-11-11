@@ -23,20 +23,22 @@ export async function hit(key: string, limit: number, windowSeconds: number): Pr
     insert into easytive.rate_limits as r (key, count, window_start)
     values (${key}, 1, now())
     on conflict (key) do update set
-      count = case when r.window_start <= now() - make_interval(secs => ${windowSeconds}) then 1 else r.count + 1 end,
-      window_start = case when r.window_start <= now() - make_interval(secs => ${windowSeconds}) then now() else r.window_start end
+      -- A cleared (inactive) or expired counter starts a fresh window.
+      count = case when not r.is_active or r.window_start <= now() - make_interval(secs => ${windowSeconds}) then 1 else r.count + 1 end,
+      window_start = case when not r.is_active or r.window_start <= now() - make_interval(secs => ${windowSeconds}) then now() else r.window_start end,
+      is_active = true
     returning count, ceil(extract(epoch from (window_start + make_interval(secs => ${windowSeconds}) - now())))::int as retry
   `;
   return { ok: row.count <= limit, retryAfterSeconds: Math.max(1, row.retry) };
 }
 
 export async function clearLimit(key: string): Promise<void> {
-  await db()`delete from easytive.rate_limits where key = ${key}`;
+  await db()`update easytive.rate_limits set is_active = false where key = ${key}`;
 }
 
-/** Housekeeping: drop counters whose window ended long ago. */
+/** Housekeeping: switch off counters whose window ended long ago (soft delete). */
 export async function pruneLimits(): Promise<void> {
-  await db()`delete from easytive.rate_limits where window_start < now() - interval '1 day'`;
+  await db()`update easytive.rate_limits set is_active = false where is_active and window_start < now() - interval '1 day'`;
 }
 
 /**
