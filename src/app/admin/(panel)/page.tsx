@@ -5,16 +5,12 @@ import { siteDataOf, getOverrides } from "@/data/store";
 
 export default async function OverviewPage() {
   const data = siteDataOf(await getOverrides());
+  const faqCount = data.faq.reduce((n, g) => n + g.items.length, 0);
   const stats = [
-    { href: "/admin/content", label: "Site content", value: "Hero · doctors · moments · steps · press" },
-    { href: "/admin/products", label: "Products", value: Object.keys(data.products).length },
-    { href: "/admin/journal", label: "Journal articles", value: data.articles.length },
-    { href: "/admin/reviews", label: "Reviews", value: data.reviews.length },
-    {
-      href: "/admin/faq",
-      label: "FAQ questions",
-      value: data.faq.reduce((n, g) => n + g.items.length, 0),
-    },
+    { href: "/admin/products", label: "Products", count: Object.keys(data.products).length, hint: "Names, prices and badges" },
+    { href: "/admin/journal", label: "Journal articles", count: data.articles.length, hint: "Posts on /blog" },
+    { href: "/admin/reviews", label: "Reviews", count: data.reviews.length, hint: "Customer quotes" },
+    { href: "/admin/faq", label: "FAQ questions", count: faqCount, hint: `In ${data.faq.length} groups` },
   ];
 
   return (
@@ -26,18 +22,22 @@ export default async function OverviewPage() {
         needed. Photos aren&apos;t uploaded; you pick from the brand photo bank the site already ships.
       </p>
 
-      <div className="a-cards">
+      <div className="a-tiles">
         {stats.map((s) => (
-          <Link key={s.href} href={s.href} className="a-row" style={{ textDecoration: "none", color: "inherit", textAlign: "inherit" }}>
-            <span className="a-rowmain">
-              <strong>{s.label}</strong>
-              <span className="a-cardhint" style={{ display: "block" }}>
-                {s.value}
-              </span>
+          <Link key={s.href} href={s.href} className="a-tile">
+            <span className="a-tile-count">{s.count}</span>
+            <span className="a-tile-label">
+              {s.label} <span aria-hidden>→</span>
             </span>
-            <span aria-hidden>→</span>
+            <span className="a-tile-hint">{s.hint}</span>
           </Link>
         ))}
+        <Link href="/admin/content" className="a-tile wide">
+          <span className="a-tile-label">
+            Site content <span aria-hidden>→</span>
+          </span>
+          <span className="a-tile-hint">Announcement bar, hero, doctors, moments, daily steps and press mentions</span>
+        </Link>
       </div>
     </>
   );

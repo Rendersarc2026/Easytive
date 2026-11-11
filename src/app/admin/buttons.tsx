@@ -51,7 +51,17 @@ export function ConfirmButton({
       <button type="button" className={className} command="show-modal" commandfor={id} disabled={pending}>
         {pending ? pendingLabel : children}
       </button>
-      <dialog ref={dialog} id={id} className="a-confirm" closedby="any" aria-labelledby={`${id}-title`} aria-describedby={message ? `${id}-msg` : undefined}>
+      {/* The browser owns the `open` attribute (invoker commands work before
+          hydration), so a click before React loads isn't a hydration mismatch. */}
+      <dialog
+        ref={dialog}
+        id={id}
+        className="a-confirm"
+        closedby="any"
+        aria-labelledby={`${id}-title`}
+        aria-describedby={message ? `${id}-msg` : undefined}
+        suppressHydrationWarning
+      >
         <h2 id={`${id}-title`}>{title}</h2>
         {message && <p id={`${id}-msg`}>{message}</p>}
         <div className="a-confirm-actions">

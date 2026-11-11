@@ -94,6 +94,30 @@ export type Overrides = {
 // The sections that may be stored: one row each, keyed by these names.
 const OVERRIDE_KEYS = ["announcement", "hero", "products", "articles", "reviews", "faq", "doctors", "moments", "steps", "press", "reviewCount"] as const satisfies readonly (keyof Overrides)[];
 
+type OverrideKey = (typeof OVERRIDE_KEYS)[number];
+
+// The JSON kind each section must be stored as.
+const SHAPES: Record<OverrideKey, "array" | "object" | "string"> = {
+  announcement: "array",
+  hero: "object",
+  products: "object",
+  articles: "array",
+  reviews: "array",
+  faq: "array",
+  doctors: "array",
+  moments: "array",
+  steps: "array",
+  press: "array",
+  reviewCount: "string",
+};
+
+function hasExpectedShape(key: OverrideKey, value: unknown): boolean {
+  const shape = SHAPES[key];
+  if (shape === "array") return Array.isArray(value);
+  if (shape === "object") return typeof value === "object" && value !== null && !Array.isArray(value);
+  return typeof value === "string";
+}
+
 // What each section looked like when it was read, so a save only touches the
 // sections that actually changed (two people editing different sections at
 // the same moment don't overwrite each other).
@@ -105,6 +129,12 @@ async function readOverridesRows(): Promise<Overrides> {
   const seen = new Map<string, string>();
   for (const row of rows) {
     if (!(OVERRIDE_KEYS as readonly string[]).includes(row.key)) continue;
+    // A section stored in the wrong shape is ignored (the site default shows),
+    // so one bad row can't break every page that reads it.
+    if (!hasExpectedShape(row.key as OverrideKey, row.value)) {
+      console.warn(`site_content: ignoring "${row.key}", stored value has the wrong shape`);
+      continue;
+    }
     o[row.key] = row.value;
     seen.set(row.key, JSON.stringify(row.value));
   }
@@ -146,11 +176,13 @@ export async function writeOverrides(o: Overrides): Promise<void> {
         if (before.has(key)) await tx`delete from easytive.site_content where key = ${key}`;
         continue;
       }
-      const json = JSON.stringify(value);
-      if (before.get(key) === json) continue;
+      if (before.get(key) === JSON.stringify(value)) continue;
+      // Pass the value itself: the driver encodes it as JSON once. (A string
+      // that was already JSON.stringify'd would be encoded twice and stored
+      // as a JSON string instead of a list/object.)
       await tx`
         insert into easytive.site_content (key, value, updated_by)
-        values (${key}, ${json}::jsonb, ${user.id})
+        values (${key}, ${tx.json(value as Parameters<typeof tx.json>[0])}, ${user.id})
         on conflict (key) do update set value = excluded.value, updated_at = now(), updated_by = excluded.updated_by
       `;
     }

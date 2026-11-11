@@ -173,7 +173,7 @@ export default async function UsersPage() {
           <div className="a-cardhead">
             <h2>Recent activity</h2>
           </div>
-          <div className="a-rows">
+          <div className="a-rows a-log">
             {log.map((e) => {
               const target = typeof e.detail?.target === "string" ? e.detail.target : typeof e.detail?.email === "string" ? e.detail.email : "";
               return (

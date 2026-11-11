@@ -5,10 +5,29 @@ import { Footer } from "@/components/sections/Footer";
 import { getSiteData } from "@/data/store";
 import { prelaunchNav } from "@/data/site";
 
-// Pre-launch About page. Story copy is placeholder; replace before launch.
+// About page. Copy follows the "About Easytive" brief (Google Doc), word for word.
 export const metadata: Metadata = {
-  description: "Why Easytive exists: doctor-guided daily urinary care, tested doses and discreet packaging, made in India.",
+  description:
+    "Easytive is a science-led health brand committed to expanding the possibilities of everyday life, bringing together global health research and the expertise of doctors and scientists.",
 };
+
+const principles = [
+  {
+    label: "Research",
+    title: "Grounded in science. Informed by the world.",
+    body: "We look beyond boundaries to follow the latest clinical research and scientific discoveries. We examine the evidence, understand its relevance and consider the needs of the people and communities we serve.",
+  },
+  {
+    label: "Formulation",
+    title: "Thoughtfully developed for real human needs.",
+    body: "Human health is complex and individual. We consider the science behind age, genetics, lifestyle and other influencing factors to develop formulations with purpose, precision and individual differences in mind.",
+  },
+  {
+    label: "Advice",
+    title: "Expertise behind every decision.",
+    body: "Medical knowledge is fundamental to what we do. Doctors and scientists guide our approach, bringing clinical understanding and scientific scrutiny to our formulations and the health information we share.",
+  },
+];
 
 export default async function AboutPage() {
   const { doctors } = await getSiteData();
@@ -20,29 +39,38 @@ export default async function AboutPage() {
           <div className="wrap">
             <span className="label">About Easytive</span>
             <h1>
-              Urinary health, made <em>easy</em> to talk about.
+              Make room for <em>more</em> of life.
             </h1>
             <p>
-              Easytive is a doctor-guided line of daily supplements for bladder and urinary comfort — measured
-              doses, plain-language labels, plain boxes in the mail, and a reading to go with them.
+              Easytive is a science-led health brand committed to expanding the possibilities of everyday life. We bring
+              together global health research and the expertise of doctors and scientists to develop thoughtful care that
+              helps people live beyond the limitations of their health.
             </p>
           </div>
         </section>
 
-        <section className="note">
+        <section className="note" aria-label="Our story">
           <div className="wrap">
-            <p className="l">There is a shelf for every part of the body — except the one nobody mentions at dinner.</p>
+            <p className="l">No one should have to live a smaller life because of their body.</p>
             <div className="r">
               <p>
-                Easytive started with a familiar frustration: millions of people quietly plan their days around the
-                nearest washroom. The choices they have are sugary juices, vague herbal blends, or silence.
+                Health shapes how we experience the world. Yet, many health concerns quietly influence the choices we make,
+                the experiences we avoid and the possibilities we hold back from.
+              </p>
+              <p>We believe this should not be the way.</p>
+              <p>
+                Easytive was founded on a simple conviction: better science should lead to better ways of living. We follow
+                advances in health research, work alongside doctors and scientists, and translate scientific understanding
+                into thoughtful every day care that makes a meaningful difference in people&apos;s lives.
               </p>
               <p>
-                So we set the bar differently. Formulas reviewed by our medical advisory board, doses that match the
-                published research, every batch checked by an independent lab, and packaging that treats your health
-                as yours — not a conversation starter.
+                We began with urinary health, an essential part of wellbeing that deserves greater understanding, better
+                conversations and more considered care.
               </p>
-              <p>We are getting ready to launch in India. Until then, join the Easy Letter and read along.</p>
+              <p>
+                Our ambition goes beyond any one area of health. As science advances, so will our work, continually exploring
+                new ways to help people experience life with greater freedom and fewer limitations.
+              </p>
             </div>
           </div>
         </section>
@@ -55,35 +83,27 @@ export default async function AboutPage() {
               </h2>
             </div>
             <div className="posts">
-              <article className="post">
-                <span className="label">Formulation</span>
-                <h3>Doses that match the research</h3>
-                <p>
-                  When a study showed an effect at 36 mg, the label says 36 mg. No proprietary blends, no sprinkles,
-                  every ingredient and amount in plain sight.
-                </p>
-              </article>
-              <article className="post">
-                <span className="label">Every batch</span>
-                <h3>Tested before it ships</h3>
-                <p>
-                  An independent lab checks identity, potency, heavy metals and microbes — and you can look up your
-                  batch number and read the report yourself.
-                </p>
-              </article>
-              <article className="post">
-                <span className="label">Advice</span>
-                <h3>Doctors steer, not marketers</h3>
-                <p>
-                  A board of urologists, gynaecologists and formulation scientists reviews every formula, dose and
-                  sentence we publish.
-                </p>
-              </article>
+              {principles.map((p) => (
+                <article className="post" key={p.label}>
+                  <span className="label">{p.label}</span>
+                  <h3>{p.title}</h3>
+                  <p>{p.body}</p>
+                </article>
+              ))}
             </div>
           </div>
         </section>
 
-        <Board doctors={doctors} link={{ label: "Read the Easy Journal", href: "/blog" }} />
+        <Board
+          doctors={doctors}
+          title={
+            <>
+              Meet the minds behind the <em>science</em>.
+            </>
+          }
+          sub="Doctors and scientists guide our approach to health, shape our formulations and bring scientific knowledge into everyday care."
+          link={{ label: "Read the Easy Journal", href: "/blog" }}
+        />
       </main>
       <Footer />
     </>
