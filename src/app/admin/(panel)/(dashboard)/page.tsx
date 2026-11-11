@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { articleDrafts, getOverrides } from "@/data/store";
+import { getAllPosts, lastBlogEdit } from "@/data/blog";
 import { requireUser } from "@/lib/auth";
 import { db } from "@/lib/db";
 
@@ -11,26 +11,19 @@ const when = (d: Date) => d.toLocaleString("en-GB", { day: "numeric", month: "sh
 export default async function DashboardPage() {
   const user = await requireUser();
   const sql = db();
-  const [o, edits, [counts]] = await Promise.all([
-    getOverrides(),
-    sql<{ key: string; updated_at: Date; email: string | null }[]>`
-      select c.key, c.updated_at, u.email
-      from easytive.site_content c
-      left join easytive.admin_users u on u.id = c.updated_by
-      where c.key = 'articles'
-    `,
+  const [posts, blogEdit, [counts]] = await Promise.all([
+    getAllPosts(),
+    lastBlogEdit(),
     sql<{ active: number }[]>`select count(*) filter (where is_active)::int as active from easytive.admin_users`,
   ]);
 
-  const blogEdit = edits.find((e) => e.key === "articles");
-  const posts = articleDrafts(o);
 
   const tiles = [
     {
       href: "/admin/blog",
       title: "Blog",
-      stat: `${posts.filter((p) => p.title).length} posts`,
-      line: blogEdit ? `Last edited ${when(blogEdit.updated_at)}${blogEdit.email ? ` by ${blogEdit.email}` : ""}` : "Showing the original posts",
+      stat: `${posts.filter((p) => p.slug).length} posts`,
+      line: blogEdit ? `Last edited ${when(blogEdit.at)}${blogEdit.email ? ` by ${blogEdit.email}` : ""}` : "No posts yet",
       view: "/blog",
     },
   ];

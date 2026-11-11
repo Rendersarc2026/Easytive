@@ -89,3 +89,17 @@ export async function getObject(key: string): Promise<Response> {
   const { client, objectUrl } = config();
   return client.fetch(objectUrl(key), { method: "GET" });
 }
+
+/**
+ * Remove a stored object, e.g. a post's old cover. Best effort: a failure is
+ * logged and otherwise ignored, since the content change has already saved.
+ */
+export async function deleteObject(key: string): Promise<void> {
+  try {
+    const { client, objectUrl } = config();
+    const res = await client.fetch(objectUrl(key), { method: "DELETE" });
+    if (!res.ok && res.status !== 404) console.error("delete failed:", key, res.status, (await res.text()).slice(0, 300));
+  } catch (err) {
+    console.error("delete failed:", key, err);
+  }
+}

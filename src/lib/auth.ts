@@ -23,8 +23,8 @@ const sha256 = (value: string) => createHash("sha256").update(value).digest();
 
 /**
  * The signed-in account, or null. Looked up in the database on every request
- * (deduplicated within one render), so disabling an account or signing out
- * elsewhere takes effect immediately.
+ * (deduplicated within one render), so disabling an account, signing out
+ * elsewhere or blocking the visitor's address takes effect immediately.
  */
 export const getCurrentUser = cache(async (): Promise<AdminUser | null> => {
   const token = (await cookies()).get(ADMIN_COOKIE)?.value;
@@ -32,6 +32,7 @@ export const getCurrentUser = cache(async (): Promise<AdminUser | null> => {
 
   const sql = db();
   const tokenHash = sha256(token);
+  const ip = await clientIp();
   const [row] = await sql<{ id: string; email: string; role: Role; must_change_password: boolean; stale: boolean }[]>`
     select u.id, u.email, u.role, u.must_change_password,
            s.last_seen_at < now() - interval '5 minutes' as stale
@@ -41,6 +42,8 @@ export const getCurrentUser = cache(async (): Promise<AdminUser | null> => {
       and s.expires_at > now()
       and s.last_seen_at > now() - make_interval(secs => ${SESSION_IDLE_SECONDS})
       and u.is_active
+      -- A blocked address (lib/login-guard.ts) is shut out of existing sessions too.
+      and not exists (select 1 from easytive.ip_blocks b where b.ip = ${ip} and b.blocked_until > now())
   `;
   if (!row) return null;
 

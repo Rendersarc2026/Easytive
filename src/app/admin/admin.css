@@ -860,3 +860,115 @@
 .a-btn.danger:hover {
   background: #8a2b19;
 }
+
+/* ---- Page loading placeholder (fallback.tsx) ------------------------------------ */
+
+/* Fades in after a short delay, so quick page loads don't flash it. */
+.a-skeleton {
+  display: grid;
+  gap: 12px;
+  animation: a-sk-in 0.2s ease 0.15s both;
+}
+
+.a-sk {
+  display: block;
+  height: 14px;
+  border-radius: 8px;
+  background: linear-gradient(90deg, #eeebe5 0%, #f7f5f1 40%, #eeebe5 80%) 0 0 / 300% 100%;
+  animation: a-sk-shimmer 1.4s ease-in-out infinite;
+}
+
+.a-sk-label {
+  width: 80px;
+  height: 10px;
+}
+
+.a-sk-title {
+  width: 260px;
+  max-width: 70%;
+  height: 34px;
+  margin-bottom: 4px;
+}
+
+.a-sk-line {
+  width: 520px;
+  max-width: 90%;
+  margin-bottom: 16px;
+}
+
+.a-sk-card {
+  display: grid;
+  gap: 14px;
+  background: #fff;
+  border: 1px solid #e4e3df;
+  border-radius: 14px;
+  padding: 22px;
+}
+
+.a-sk-heading {
+  width: 180px;
+  height: 22px;
+}
+
+.a-sk-row {
+  height: 52px;
+  border-radius: 12px;
+}
+
+.a-sk-row.short {
+  width: 60%;
+}
+
+.a-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+@keyframes a-sk-shimmer {
+  from {
+    background-position: 100% 0;
+  }
+  to {
+    background-position: 0 0;
+  }
+}
+
+@keyframes a-sk-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .a-sk {
+    animation: none;
+  }
+}
+
+/* ---- Users: account lock notice ------------------------------------------------- */
+
+.a-lockline {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.a-badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  background: #f4f1eb;
+  color: #4c4842;
+}
+
+.a-badge.warn {
+  background: #fbeee4;
+  color: #8a4b1f;
+}

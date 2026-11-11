@@ -8,11 +8,16 @@ import { redirect } from "next/navigation";
 import { audit, createSession, destroyCurrentSession, getCurrentUser, requireUser, revokeUserSessions } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { decoyHash, hashPassword, normalizeEmail, passwordProblem, PASSWORD_MAX, verifyPassword } from "@/lib/password";
+import { accountLockMinutes, blockIp, clearFailures, emailHash, isIpBlocked, recordFailure } from "@/lib/login-guard";
 import { clearLimit, clientIp, hit, limitKey } from "@/lib/rate-limit";
 
 const WINDOW = 15 * 60;
-const LOGIN_PER_IP = 20; // attempts per address per 15 minutes
-const LOGIN_PER_EMAIL = 10; // attempts per account per 15 minutes, from anywhere
+// Plain attempt limits per address (right or wrong password). Going over the
+// 15-minute one counts as an attack and blocks the address; the per-minute one
+// just slows down a burst. Failed-password lockouts and address blocks are in
+// lib/login-guard.ts.
+const LOGIN_PER_IP_MINUTE = 6;
+const LOGIN_PER_IP = 20;
 const PASSWORD_CHECKS_PER_USER = 5; // wrong "current password" tries per 15 minutes
 
 type UserRow = {
@@ -28,16 +33,18 @@ export async function login(formData: FormData): Promise<void> {
   const email = normalizeEmail(String(formData.get("email") ?? ""));
   const password = String(formData.get("password") ?? "");
   const ip = await clientIp();
+  const hash = emailHash(email ?? String(formData.get("email") ?? ""));
 
-  // Count the attempt before looking at the password, so parallel guesses
-  // can't race past the limit. Both limits apply: per address, per account.
-  // The account lookup runs alongside them (each sequential round trip to the
-  // database adds delay), but its result isn't used until both limits pass.
+  // Every check that can refuse the attempt runs before the password is
+  // looked at, and they run together (each round trip to the database adds
+  // delay). Attempts are counted first, so parallel guesses can't race past
+  // the limits.
   const sql = db();
-  const emailKey = email ? limitKey("login:email", email) : null;
-  const [ipLimit, emailLimit, [user]] = await Promise.all([
+  const [blocked, burst, window, lockMinutes, [user]] = await Promise.all([
+    isIpBlocked(ip),
+    hit(limitKey("login:ip:1m", ip), LOGIN_PER_IP_MINUTE, 60),
     hit(limitKey("login:ip", ip), LOGIN_PER_IP, WINDOW),
-    emailKey ? hit(emailKey, LOGIN_PER_EMAIL, WINDOW) : { ok: true, retryAfterSeconds: 0 },
+    accountLockMinutes(hash),
     email
       ? sql<UserRow[]>`
           select id, email, password_hash, must_change_password,
@@ -48,9 +55,22 @@ export async function login(formData: FormData): Promise<void> {
         `
       : ([] as UserRow[]),
   ]);
-  if (!ipLimit.ok || !emailLimit.ok) {
+  if (blocked) {
+    await audit("login.ip_blocked", null, { email: email ?? "(invalid)" });
+    redirect("/admin/login?error=blocked");
+  }
+  if (!window.ok) {
+    await blockIp(ip, `over ${LOGIN_PER_IP} sign-in attempts in 15 minutes`);
+    await audit("ip.block", null, { reason: "attempt limit" });
+    redirect("/admin/login?error=blocked");
+  }
+  if (!burst.ok) {
     await audit("login.blocked", null, { email: email ?? "(invalid)" });
     redirect("/admin/login?error=rate");
+  }
+  if (lockMinutes > 0) {
+    await audit("login.locked_out", null, { email: email ?? "(invalid)" });
+    redirect("/admin/login?error=locked");
   }
 
   // Always run one full hash check, account or not, so the response time
@@ -58,8 +78,14 @@ export async function login(formData: FormData): Promise<void> {
   const tooLong = password.length > PASSWORD_MAX;
   const check = await verifyPassword(tooLong ? "" : password, user?.password_hash ?? (await decoyHash()));
   if (!user || tooLong || !check.ok || !user.is_active) {
-    await audit("login.failure", null, { email: email ?? "(invalid)" });
-    redirect("/admin/login?error=1"); // same answer for every kind of failure
+    const outcome = await recordFailure(hash, ip);
+    await Promise.all([
+      audit("login.failure", null, { email: email ?? "(invalid)" }),
+      outcome.locked ? audit("account.lock", null, { email: email ?? "(invalid)" }) : null,
+      outcome.blocked ? audit("ip.block", null, { reason: "failed sign-ins" }) : null,
+    ]);
+    // Same answer for every kind of failure, unless the account just locked.
+    redirect(outcome.blocked ? "/admin/login?error=blocked" : outcome.locked ? "/admin/login?error=locked" : "/admin/login?error=1");
   }
   if (user.must_change_password && user.temp_expired) {
     await audit("login.temp_expired", user.id, {});
@@ -75,7 +101,7 @@ export async function login(formData: FormData): Promise<void> {
       set last_login_at = now(), password_hash = coalesce(${newHash}::text, password_hash)
       where id = ${user.id}
     `,
-    emailKey ? clearLimit(emailKey) : null,
+    clearFailures(hash),
     createSession(user.id), // always a fresh token: nothing from before sign-in is reused
     audit("login.success", user.id, {}),
   ]);

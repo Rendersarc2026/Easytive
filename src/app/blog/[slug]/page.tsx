@@ -6,24 +6,21 @@ import { Suspense } from "react";
 import { Header } from "@/components/Header";
 import { Arrow, Silhouette } from "@/components/icons";
 import { Footer } from "@/components/sections/Footer";
-import { placeholderFor, prelaunchNav } from "@/data/site";
-import { getSiteData } from "@/data/store";
+import { getPostBySlug, getPublishedPosts } from "@/data/blog";
+import { prelaunchNav } from "@/data/site";
 
 // Article page: grey title block over the photo on the left (pinned on desktop),
 // author + body on the right. Stacks title → photo → text on phones.
 // The slug is URL data, so the article streams inside <Suspense>; the header,
 // footer and an empty grey/photo frame show instantly on navigation.
 
-async function findArticle(slug: string) {
-  const { articles } = await getSiteData();
-  return articles.find((a) => a.slug === slug);
-}
+const findArticle = getPostBySlug;
 
 // Cache Components needs at least one param at build time, even if the admin
 // has removed every article (that page then 404s).
 export async function generateStaticParams() {
-  const { articles } = await getSiteData();
-  return articles.length ? articles.map((a) => ({ slug: a.slug })) : [{ slug: "article" }];
+  const posts = await getPublishedPosts();
+  return posts.length ? posts.map((a) => ({ slug: a.slug })) : [{ slug: "article" }];
 }
 
 export async function generateMetadata({ params }: PageProps<"/blog/[slug]">): Promise<Metadata> {
@@ -83,9 +80,7 @@ async function Article({ params }: { params: PageProps<"/blog/[slug]">["params"]
             <em>{keepHyphens(last)}</em>
           </h1>
         </header>
-        <div className="art-ph">
-          <Image src={a.image.src} alt={a.image.alt} fill placeholder={placeholderFor(a.image.src)} preload sizes="(min-width: 900px) 52vw, 100vw" />
-        </div>
+        <div className="art-ph">{a.cover && <Image src={a.cover} alt={a.coverAlt} fill preload sizes="(min-width: 900px) 52vw, 100vw" />}</div>
       </div>
 
       <div className="art-r">

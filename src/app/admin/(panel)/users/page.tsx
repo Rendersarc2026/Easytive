@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { requireAdminRole, type Role } from "@/lib/auth";
 import { db } from "@/lib/db";
-import { createUser, resetUserPassword, setUserActive, setUserRole } from "./actions";
+import { emailHash } from "@/lib/login-guard";
+import { createUser, resetUserPassword, setUserActive, setUserRole, unblockAddress, unlockUser } from "./actions";
 import { TempPasswordForm } from "./forms";
 import { ConfirmButton } from "@/app/admin/buttons";
 
@@ -16,6 +17,8 @@ type UserRow = {
   last_login_at: Date | null;
 };
 
+type BlockRow = { ip: string; blocked_until: Date; reason: string; strikes: number };
+
 type AuditRow = { id: string; at: Date; action: string; actor: string | null; detail: Record<string, unknown> | null };
 
 const stamp = (d: Date | null) => (d ? `${d.toISOString().slice(0, 16).replace("T", " ")} UTC` : "never");
@@ -23,7 +26,13 @@ const stamp = (d: Date | null) => (d ? `${d.toISOString().slice(0, 16).replace("
 const actionLabels: Record<string, string> = {
   "login.success": "Signed in",
   "login.failure": "Failed sign-in",
-  "login.blocked": "Sign-in blocked (too many attempts)",
+  "login.blocked": "Sign-in slowed down (too many attempts in a minute)",
+  "login.locked_out": "Sign-in refused (account locked)",
+  "login.ip_blocked": "Sign-in refused (address blocked)",
+  "account.lock": "Account locked after 5 failed sign-ins",
+  "account.unlock": "Unlocked account",
+  "ip.block": "Blocked an address",
+  "ip.unblock": "Unblocked address",
   "login.temp_expired": "Sign-in with expired temporary password",
   logout: "Signed out",
   "logout.everywhere": "Signed out everywhere",
@@ -42,7 +51,7 @@ const actionLabels: Record<string, string> = {
 export default async function UsersPage() {
   const me = await requireAdminRole();
   const sql = db();
-  const [users, log] = await Promise.all([
+  const [users, log, locks, blocks] = await Promise.all([
     sql<UserRow[]>`
       select id, email, role, is_active as active, must_change_password as pending, last_login_at
       from easytive.admin_users
@@ -55,7 +64,19 @@ export default async function UsersPage() {
       order by l.at desc
       limit 30
     `,
+    sql<{ email_hash: string; mins: number }[]>`
+      select email_hash, ceil(extract(epoch from (locked_until - now())) / 60)::int as mins
+      from easytive.account_locks
+      where locked_until > now()
+    `,
+    sql<BlockRow[]>`
+      select ip, blocked_until, reason, strikes
+      from easytive.ip_blocks
+      where blocked_until > now()
+      order by blocked_until desc
+    `,
   ]);
+  const lockedFor = new Map(locks.map((l) => [l.email_hash, l.mins]));
 
   return (
     <>
@@ -99,6 +120,7 @@ export default async function UsersPage() {
           <div className="a-rows">
             {users.map((u) => {
               const self = u.id === me.id;
+              const lockMins = lockedFor.get(emailHash(u.email));
               return (
                 <div className="a-row" key={u.id}>
                   <div className="a-rowmain">
@@ -108,6 +130,15 @@ export default async function UsersPage() {
                       {self ? " · you" : ""}
                       {!u.active ? " · deactivated" : u.pending ? " · waiting for first sign-in" : ""} · last sign-in {stamp(u.last_login_at)}
                     </span>
+                    {lockMins ? (
+                      <form action={unlockUser} className="a-lockline">
+                        <input type="hidden" name="id" value={u.id} />
+                        <span className="a-badge warn">Locked for {lockMins} more min after 5 failed sign-ins</span>
+                        <ConfirmButton className="a-btn small ghost" title={`Unlock ${u.email}?`} message="They can try signing in again straight away." confirmLabel="Unlock">
+                          Unlock
+                        </ConfirmButton>
+                      </form>
+                    ) : null}
                     {!self && (
                       <TempPasswordForm
                         action={resetUserPassword}
@@ -166,6 +197,41 @@ export default async function UsersPage() {
           <p className="a-cardhint" style={{ marginTop: 12 }}>
             Deactivating signs the person out at once and blocks sign-in. The account is kept, so it can be reactivated
             later.
+          </p>
+        </section>
+
+        <section className="a-card">
+          <div className="a-cardhead">
+            <h2>Blocked addresses</h2>
+          </div>
+          {blocks.length === 0 ? (
+            <p className="a-cardhint">No addresses are blocked right now.</p>
+          ) : (
+            <div className="a-rows">
+              {blocks.map((b) => (
+                <div className="a-row" key={b.ip}>
+                  <div className="a-rowmain">
+                    <strong>{b.ip}</strong>
+                    <span className="a-cardhint" style={{ display: "block" }}>
+                      {b.reason} · blocked until {stamp(b.blocked_until)}
+                      {b.strikes > 1 ? ` · blocked ${b.strikes} times` : ""}
+                    </span>
+                  </div>
+                  <div className="a-rowside">
+                    <form action={unblockAddress}>
+                      <input type="hidden" name="ip" value={b.ip} />
+                      <ConfirmButton title={`Unblock ${b.ip}?`} message="Sign-in from this address works again straight away. If it misbehaves again, the next block lasts twice as long." confirmLabel="Unblock">
+                        Unblock
+                      </ConfirmButton>
+                    </form>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+          <p className="a-cardhint" style={{ marginTop: 12 }}>
+            An address is blocked from the whole admin after 10 failed sign-ins in 15 minutes, failed sign-ins on 4 or more
+            accounts, or more than 20 attempts in 15 minutes. Blocks last an hour and double each time it happens again.
           </p>
         </section>
 

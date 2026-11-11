@@ -9,7 +9,8 @@ import { refresh } from "next/cache";
 import { audit, requireAdminRole, revokeUserSessions, type Role } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { generateTempPassword, hashPassword, normalizeEmail } from "@/lib/password";
-import { clearLimit, hit, limitKey } from "@/lib/rate-limit";
+import { unblockIp, unlockAccount } from "@/lib/login-guard";
+import { hit, limitKey } from "@/lib/rate-limit";
 
 /** What the add/reset forms show after submitting. The temporary password is returned once and stored nowhere readable. */
 export type UserFormState = { error?: string; email?: string; tempPassword?: string } | null;
@@ -73,7 +74,7 @@ export async function resetUserPassword(_prev: UserFormState, fd: FormData): Pro
   if (!user) return { error: "That account no longer exists." };
 
   await revokeUserSessions(id); // the old password's sessions end now
-  await clearLimit(limitKey("login:email", user.email)); // and any sign-in lockout
+  await unlockAccount(user.email); // and any sign-in lockout
   await audit("user.reset_password", actor.id, { target: user.email });
   refresh();
   return { email: user.email, tempPassword };
@@ -109,5 +110,27 @@ export async function setUserRole(fd: FormData): Promise<void> {
   `;
   if (!user) return;
   await audit("user.role", actor.id, { target: user.email, role });
+  refresh();
+}
+
+/** Lifts a failed-sign-in lock on an account (any account, yours included). */
+export async function unlockUser(fd: FormData): Promise<void> {
+  const actor = await requireAdminRole();
+  const id = targetId(fd);
+  if (!id) return;
+  const [user] = await db()<{ email: string }[]>`select email from easytive.admin_users where id = ${id}`;
+  if (!user) return;
+  await unlockAccount(user.email);
+  await audit("account.unlock", actor.id, { target: user.email });
+  refresh();
+}
+
+/** Lifts a block on an address. */
+export async function unblockAddress(fd: FormData): Promise<void> {
+  const actor = await requireAdminRole();
+  const ip = String(fd.get("ip") ?? "").slice(0, 64);
+  if (!ip) return;
+  await unblockIp(ip);
+  await audit("ip.unblock", actor.id, { target: ip });
   refresh();
 }
