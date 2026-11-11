@@ -5,18 +5,16 @@
 // in from the left over a dimmed page. It closes on a tap outside, Esc, the
 // close button, or moving to another page.
 
-import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 
 const icon = { width: 20, height: 20, viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: 1.8, strokeLinecap: "round", "aria-hidden": true } as const;
 
 export function AdminShell({ sidebar, children }: { sidebar: ReactNode; children: ReactNode }) {
-  const pathname = usePathname();
-  // Remember which page the menu was opened on: navigating anywhere else
-  // closes it, with no effect needed.
-  const [openOn, setOpenOn] = useState<string | null>(null);
-  const open = openOn === pathname;
-  const close = () => setOpenOn(null);
+  // The drawer is closed by a link click (below), Esc, the close button, the
+  // scrim, or browser back/forward. It deliberately doesn't read the pathname:
+  // that hook can't resolve while an unknown admin URL is prerendered.
+  const [open, setOpen] = useState(false);
+  const close = () => setOpen(false);
   const menuButton = useRef<HTMLButtonElement>(null);
   const drawer = useRef<HTMLElement>(null);
 
@@ -26,18 +24,22 @@ export function AdminShell({ sidebar, children }: { sidebar: ReactNode; children
     drawer.current?.querySelector<HTMLElement>("a, button")?.focus();
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
-        setOpenOn(null);
+        setOpen(false);
         menuButton.current?.focus();
       }
     };
     // Widening the window to desktop size closes the drawer.
     const desktop = window.matchMedia("(min-width: 761px)");
-    const onWide = () => desktop.matches && setOpenOn(null);
+    const onWide = () => desktop.matches && setOpen(false);
+    // Back/forward can leave the page the drawer was opened on.
+    const onHistory = () => setOpen(false);
     document.addEventListener("keydown", onKey);
     desktop.addEventListener("change", onWide);
+    window.addEventListener("popstate", onHistory);
     return () => {
       document.removeEventListener("keydown", onKey);
       desktop.removeEventListener("change", onWide);
+      window.removeEventListener("popstate", onHistory);
     };
   }, [open]);
 
@@ -51,7 +53,7 @@ export function AdminShell({ sidebar, children }: { sidebar: ReactNode; children
           className="a-menubtn"
           aria-expanded={open}
           aria-controls="a-side"
-          onClick={() => setOpenOn(open ? null : pathname)}
+          onClick={() => setOpen((wasOpen) => !wasOpen)}
         >
           <svg {...icon}>
             <path d="M4 7h16M4 12h16M4 17h16" />
@@ -60,7 +62,14 @@ export function AdminShell({ sidebar, children }: { sidebar: ReactNode; children
         </button>
       </header>
 
-      <aside ref={drawer} id="a-side" className="a-side" aria-label="Admin menu">
+      <aside
+        ref={drawer}
+        id="a-side"
+        className="a-side"
+        aria-label="Admin menu"
+        // Following a link navigates; close the drawer so the new page shows.
+        onClick={(e) => e.target instanceof Element && e.target.closest("a") && setOpen(false)}
+      >
         <button type="button" className="a-drawerclose" onClick={close}>
           <svg {...icon}>
             <path d="M6 6l12 12M18 6L6 18" />
