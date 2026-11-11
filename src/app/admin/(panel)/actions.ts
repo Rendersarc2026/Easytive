@@ -11,9 +11,9 @@
 
 import { updateTag } from "next/cache";
 import { redirect } from "next/navigation";
-import { createDraft, deletePost, hasCover, textToBody, updatePost } from "@/data/blog";
+import { createPost, deletePost, hasCover, textToBody, updatePost } from "@/data/blog";
 import { requireUser } from "@/lib/auth";
-import { mediaKey, uploadImage, UploadError } from "@/lib/media";
+import { uploadImage, UploadError } from "@/lib/media";
 import { hit, limitKey } from "@/lib/rate-limit";
 
 const PAGE = "/admin/blog";
@@ -37,16 +37,39 @@ async function uploadedKey(fd: FormData, userId: string): Promise<string | undef
   if (!(file instanceof File) || file.size === 0) return undefined;
   if (!(await hit(limitKey("upload", userId), 60, 60 * 60)).ok) redirect(`${PAGE}?error=upload-rate`);
   try {
-    return mediaKey(await uploadImage(file)) ?? undefined;
+    return await uploadImage(file);
   } catch (err) {
     if (err instanceof UploadError) redirect(`${PAGE}?error=upload-${err.code}`);
     throw err;
   }
 }
 
-export async function addArticle() {
-  await requireUser();
-  await createDraft();
+function readPost(fd: FormData) {
+  return {
+    title: str(fd, "title", 200),
+    tag: str(fd, "tag", 80),
+    author: str(fd, "author", 120),
+    publishedOn: str(fd, "date", 10),
+    body: textToBody(String(fd.get("body") ?? "").slice(0, 100_000)),
+  };
+}
+
+// Same required fields as the form marks (the browser check can be skipped).
+const complete = (p: ReturnType<typeof readPost>) => Boolean(p.title && p.author && /^\d{4}-\d{2}-\d{2}$/.test(p.publishedOn) && p.body.length > 0);
+const sentFile = (fd: FormData) => {
+  const file = fd.get("upload");
+  return file instanceof File && file.size > 0;
+};
+
+/** New post, from the "New post" form. Nothing is stored until it's complete. */
+export async function createArticle(fd: FormData) {
+  const user = await requireUser();
+  const input = readPost(fd);
+  // Checked before the upload, so a rejected post leaves nothing in the bucket.
+  if (!complete(input) || !sentFile(fd)) redirect(`${PAGE}?error=post-missing`);
+  const coverKey = await uploadedKey(fd, user.id);
+  if (!coverKey) redirect(`${PAGE}?error=post-missing`);
+  await createPost({ ...input, coverKey });
   updateTag("blog");
 }
 
@@ -54,19 +77,8 @@ export async function saveArticle(fd: FormData) {
   const user = await requireUser();
   const id = postId(fd);
   if (!id) return;
-  const input = {
-    title: str(fd, "title", 200),
-    tag: str(fd, "tag", 80),
-    author: str(fd, "author", 120),
-    publishedOn: str(fd, "date", 10),
-    body: textToBody(String(fd.get("body") ?? "").slice(0, 100_000)),
-  };
-  // Same required fields as the form marks (the browser check can be skipped).
-  // Checked before any upload, so a rejected save leaves nothing in the bucket.
-  const sentFile = fd.get("upload") instanceof File && (fd.get("upload") as File).size > 0;
-  const complete = input.title && input.author && /^\d{4}-\d{2}-\d{2}$/.test(input.publishedOn) && input.body.length > 0;
-  if (!complete || (!sentFile && !(await hasCover(id)))) redirect(`${PAGE}?error=post-missing`);
-
+  const input = readPost(fd);
+  if (!complete(input) || (!sentFile(fd) && !(await hasCover(id)))) redirect(`${PAGE}?error=post-missing`);
   const coverKey = await uploadedKey(fd, user.id);
   await updatePost(id, { ...input, coverKey });
   updateTag("blog");

@@ -2,8 +2,6 @@ import { Suspense } from "react";
 
 // Shared pieces for the admin pages.
 
-export { PhotoField } from "./photo-field";
-
 const problems: Record<string, string> = {
   "upload-empty": "That file was empty. Pick the image again.",
   "upload-size": "That image is over 4 MB. Export it smaller (around 2000px wide is plenty) and try again.",

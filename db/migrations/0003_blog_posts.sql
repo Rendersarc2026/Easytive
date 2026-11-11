@@ -1,6 +1,6 @@
 -- Blog posts get their own table: one row per post, edited from /admin/blog.
 -- Until now they were a JSON list in site_content (key 'articles') with
--- sample posts in the code. scripts/import-blog.mjs copies that list in once.
+-- sample posts in the code. A one-off import copied the existing posts in.
 --
 -- Cover images live in the storage bucket; cover_key is the object key
 -- (uploads/<year>/<uuid>.<ext>), served by this site at /media/<key>.

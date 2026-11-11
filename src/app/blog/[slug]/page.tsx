@@ -6,8 +6,7 @@ import { Suspense } from "react";
 import { Header } from "@/components/Header";
 import { Arrow, Silhouette } from "@/components/icons";
 import { Footer } from "@/components/sections/Footer";
-import { getPostBySlug, getPublishedPosts } from "@/data/blog";
-import { prelaunchNav } from "@/data/site";
+import { getPostBySlug, getPublishedSlugs } from "@/data/blog";
 
 // Article page: grey title block over the photo on the left (pinned on desktop),
 // author + body on the right. Stacks title → photo → text on phones.
@@ -19,8 +18,8 @@ const findArticle = getPostBySlug;
 // Cache Components needs at least one param at build time, even if the admin
 // has removed every article (that page then 404s).
 export async function generateStaticParams() {
-  const posts = await getPublishedPosts();
-  return posts.length ? posts.map((a) => ({ slug: a.slug })) : [{ slug: "article" }];
+  const slugs = await getPublishedSlugs();
+  return slugs.length ? slugs.map((slug) => ({ slug })) : [{ slug: "article" }];
 }
 
 export async function generateMetadata({ params }: PageProps<"/blog/[slug]">): Promise<Metadata> {
@@ -32,7 +31,7 @@ export async function generateMetadata({ params }: PageProps<"/blog/[slug]">): P
 export default function ArticlePage({ params }: PageProps<"/blog/[slug]">) {
   return (
     <>
-      <Header slim items={prelaunchNav} />
+      <Header />
       <main>
         <Suspense fallback={<ArticleFrame />}>
           <Article params={params} />

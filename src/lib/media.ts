@@ -5,12 +5,12 @@
 // bucket with the same credentials. Keys are random and objects are never
 // overwritten, so those responses can be cached forever.
 //
-// Content stores the public path ("/media/uploads/2026/<uuid>.jpg") as the
-// photo reference, next to the built-in photo bank keys ("bottle-hand").
+// Blog posts store the object key ("uploads/2026/<uuid>.jpg"); pages show it
+// at /media/<key>.
 
 import { randomUUID } from "node:crypto";
 import { AwsClient } from "aws4fetch";
-export { isMediaPath, mediaKey } from "./media-path";
+export { mediaKey } from "./media-path";
 
 /** Largest accepted upload. Vercel rejects request bodies over 4.5 MB. */
 export const MAX_UPLOAD_BYTES = 4 * 1024 * 1024;
@@ -60,7 +60,7 @@ export class UploadError extends Error {
 }
 
 /**
- * Store an uploaded image and return its /media path. Only JPEG, PNG, WebP
+ * Store an uploaded image and return its bucket key. Only JPEG, PNG, WebP
  * and AVIF are accepted, checked from the file's contents, up to 4 MB.
  */
 export async function uploadImage(file: File): Promise<string> {
@@ -81,7 +81,7 @@ export async function uploadImage(file: File): Promise<string> {
     console.error("upload failed:", res.status, (await res.text()).slice(0, 300));
     throw new UploadError("store");
   }
-  return `/media/${key}`;
+  return key;
 }
 
 /** Fetch a stored object (for the /media route). */

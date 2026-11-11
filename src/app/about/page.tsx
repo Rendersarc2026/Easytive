@@ -4,7 +4,6 @@ import { Header } from "@/components/Header";
 import { Board } from "@/components/sections/Board";
 import { Footer } from "@/components/sections/Footer";
 import { getSiteData } from "@/data/store";
-import { prelaunchNav } from "@/data/site";
 
 // About page. All copy is editable in the admin (About us); the defaults in
 // data/site.ts follow the "About Easytive" brief word for word.
@@ -17,7 +16,7 @@ export default async function AboutPage() {
   const { about, doctors } = await getSiteData();
   return (
     <>
-      <Header slim items={prelaunchNav} />
+      <Header />
       <main className="about">
         <section className="about-intro">
           <div className="wrap">

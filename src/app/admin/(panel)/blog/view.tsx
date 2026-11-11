@@ -1,26 +1,33 @@
 "use client";
 
-// List / grid switch for the blog admin. The choice is kept in a cookie
-// (blog-view) so the server renders the same layout on the next visit, with
-// no jump after the page loads.
+// Client-side state for the blog admin page:
+//   - List / grid layout. Grid is the default; the choice is kept in a cookie
+//     (blog-view) so the server renders the same layout next time.
+//   - The "New post" form. The button only opens an empty form; the post is
+//     created when the form is submitted (createArticle), never before.
 
 import { createContext, use, useState, type ReactNode } from "react";
+import { SubmitButton } from "@/app/admin/buttons";
+import { createArticle } from "../actions";
 
 export type BlogView = "list" | "grid";
 
-const ViewContext = createContext<{ view: BlogView; setView: (v: BlogView) => void }>({ view: "list", setView: () => {} });
+type State = { view: BlogView; setView: (v: BlogView) => void; composing: boolean; setComposing: (on: boolean) => void };
+
+const BlogContext = createContext<State>({ view: "grid", setView: () => {}, composing: false, setComposing: () => {} });
 
 export function BlogViewProvider({ initial, children }: { initial: BlogView; children: ReactNode }) {
   const [view, set] = useState<BlogView>(initial);
+  const [composing, setComposing] = useState(false);
   const setView = (v: BlogView) => {
     set(v);
     document.cookie = `blog-view=${v}; path=/admin; max-age=31536000; samesite=strict`;
   };
-  return <ViewContext value={{ view, setView }}>{children}</ViewContext>;
+  return <BlogContext value={{ view, setView, composing, setComposing }}>{children}</BlogContext>;
 }
 
 export function PostList({ children }: { children: ReactNode }) {
-  const { view } = use(ViewContext);
+  const { view } = use(BlogContext);
   return (
     <div className="bp-list" data-view={view}>
       {children}
@@ -28,10 +35,49 @@ export function PostList({ children }: { children: ReactNode }) {
   );
 }
 
+export function NewPostButton({ label = "New post" }: { label?: string }) {
+  const { composing, setComposing } = use(BlogContext);
+  return (
+    <button type="button" className="a-btn" onClick={() => setComposing(true)} disabled={composing} aria-expanded={composing} aria-controls="bp-compose">
+      {label}
+    </button>
+  );
+}
+
+/** The empty "New post" form (fields rendered by the server and passed in). Shown only while composing. */
+export function ComposePanel({ children }: { children: ReactNode }) {
+  const { composing, setComposing } = use(BlogContext);
+  if (!composing) return null;
+
+  async function submit(fd: FormData) {
+    await createArticle(fd);
+    setComposing(false);
+  }
+
+  return (
+    <section id="bp-compose" className="bp-compose" aria-labelledby="bp-compose-title">
+      <div className="bp-compose-head">
+        <h2 id="bp-compose-title">New post</h2>
+        <button type="button" className="a-btn small ghost" onClick={() => setComposing(false)}>
+          Cancel
+        </button>
+      </div>
+      <form action={submit} className="a-form">
+        {children}
+        <div className="a-actions">
+          <SubmitButton className="a-btn small" pendingLabel="Adding post…">
+            Add post
+          </SubmitButton>
+        </div>
+      </form>
+    </section>
+  );
+}
+
 const icon = { width: 16, height: 16, viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: 1.8, strokeLinecap: "round", strokeLinejoin: "round", "aria-hidden": true } as const;
 
 export function ViewToggle() {
-  const { view, setView } = use(ViewContext);
+  const { view, setView } = use(BlogContext);
   return (
     <div className="bp-views" role="group" aria-label="Layout">
       <button type="button" aria-pressed={view === "list"} onClick={() => setView("list")} title="List">

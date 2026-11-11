@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { getAllPosts, lastBlogEdit } from "@/data/blog";
+import { getPostCounts, lastBlogEdit } from "@/data/blog";
 import { requireUser } from "@/lib/auth";
 
 // Dashboard: the blog tile (what's in it, when it was last changed, a link to
@@ -9,14 +9,14 @@ const when = (d: Date) => d.toLocaleString("en-GB", { day: "numeric", month: "sh
 
 export default async function DashboardPage() {
   const user = await requireUser();
-  const [posts, blogEdit] = await Promise.all([getAllPosts(), lastBlogEdit()]);
+  const [counts, blogEdit] = await Promise.all([getPostCounts(), lastBlogEdit()]);
 
 
   const tiles = [
     {
       href: "/admin/blog",
       title: "Blog",
-      stat: `${posts.filter((p) => p.slug).length} posts`,
+      stat: `${counts.live} ${counts.live === 1 ? "post" : "posts"}`,
       line: blogEdit ? `Last edited ${when(blogEdit.at)}${blogEdit.email ? ` by ${blogEdit.email}` : ""}` : "No posts yet",
       view: "/blog",
     },
