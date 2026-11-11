@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { ConfirmButton, SubmitButton } from "@/app/admin/buttons";
 import { articleDrafts, articlesOf, bodyToText, getOverrides } from "@/data/store";
+import { requireUser } from "@/lib/auth";
 import { addArticle, deleteArticle, saveArticle } from "../actions";
 import { Notice, PhotoField, Thumb } from "../fields";
 
@@ -10,6 +11,7 @@ export const metadata: Metadata = { title: "Blog · Easytive admin" };
 // opens into its edit form; its Remove button is a sibling form (HTML forbids
 // a form inside a form). Rows are addressed by index, like the saved list.
 export default async function BlogAdminPage({ searchParams }: { searchParams: Promise<{ error?: string }> }) {
+  await requireUser();
   const o = await getOverrides();
   const drafts = articleDrafts(o);
   const shown = articlesOf(o); // what readers get: slugs and resolved photos
@@ -47,7 +49,8 @@ export default async function BlogAdminPage({ searchParams }: { searchParams: Pr
                     <span className="a-cardhint">{[d.tag, d.author, d.date].filter(Boolean).join(" · ") || "Not filled in yet"}</span>
                   </span>
                   <span className="a-edit" aria-hidden>
-                    Edit
+                    <span className="when-closed">Edit</span>
+                    <span className="when-open">Close</span>
                   </span>
                 </summary>
                 <form action={saveArticle} className="a-form a-postform">

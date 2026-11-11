@@ -8,8 +8,6 @@ type NavLink = { href: string; label: string };
 
 const contentLinks: NavLink[] = [
   { href: "/admin", label: "Dashboard" },
-  { href: "/admin/home", label: "Home banner" },
-  { href: "/admin/about", label: "About us" },
   { href: "/admin/blog", label: "Blog" },
 ];
 
