@@ -3,7 +3,7 @@
 //   npm run admin:user -- someone@example.com
 //
 // If the email is new, an admin account is created. If it already exists, its
-// password is reset, it is re-enabled, signed out everywhere, and any sign-in
+// password is reset, it is reactivated, signed out everywhere, and any sign-in
 // lockout is cleared. Either way a temporary password is printed once; the
 // person must choose their own at first sign-in (within 72 hours).
 //
@@ -51,7 +51,7 @@ try {
       must_change_password = true,
       temp_password_expires_at = excluded.temp_password_expires_at,
       password_changed_at = now(),
-      disabled_at = null
+      is_active = true
     returning id, role, (xmax = 0) as created
   `;
   await sql`delete from easytive.admin_sessions where user_id = ${row.id}`;

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { requireAdminRole, type Role } from "@/lib/auth";
 import { db } from "@/lib/db";
-import { createUser, deleteUser, resetUserPassword, setUserDisabled, setUserRole } from "./actions";
+import { createUser, resetUserPassword, setUserActive, setUserRole } from "./actions";
 import { TempPasswordForm } from "./forms";
 
 export const metadata: Metadata = { title: "Users · Easytive admin" };
@@ -10,7 +10,7 @@ type UserRow = {
   id: string;
   email: string;
   role: Role;
-  disabled: boolean;
+  active: boolean;
   pending: boolean;
   last_login_at: Date | null;
 };
@@ -34,6 +34,8 @@ const actionLabels: Record<string, string> = {
   "user.enable": "Enabled user",
   "user.role": "Changed role",
   "user.delete": "Deleted user",
+  "user.deactivate": "Deactivated user",
+  "user.reactivate": "Reactivated user",
 };
 
 export default async function UsersPage() {
@@ -41,9 +43,9 @@ export default async function UsersPage() {
   const sql = db();
   const [users, log] = await Promise.all([
     sql<UserRow[]>`
-      select id, email, role, disabled_at is not null as disabled, must_change_password as pending, last_login_at
+      select id, email, role, is_active as active, must_change_password as pending, last_login_at
       from easytive.admin_users
-      order by disabled_at is not null, email
+      order by is_active desc, email
     `,
     sql<AuditRow[]>`
       select l.id, l.at, l.action, u.email as actor, l.detail
@@ -103,7 +105,7 @@ export default async function UsersPage() {
                     <span className="a-cardhint" style={{ display: "block" }}>
                       {u.role}
                       {self ? " · you" : ""}
-                      {u.disabled ? " · disabled" : u.pending ? " · waiting for first sign-in" : ""} · last sign-in {stamp(u.last_login_at)}
+                      {!u.active ? " · deactivated" : u.pending ? " · waiting for first sign-in" : ""} · last sign-in {stamp(u.last_login_at)}
                     </span>
                     {!self && (
                       <TempPasswordForm action={resetUserPassword} submitLabel="Reset password" buttonClassName="a-btn small ghost">
@@ -120,21 +122,13 @@ export default async function UsersPage() {
                           Make {u.role === "admin" ? "editor" : "admin"}
                         </button>
                       </form>
-                      <form action={setUserDisabled}>
+                      <form action={setUserActive}>
                         <input type="hidden" name="id" value={u.id} />
-                        <input type="hidden" name="disabled" value={u.disabled ? "0" : "1"} />
+                        <input type="hidden" name="active" value={u.active ? "0" : "1"} />
                         <button className="a-btn small subtle" type="submit">
-                          {u.disabled ? "Enable" : "Disable"}
+                          {u.active ? "Deactivate" : "Reactivate"}
                         </button>
                       </form>
-                      {u.disabled && (
-                        <form action={deleteUser}>
-                          <input type="hidden" name="id" value={u.id} />
-                          <button className="a-btn small subtle" type="submit">
-                            Delete for good
-                          </button>
-                        </form>
-                      )}
                     </div>
                   )}
                 </div>
@@ -142,8 +136,8 @@ export default async function UsersPage() {
             })}
           </div>
           <p className="a-cardhint" style={{ marginTop: 12 }}>
-            Disabling signs the person out at once and blocks sign-in; it can be undone. Deleting is only offered for a
-            disabled account and can&apos;t be undone.
+            Deactivating signs the person out at once and blocks sign-in. The account is kept, so it can be reactivated
+            later.
           </p>
         </section>
 

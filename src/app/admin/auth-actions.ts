@@ -20,7 +20,7 @@ type UserRow = {
   email: string;
   password_hash: string;
   must_change_password: boolean;
-  disabled: boolean;
+  is_active: boolean;
   temp_expired: boolean;
 };
 
@@ -43,7 +43,7 @@ export async function login(formData: FormData): Promise<void> {
   const [user] = email
     ? await sql<UserRow[]>`
         select id, email, password_hash, must_change_password,
-               disabled_at is not null as disabled,
+               is_active,
                coalesce(temp_password_expires_at < now(), false) as temp_expired
         from easytive.admin_users
         where email = ${email}
@@ -54,7 +54,7 @@ export async function login(formData: FormData): Promise<void> {
   // doesn't reveal which emails exist.
   const tooLong = password.length > PASSWORD_MAX;
   const check = await verifyPassword(tooLong ? "" : password, user?.password_hash ?? (await decoyHash()));
-  if (!user || tooLong || !check.ok || user.disabled) {
+  if (!user || tooLong || !check.ok || !user.is_active) {
     await audit("login.failure", null, { email: email ?? "(invalid)" });
     redirect("/admin/login?error=1"); // same answer for every kind of failure
   }

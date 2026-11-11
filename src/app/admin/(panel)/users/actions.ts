@@ -18,7 +18,7 @@ const TEMP_PASSWORD_HOURS = 72;
 
 function targetId(fd: FormData): string | null {
   const id = String(fd.get("id") ?? "");
-  return /^\d{1,18}$/.test(id) ? id : null;
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id) ? id.toLowerCase() : null;
 }
 
 const roleOf = (fd: FormData): Role => (fd.get("role") === "admin" ? "admin" : "editor");
@@ -44,7 +44,7 @@ export async function createUser(_prev: UserFormState, fd: FormData): Promise<Us
     on conflict (email) do nothing
     returning id
   `;
-  if (created.length === 0) return { error: "An account with that email already exists." };
+  if (created.length === 0) return { error: "An account with that email already exists. If it's deactivated, reactivate it below." };
 
   await audit("user.create", actor.id, { target: email, role });
   refresh();
@@ -79,21 +79,22 @@ export async function resetUserPassword(_prev: UserFormState, fd: FormData): Pro
   return { email: user.email, tempPassword };
 }
 
-export async function setUserDisabled(fd: FormData): Promise<void> {
+/**
+ * Soft delete: deactivating blocks sign-in and ends the account's sessions,
+ * but keeps the row (and its audit history). Reactivating undoes it.
+ */
+export async function setUserActive(fd: FormData): Promise<void> {
   const actor = await requireAdminRole();
   const id = targetId(fd);
   if (!id || id === actor.id) return;
-  const disable = fd.get("disabled") === "1";
+  const active = fd.get("active") === "1";
 
   const [user] = await db()<{ email: string }[]>`
-    update easytive.admin_users
-    set disabled_at = case when ${disable} then now() else null end
-    where id = ${id}
-    returning email
+    update easytive.admin_users set is_active = ${active} where id = ${id} and is_active <> ${active} returning email
   `;
   if (!user) return;
-  if (disable) await revokeUserSessions(id);
-  await audit(disable ? "user.disable" : "user.enable", actor.id, { target: user.email });
+  if (!active) await revokeUserSessions(id);
+  await audit(active ? "user.reactivate" : "user.deactivate", actor.id, { target: user.email });
   refresh();
 }
 
@@ -108,19 +109,5 @@ export async function setUserRole(fd: FormData): Promise<void> {
   `;
   if (!user) return;
   await audit("user.role", actor.id, { target: user.email, role });
-  refresh();
-}
-
-/** Permanent. Only a disabled account can be deleted, so it always takes two deliberate steps. */
-export async function deleteUser(fd: FormData): Promise<void> {
-  const actor = await requireAdminRole();
-  const id = targetId(fd);
-  if (!id || id === actor.id) return;
-
-  const [user] = await db()<{ email: string }[]>`
-    delete from easytive.admin_users where id = ${id} and disabled_at is not null returning email
-  `;
-  if (!user) return;
-  await audit("user.delete", actor.id, { target: user.email });
   refresh();
 }

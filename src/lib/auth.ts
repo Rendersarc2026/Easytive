@@ -40,7 +40,7 @@ export const getCurrentUser = cache(async (): Promise<AdminUser | null> => {
     where s.token_hash = ${tokenHash}
       and s.expires_at > now()
       and s.last_seen_at > now() - make_interval(secs => ${SESSION_IDLE_SECONDS})
-      and u.disabled_at is null
+      and u.is_active
   `;
   if (!row) return null;
 
