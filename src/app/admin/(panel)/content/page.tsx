@@ -16,7 +16,7 @@ import {
   savePress,
   saveStep,
 } from "../actions";
-import { doctorDrafts, heroOf, momentDrafts, photoOptions, readOverrides, siteDataOf, stepDrafts } from "@/data/store";
+import { doctorDrafts, heroOf, momentDrafts, photoOptions, getOverrides, siteDataOf, stepDrafts } from "@/data/store";
 
 export const metadata: Metadata = { title: "Site content · Easytive admin" };
 
@@ -24,7 +24,7 @@ export const metadata: Metadata = { title: "Site content · Easytive admin" };
 // here. Row lists (stats, doctors, moments, steps) use one form per row with a
 // sibling Drop form; plain string lists are one-line-per-entry textareas.
 export default async function ContentPage() {
-  const o = await readOverrides();
+  const o = await getOverrides();
   const data = siteDataOf(o); // merged values for textareas/counters
   const hero = heroOf(o);
   const stats = hero.proof.stats;

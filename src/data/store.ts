@@ -7,7 +7,8 @@
 //
 // Public pages call getSiteData() (cached with `use cache`; the tag
 // "site-content" lets admin saves update it immediately via updateTag).
-// Admin pages call readOverrides() directly (uncached) to prefill their forms.
+// Admin pages call getOverrides() (same cache and tag) to prefill their forms;
+// admin actions call readOverrides() (uncached) before they save.
 
 import { cacheLife, cacheTag } from "next/cache";
 import type { StaticImageData } from "next/image";
@@ -111,8 +112,22 @@ async function readOverridesRows(): Promise<Overrides> {
   return o as Overrides;
 }
 
-/** Uncached read: used by admin pages/actions so they always see what's saved. */
+/** Uncached read for admin actions: they mutate and save, so they need the live rows. */
 export async function readOverrides(): Promise<Overrides> {
+  return readOverridesRows();
+}
+
+/**
+ * Cached read for admin pages (form prefill, counts). Shares the
+ * "site-content" tag with getSiteData, and every save calls
+ * updateTag("site-content"), so a page right after a save is still fresh.
+ * Saves themselves re-read with readOverrides(), so a stale form never
+ * overwrites newer data.
+ */
+export async function getOverrides(): Promise<Overrides> {
+  "use cache";
+  cacheLife("hours");
+  cacheTag("site-content");
   return readOverridesRows();
 }
 

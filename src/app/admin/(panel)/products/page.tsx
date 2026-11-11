@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { saveProduct } from "../actions";
-import { readOverrides, siteDataOf, type ProductsMap } from "@/data/store";
+import { getOverrides, siteDataOf, type ProductsMap } from "@/data/store";
 
 export const metadata: Metadata = { title: "Products · Easytive admin" };
 
@@ -9,7 +9,7 @@ export const metadata: Metadata = { title: "Products · Easytive admin" };
 // One form per product. Badge left empty = hidden; gradients keep the two pack
 // layers the site renders (tint = glow behind the pack, l1/l2 = pack surface).
 export default async function ProductsPage() {
-  const products: ProductsMap = siteDataOf(await readOverrides()).products;
+  const products: ProductsMap = siteDataOf(await getOverrides()).products;
 
   return (
     <>

@@ -1,10 +1,10 @@
 import Link from "next/link";
-import { siteDataOf, readOverrides } from "@/data/store";
+import { siteDataOf, getOverrides } from "@/data/store";
 
 // Dashboard: what's editable, how much of it, and where the edits land.
 
 export default async function OverviewPage() {
-  const data = siteDataOf(await readOverrides());
+  const data = siteDataOf(await getOverrides());
   const stats = [
     { href: "/admin/content", label: "Site content", value: "Hero · doctors · moments · steps · press" },
     { href: "/admin/products", label: "Products", value: Object.keys(data.products).length },

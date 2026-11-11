@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { addFaqGroup, addFaqItem, deleteFaqGroup, saveFaqGroup } from "../actions";
-import { faqDrafts, readOverrides } from "@/data/store";
+import { faqDrafts, getOverrides } from "@/data/store";
 
 export const metadata: Metadata = { title: "FAQ · Easytive admin" };
 
@@ -9,7 +9,7 @@ export const metadata: Metadata = { title: "FAQ · Easytive admin" };
 // arrays); "Drop" checkboxes remove rows on save, the small + button appends a
 // blank row via its own form.
 export default async function FaqPage() {
-  const groups = faqDrafts(await readOverrides());
+  const groups = faqDrafts(await getOverrides());
 
   return (
     <>

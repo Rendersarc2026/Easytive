@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { addReview, deleteReview, saveReview, saveReviewCount } from "../actions";
-import { readOverrides, reviewDrafts, siteDataOf } from "@/data/store";
+import { getOverrides, reviewDrafts, siteDataOf } from "@/data/store";
 import { products, type ProductKey } from "@/data/site";
 
 export const metadata: Metadata = { title: "Reviews · Easytive admin" };
@@ -11,7 +11,7 @@ const niceName: Record<string, string> = Object.fromEntries(Object.entries(produ
 // Big-quotes carousel data: the counter ("12,400+") and the six editable
 // testimonials. Each review is one form + one drop form.
 export default async function ReviewsPage() {
-  const o = await readOverrides();
+  const o = await getOverrides();
   const drafts = reviewDrafts(o);
   const reviewCount = siteDataOf(o).reviewCount;
 

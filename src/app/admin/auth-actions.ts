@@ -5,10 +5,10 @@
 // code to a message, so nothing typed by a visitor is ever echoed back.
 
 import { redirect } from "next/navigation";
-import { audit, createSession, destroyCurrentSession, getCurrentUser, pruneSessions, requireUser, revokeUserSessions } from "@/lib/auth";
+import { audit, createSession, destroyCurrentSession, getCurrentUser, requireUser, revokeUserSessions } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { decoyHash, hashPassword, normalizeEmail, passwordProblem, PASSWORD_MAX, verifyPassword } from "@/lib/password";
-import { clearLimit, clientIp, hit, limitKey, pruneLimits } from "@/lib/rate-limit";
+import { clearLimit, clientIp, hit, limitKey } from "@/lib/rate-limit";
 
 const WINDOW = 15 * 60;
 const LOGIN_PER_IP = 20; // attempts per address per 15 minutes
@@ -31,24 +31,27 @@ export async function login(formData: FormData): Promise<void> {
 
   // Count the attempt before looking at the password, so parallel guesses
   // can't race past the limit. Both limits apply: per address, per account.
-  const ipLimit = await hit(limitKey("login:ip", ip), LOGIN_PER_IP, WINDOW);
+  // The account lookup runs alongside them (each sequential round trip to the
+  // database adds delay), but its result isn't used until both limits pass.
+  const sql = db();
   const emailKey = email ? limitKey("login:email", email) : null;
-  const emailLimit = emailKey ? await hit(emailKey, LOGIN_PER_EMAIL, WINDOW) : { ok: true, retryAfterSeconds: 0 };
+  const [ipLimit, emailLimit, [user]] = await Promise.all([
+    hit(limitKey("login:ip", ip), LOGIN_PER_IP, WINDOW),
+    emailKey ? hit(emailKey, LOGIN_PER_EMAIL, WINDOW) : { ok: true, retryAfterSeconds: 0 },
+    email
+      ? sql<UserRow[]>`
+          select id, email, password_hash, must_change_password,
+                 is_active,
+                 coalesce(temp_password_expires_at < now(), false) as temp_expired
+          from easytive.admin_users
+          where email = ${email}
+        `
+      : ([] as UserRow[]),
+  ]);
   if (!ipLimit.ok || !emailLimit.ok) {
     await audit("login.blocked", null, { email: email ?? "(invalid)" });
     redirect("/admin/login?error=rate");
   }
-
-  const sql = db();
-  const [user] = email
-    ? await sql<UserRow[]>`
-        select id, email, password_hash, must_change_password,
-               is_active,
-               coalesce(temp_password_expires_at < now(), false) as temp_expired
-        from easytive.admin_users
-        where email = ${email}
-      `
-    : [];
 
   // Always run one full hash check, account or not, so the response time
   // doesn't reveal which emails exist.
@@ -63,15 +66,19 @@ export async function login(formData: FormData): Promise<void> {
     redirect("/admin/login?error=expired");
   }
 
-  if (check.needsRehash) {
-    await sql`update easytive.admin_users set password_hash = ${await hashPassword(password)} where id = ${user.id}`;
-  }
-  await sql`update easytive.admin_users set last_login_at = now() where id = ${user.id}`;
-  if (emailKey) await clearLimit(emailKey);
-  await Promise.all([pruneSessions(), pruneLimits()]);
-
-  await createSession(user.id); // always a fresh token: nothing from before sign-in is reused
-  await audit("login.success", user.id, {});
+  // Independent writes, sent together. Old sessions and counters are cleared
+  // by the daily cron (/api/cron/db-ping), not here.
+  const newHash = check.needsRehash ? await hashPassword(password) : null;
+  await Promise.all([
+    sql`
+      update easytive.admin_users
+      set last_login_at = now(), password_hash = coalesce(${newHash}::text, password_hash)
+      where id = ${user.id}
+    `,
+    emailKey ? clearLimit(emailKey) : null,
+    createSession(user.id), // always a fresh token: nothing from before sign-in is reused
+    audit("login.success", user.id, {}),
+  ]);
   redirect(user.must_change_password ? "/admin/set-password" : "/admin");
 }
 

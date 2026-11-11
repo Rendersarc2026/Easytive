@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { addArticle, deleteArticle, saveArticle } from "../actions";
-import { articleDrafts, articlesOf, bodyToText, photoBank, photoOptions, readOverrides } from "@/data/store";
+import { articleDrafts, articlesOf, bodyToText, photoBank, photoOptions, getOverrides } from "@/data/store";
 
 export const metadata: Metadata = { title: "Journal · Easytive admin" };
 
@@ -9,7 +9,7 @@ export const metadata: Metadata = { title: "Journal · Easytive admin" };
 // Each article is one edit form; its Drop button is a separate sibling form
 // (HTML forbids a form inside a form).
 export default async function JournalPage() {
-  const o = await readOverrides();
+  const o = await getOverrides();
   const drafts = articleDrafts(o);
   const shown = articlesOf(o); // what readers get, images resolved
 

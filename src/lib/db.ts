@@ -22,7 +22,9 @@ export function db(): Sql {
       prepare: false,
       ssl: "require",
       max: 5,
-      idle_timeout: 20,
+      // Seconds. Opening a connection to the pooler costs far more than
+      // keeping an idle one, so hold on to them for a while.
+      idle_timeout: 300,
       connect_timeout: 10,
       onnotice: () => {},
     });
