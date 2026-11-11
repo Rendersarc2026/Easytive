@@ -6,12 +6,24 @@
 import { useId, useRef, type ReactNode } from "react";
 import { useFormStatus } from "react-dom";
 
+/** Small spinning ring, in the text colour of whatever it sits in. */
+export function Spinner({ label }: { label?: string }) {
+  return <span className="a-spin" role={label ? "status" : undefined} aria-label={label} aria-hidden={label ? undefined : true} />;
+}
+
 /** Plain submit button that says it's working (and can't be clicked twice) while the action runs. */
 export function SubmitButton({ children, pendingLabel, className = "a-btn" }: { children: ReactNode; pendingLabel: string; className?: string }) {
   const { pending } = useFormStatus();
   return (
     <button className={className} type="submit" disabled={pending} aria-disabled={pending}>
-      {pending ? pendingLabel : children}
+      {pending ? (
+        <span className="a-pending">
+          <Spinner />
+          {pendingLabel}
+        </span>
+      ) : (
+        children
+      )}
     </button>
   );
 }
@@ -38,7 +50,8 @@ export function ConfirmButton({
   title: string;
   message?: string;
   confirmLabel: string;
-  pendingLabel?: string;
+  /** Shown in the button while the action runs. Text, or a <Spinner> for icon buttons. */
+  pendingLabel?: ReactNode;
   danger?: boolean;
   className?: string;
 }) {

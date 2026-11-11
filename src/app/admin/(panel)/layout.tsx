@@ -5,7 +5,7 @@ import { getCurrentUser } from "@/lib/auth";
 import { logout } from "../auth-actions";
 import AdminNav from "./nav";
 import "../admin.css";
-import { ConfirmButton } from "@/app/admin/buttons";
+import { ConfirmButton, Spinner } from "@/app/admin/buttons";
 
 // The sidebar is static and prerenders. Each page checks the session itself
 // (`await requireUser()` as its first statement), and each page folder's
@@ -55,7 +55,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
               View site
             </Link>
             <form action={logout}>
-              <ConfirmButton className="a-sideaction" title="Log out?" message="You'll need your email and password to sign back in." confirmLabel="Log out" pendingLabel="Logging out…">
+              <ConfirmButton className="a-sideaction" title="Log out?" message="You'll need your email and password to sign back in." confirmLabel="Log out" pendingLabel={<span className="a-pending"><Spinner label="Logging out" />Log out</span>}>
                 <svg {...icon}>
                   <path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3M10 16l-4-4 4-4M6 12h10" />
                 </svg>

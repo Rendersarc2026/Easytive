@@ -174,6 +174,12 @@ export async function updatePost(id: number, input: PostInput): Promise<string |
   return input.coverKey && row.old_cover !== input.coverKey ? row.old_cover : null;
 }
 
+/** True if the post already has a cover image. */
+export async function hasCover(id: number): Promise<boolean> {
+  const [row] = await db()`select 1 from easytive.blog_posts where id = ${id} and cover_key is not null`;
+  return Boolean(row);
+}
+
 /** Deletes a post and returns its cover key (to remove from the bucket), or null. */
 export async function deletePost(id: number): Promise<string | null> {
   await requireUser();

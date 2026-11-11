@@ -10,7 +10,7 @@
 
 import { updateTag } from "next/cache";
 import { redirect } from "next/navigation";
-import { createDraft, deletePost, textToBody, updatePost } from "@/data/blog";
+import { createDraft, deletePost, hasCover, textToBody, updatePost } from "@/data/blog";
 import { requireUser } from "@/lib/auth";
 import { deleteObject, mediaKey, uploadImage, UploadError } from "@/lib/media";
 import { hit, limitKey } from "@/lib/rate-limit";
@@ -53,15 +53,21 @@ export async function saveArticle(fd: FormData) {
   const user = await requireUser();
   const id = postId(fd);
   if (!id) return;
-  const coverKey = await uploadedKey(fd, user.id);
-  const replaced = await updatePost(id, {
+  const input = {
     title: str(fd, "title", 200),
     tag: str(fd, "tag", 80),
     author: str(fd, "author", 120),
     publishedOn: str(fd, "date", 10),
     body: textToBody(String(fd.get("body") ?? "").slice(0, 100_000)),
-    coverKey,
-  });
+  };
+  // Same required fields as the form marks (the browser check can be skipped).
+  // Checked before any upload, so a rejected save leaves nothing in the bucket.
+  const sentFile = fd.get("upload") instanceof File && (fd.get("upload") as File).size > 0;
+  const complete = input.title && input.author && /^\d{4}-\d{2}-\d{2}$/.test(input.publishedOn) && input.body.length > 0;
+  if (!complete || (!sentFile && !(await hasCover(id)))) redirect(`${PAGE}?error=post-missing`);
+
+  const coverKey = await uploadedKey(fd, user.id);
+  const replaced = await updatePost(id, { ...input, coverKey });
   // Post deleted meanwhile: the new upload has nowhere to go.
   if (replaced === false) {
     if (coverKey) await deleteObject(coverKey);
