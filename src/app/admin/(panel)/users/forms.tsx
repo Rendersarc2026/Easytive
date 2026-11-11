@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState, type ReactNode } from "react";
+import { ConfirmButton } from "@/app/admin/buttons";
 import type { UserFormState } from "./actions";
 
 // Wraps the add-user and reset-password forms: both hand back a temporary
@@ -12,12 +13,15 @@ export function TempPasswordForm({
   submitLabel,
   className,
   buttonClassName = "a-btn small",
+  confirm,
 }: {
   action: (prev: UserFormState, fd: FormData) => Promise<UserFormState>;
   children?: ReactNode;
   submitLabel: string;
   className?: string;
   buttonClassName?: string;
+  /** Ask before submitting (used for resetting someone else's password). */
+  confirm?: { title: string; message: string; confirmLabel: string };
 }) {
   const [state, formAction, pending] = useActionState(action, null);
 
@@ -25,9 +29,15 @@ export function TempPasswordForm({
     <form action={formAction} className={className}>
       {children}
       <div className="a-actions">
-        <button className={buttonClassName} type="submit" disabled={pending}>
-          {pending ? "Working…" : submitLabel}
-        </button>
+        {confirm ? (
+          <ConfirmButton className={buttonClassName} {...confirm}>
+            {submitLabel}
+          </ConfirmButton>
+        ) : (
+          <button className={buttonClassName} type="submit" disabled={pending}>
+            {pending ? "Working…" : submitLabel}
+          </button>
+        )}
       </div>
       {state?.error && (
         <p className="a-error" role="alert">

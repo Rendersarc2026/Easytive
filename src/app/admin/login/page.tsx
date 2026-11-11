@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth";
 import { login } from "../auth-actions";
 import "../admin.css";
+import { SubmitButton } from "../buttons";
 
 export const metadata: Metadata = { title: "Admin · Easytive", robots: { index: false, follow: false } };
 
@@ -35,9 +36,7 @@ async function LoginCard({ searchParams }: { searchParams: Promise<{ error?: str
           </label>
           <input className="a-input" id="password" name="password" type="password" required autoComplete="current-password" maxLength={128} />
         </div>
-        <button className="a-btn" type="submit">
-          Sign in
-        </button>
+        <SubmitButton pendingLabel="Signing in…">Sign in</SubmitButton>
       </form>
       {error && (
         <p className="a-error" role="alert">

@@ -5,6 +5,7 @@ import { getCurrentUser, requireUser } from "@/lib/auth";
 import { logout } from "../auth-actions";
 import AdminNav from "./nav";
 import "../admin.css";
+import { ConfirmButton } from "@/app/admin/buttons";
 
 // The sidebar hangs off the shell and prerenders; the guarded subtree streams
 // in behind a Suspense boundary. Anything that reads cookies() must sit inside
@@ -46,9 +47,9 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
             View public site
           </Link>
           <form action={logout}>
-            <button className="logout-btn" type="submit">
+            <ConfirmButton className="logout-btn" title="Log out?" message="You'll need your email and password to sign back in." confirmLabel="Log out" pendingLabel="Logging out…">
               Log out
-            </button>
+            </ConfirmButton>
           </form>
         </div>
       </aside>

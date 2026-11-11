@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { requireUser } from "@/lib/auth";
 import { changePassword, signOutEverywhere } from "../../auth-actions";
 import { passwordErrorMessage, passwordHint } from "../../messages";
+import { ConfirmButton } from "@/app/admin/buttons";
 
 export const metadata: Metadata = { title: "Account · Easytive admin" };
 
@@ -70,9 +71,15 @@ export default async function AccountPage({ searchParams }: { searchParams: Prom
             has been in your account, sign out everywhere and then change your password.
           </p>
           <form action={signOutEverywhere} style={{ marginTop: 12 }}>
-            <button className="a-btn small ghost" type="submit">
+            <ConfirmButton
+              className="a-btn small ghost"
+              title="Sign out on every device?"
+              message="This ends every session for your account, including this one. You'll need your password to sign back in."
+              confirmLabel="Sign out everywhere"
+              pendingLabel="Signing out…"
+            >
               Sign out on every device
-            </button>
+            </ConfirmButton>
           </form>
         </section>
       </div>

@@ -3,6 +3,7 @@ import { requireAdminRole, type Role } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { createUser, resetUserPassword, setUserActive, setUserRole } from "./actions";
 import { TempPasswordForm } from "./forms";
+import { ConfirmButton } from "@/app/admin/buttons";
 
 export const metadata: Metadata = { title: "Users · Easytive admin" };
 
@@ -108,7 +109,16 @@ export default async function UsersPage() {
                       {!u.active ? " · deactivated" : u.pending ? " · waiting for first sign-in" : ""} · last sign-in {stamp(u.last_login_at)}
                     </span>
                     {!self && (
-                      <TempPasswordForm action={resetUserPassword} submitLabel="Reset password" buttonClassName="a-btn small ghost">
+                      <TempPasswordForm
+                        action={resetUserPassword}
+                        submitLabel="Reset password"
+                        buttonClassName="a-btn small ghost"
+                        confirm={{
+                          title: `Reset the password for ${u.email}?`,
+                          message: "Their current password stops working and they're signed out everywhere. You'll get a temporary password to send them.",
+                          confirmLabel: "Reset password",
+                        }}
+                      >
                         <input type="hidden" name="id" value={u.id} />
                       </TempPasswordForm>
                     )}
@@ -118,16 +128,34 @@ export default async function UsersPage() {
                       <form action={setUserRole}>
                         <input type="hidden" name="id" value={u.id} />
                         <input type="hidden" name="role" value={u.role === "admin" ? "editor" : "admin"} />
-                        <button className="a-btn small ghost" type="submit">
+                        <ConfirmButton
+                          className="a-btn small ghost"
+                          title={`Make ${u.email} ${u.role === "admin" ? "an editor" : "an admin"}?`}
+                          message={
+                            u.role === "admin"
+                              ? "They'll keep access to site content but lose access to this Users page."
+                              : "They'll be able to add, reset and deactivate accounts, including yours."
+                          }
+                          confirmLabel={u.role === "admin" ? "Make editor" : "Make admin"}
+                        >
                           Make {u.role === "admin" ? "editor" : "admin"}
-                        </button>
+                        </ConfirmButton>
                       </form>
                       <form action={setUserActive}>
                         <input type="hidden" name="id" value={u.id} />
                         <input type="hidden" name="active" value={u.active ? "0" : "1"} />
-                        <button className="a-btn small subtle" type="submit">
+                        <ConfirmButton
+                          title={`${u.active ? "Deactivate" : "Reactivate"} ${u.email}?`}
+                          message={
+                            u.active
+                              ? "They're signed out at once and can't sign in until the account is reactivated."
+                              : "They'll be able to sign in again with their current password."
+                          }
+                          confirmLabel={u.active ? "Deactivate" : "Reactivate"}
+                          danger={u.active}
+                        >
                           {u.active ? "Deactivate" : "Reactivate"}
-                        </button>
+                        </ConfirmButton>
                       </form>
                     </div>
                   )}

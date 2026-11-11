@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { addArticle, deleteArticle, saveArticle } from "../actions";
 import { articleDrafts, articlesOf, bodyToText, photoBank, photoOptions, getOverrides } from "@/data/store";
+import { ConfirmButton } from "@/app/admin/buttons";
 
 export const metadata: Metadata = { title: "Journal · Easytive admin" };
 
@@ -107,9 +108,9 @@ export default async function JournalPage() {
                 <div className="a-rowside">
                   <form action={deleteArticle}>
                     <input type="hidden" name="id" value={i} />
-                    <button className="a-btn small subtle" type="submit">
+                    <ConfirmButton title="Remove this article?" message="It comes off the site straight away. This can't be undone." confirmLabel="Remove" danger>
                       Drop
-                    </button>
+                    </ConfirmButton>
                   </form>
                 </div>
               </div>

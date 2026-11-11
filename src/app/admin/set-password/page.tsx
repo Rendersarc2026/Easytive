@@ -5,6 +5,7 @@ import { getCurrentUser } from "@/lib/auth";
 import { changePassword, logout } from "../auth-actions";
 import { passwordErrorMessage, passwordHint } from "../messages";
 import "../admin.css";
+import { ConfirmButton } from "@/app/admin/buttons";
 
 export const metadata: Metadata = { title: "Set your password · Easytive admin", robots: { index: false, follow: false } };
 
@@ -46,9 +47,9 @@ async function Card({ searchParams }: { searchParams: Promise<{ error?: string }
         </p>
       )}
       <form action={logout}>
-        <button className="logout-btn" type="submit">
+        <ConfirmButton className="logout-btn" title="Sign out?" message="You'll need your email and password to sign back in." confirmLabel="Sign out" pendingLabel="Signing out…">
           Sign out
-        </button>
+        </ConfirmButton>
       </form>
     </div>
   );

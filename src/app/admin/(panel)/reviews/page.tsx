@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { addReview, deleteReview, saveReview, saveReviewCount } from "../actions";
 import { getOverrides, reviewDrafts, siteDataOf } from "@/data/store";
 import { products, type ProductKey } from "@/data/site";
+import { ConfirmButton } from "@/app/admin/buttons";
 
 export const metadata: Metadata = { title: "Reviews · Easytive admin" };
 
@@ -97,9 +98,9 @@ export default async function ReviewsPage() {
                 <div className="a-rowside">
                   <form action={deleteReview}>
                     <input type="hidden" name="id" value={i} />
-                    <button className="a-btn small subtle" type="submit">
+                    <ConfirmButton title="Remove this review?" message="It comes off the site straight away. This can't be undone." confirmLabel="Remove" danger>
                       Drop
-                    </button>
+                    </ConfirmButton>
                   </form>
                 </div>
               </div>

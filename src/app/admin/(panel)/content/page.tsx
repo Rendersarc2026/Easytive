@@ -17,6 +17,7 @@ import {
   saveStep,
 } from "../actions";
 import { doctorDrafts, heroOf, momentDrafts, photoOptions, getOverrides, siteDataOf, stepDrafts } from "@/data/store";
+import { ConfirmButton } from "@/app/admin/buttons";
 
 export const metadata: Metadata = { title: "Site content · Easytive admin" };
 
@@ -161,9 +162,9 @@ export default async function ContentPage() {
                 <div className="a-rowside">
                   <form action={deleteHeroStat}>
                     <input type="hidden" name="id" value={i} />
-                    <button className="a-btn small subtle" type="submit">
+                    <ConfirmButton title="Remove this hero stat?" message="It comes off the site straight away. This can't be undone." confirmLabel="Remove" danger>
                       Drop
-                    </button>
+                    </ConfirmButton>
                   </form>
                 </div>
               </div>
@@ -217,9 +218,9 @@ export default async function ContentPage() {
                 <div className="a-rowside">
                   <form action={deleteDoctor}>
                     <input type="hidden" name="id" value={i} />
-                    <button className="a-btn small subtle" type="submit">
+                    <ConfirmButton title="Remove this doctor?" message="It comes off the site straight away. This can't be undone." confirmLabel="Remove" danger>
                       Drop
-                    </button>
+                    </ConfirmButton>
                   </form>
                 </div>
               </div>
@@ -286,9 +287,9 @@ export default async function ContentPage() {
                 <div className="a-rowside">
                   <form action={deleteMoment}>
                     <input type="hidden" name="id" value={i} />
-                    <button className="a-btn small subtle" type="submit">
+                    <ConfirmButton title="Remove this moment?" message="It comes off the site straight away. This can't be undone." confirmLabel="Remove" danger>
                       Drop
-                    </button>
+                    </ConfirmButton>
                   </form>
                 </div>
               </div>
@@ -352,9 +353,9 @@ export default async function ContentPage() {
                 <div className="a-rowside">
                   <form action={deleteStep}>
                     <input type="hidden" name="id" value={i} />
-                    <button className="a-btn small subtle" type="submit">
+                    <ConfirmButton title="Remove this step?" message="It comes off the site straight away. This can't be undone." confirmLabel="Remove" danger>
                       Drop
-                    </button>
+                    </ConfirmButton>
                   </form>
                 </div>
               </div>

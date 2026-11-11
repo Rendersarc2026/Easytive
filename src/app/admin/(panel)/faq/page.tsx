@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { addFaqGroup, addFaqItem, deleteFaqGroup, saveFaqGroup } from "../actions";
 import { faqDrafts, getOverrides } from "@/data/store";
+import { ConfirmButton } from "@/app/admin/buttons";
 
 export const metadata: Metadata = { title: "FAQ · Easytive admin" };
 
@@ -81,9 +82,9 @@ export default async function FaqPage() {
               </form>
               <form action={deleteFaqGroup}>
                 <input type="hidden" name="id" value={i} />
-                <button className="a-btn small subtle" type="submit">
+                <ConfirmButton title="Remove this question group?" message="The group and all its questions come off the site straight away. This can't be undone." confirmLabel="Remove group" danger>
                   Drop group
-                </button>
+                </ConfirmButton>
               </form>
             </div>
           </section>
