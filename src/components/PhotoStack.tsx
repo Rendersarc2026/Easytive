@@ -1,5 +1,5 @@
 import Image from "next/image";
-import type { BannerPhoto } from "@/data/site";
+import { placeholderFor, type BannerPhoto } from "@/data/site";
 
 // Stacked banner photos; only the active one is visible and the rest fade out.
 // Only the active photo is announced to screen readers.
@@ -10,7 +10,7 @@ export function PhotoStack({ photos, active, sizes, preloadFirst }: { photos: Ba
         src={p.src}
         alt={p.alt}
         fill
-        placeholder="blur"
+        placeholder={placeholderFor(p.src)}
         preload={preloadFirst && i === 0}
         sizes={sizes}
         style={{ objectPosition: p.pos ?? "50% 40%" }}

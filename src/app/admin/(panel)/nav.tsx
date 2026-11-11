@@ -7,12 +7,10 @@ import { usePathname } from "next/navigation";
 type NavLink = { href: string; label: string };
 
 const contentLinks: NavLink[] = [
-  { href: "/admin", label: "Overview" },
-  { href: "/admin/content", label: "Site content" },
-  { href: "/admin/products", label: "Products" },
-  { href: "/admin/journal", label: "Journal" },
-  { href: "/admin/reviews", label: "Reviews" },
-  { href: "/admin/faq", label: "FAQ" },
+  { href: "/admin", label: "Dashboard" },
+  { href: "/admin/home", label: "Home banner" },
+  { href: "/admin/about", label: "About us" },
+  { href: "/admin/blog", label: "Blog" },
 ];
 
 export default function AdminNav({ links = contentLinks, label = "Admin" }: { links?: NavLink[]; label?: string }) {
@@ -22,7 +20,10 @@ export default function AdminNav({ links = contentLinks, label = "Admin" }: { li
       {links.map((l) => {
         const on = l.href === "/admin" ? pathname === "/admin" : pathname.startsWith(l.href);
         return (
-          <Link key={l.href} href={l.href} className={`a-navlink${on ? " on" : ""}`} aria-current={on ? "page" : undefined}>
+          // No prefetch: a prefetch that gets cancelled part-way through the
+          // session lookup can leave a database connection stuck (and the
+          // admin is small, so navigating without it is still quick).
+          <Link key={l.href} href={l.href} prefetch={false} className={`a-navlink${on ? " on" : ""}`} aria-current={on ? "page" : undefined}>
             {l.label}
           </Link>
         );

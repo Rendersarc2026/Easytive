@@ -1,13 +1,15 @@
 import type { ReactNode } from "react";
+import Image from "next/image";
 import Link from "next/link";
-import { doctors as siteDoctors } from "@/data/site";
+import { doctors as siteDoctors, placeholderFor } from "@/data/site";
+import type { DoctorCard } from "@/data/store";
 import { Arrow, Silhouette } from "../icons";
 import { LogoIcon } from "../Logo";
 
 type Props = {
   link?: { label: string; href: string } | null;
   /** Board members; pass the admin's merged list (data/store) to show edits. */
-  doctors?: typeof siteDoctors;
+  doctors?: DoctorCard[];
   /** Heading and subline; the defaults are the home page's wording. */
   title?: ReactNode;
   sub?: string;
@@ -47,8 +49,14 @@ export function Board({
           {doctors.map((d) => (
             <article className="doc" tabIndex={0} key={d.name}>
               <div className="portrait">
-                <Silhouette />
-                <span className="soon">Photo to come</span>
+                {d.image ? (
+                  <Image src={d.image.src} alt={d.image.alt} fill placeholder={placeholderFor(d.image.src)} sizes="(min-width: 900px) 22vw, 45vw" className="photo" />
+                ) : (
+                  <>
+                    <Silhouette />
+                    <span className="soon">Photo to come</span>
+                  </>
+                )}
                 <LogoIcon className="mark" />
                 <p className="reviews">
                   <b>Reviews:</b> {d.reviews}

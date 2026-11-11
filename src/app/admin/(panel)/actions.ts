@@ -1,32 +1,33 @@
 "use server";
 
-// Every admin mutation lives here. Each one:
+// Every content mutation in the admin lives here. Each one:
 //   1. verifies the session (requireUser),
 //   2. re-reads the saved overrides from the database (uncached),
-//   3. mutates the in-memory object and writes back the sections that changed,
-//   4. expires the "site-content" tag so public pages re-render immediately.
+//   3. changes the in-memory object and writes back the sections that changed,
+//   4. expires the "site-content" tag so pages show the change immediately.
 //
-// Lists avoid nested <form>s: each row/sub-entity gets its own form with a
-// hidden `id` (index). Plain string lists (announcement, press) are edited as
-// one textarea, one line per entry.
+// List rows are addressed by index (a hidden `id` field). Forms that carry a
+// photo accept either an uploaded file (`upload`) or a choice from the photo
+// bank (`photo`); an upload wins when both are present.
 
 import { updateTag } from "next/cache";
+import { redirect } from "next/navigation";
+import { heroCopy } from "@/data/site";
 import {
+  aboutOf,
   defaultArticleDrafts,
   defaultDoctorDrafts,
-  defaultFaqDrafts,
-  defaultMomentDrafts,
-  defaultReviewDrafts,
-  defaultStepDrafts,
+  defaultHeroPhotoDrafts,
+  photoBank,
   readOverrides,
   textToBody,
   writeOverrides,
+  type HeroSlide,
   type Overrides,
 } from "@/data/store";
-import { products, heroCopy, type ProductKey } from "@/data/site";
 import { requireUser } from "@/lib/auth";
-
-const PRODUCT_KEYS = Object.keys(products) as ProductKey[];
+import { isMediaPath, uploadImage, UploadError } from "@/lib/media";
+import { hit, limitKey } from "@/lib/rate-limit";
 
 // Hard cap on any single field, so one request can't stuff the database.
 const MAX_FIELD = 20_000;
@@ -39,37 +40,32 @@ function id(fd: FormData): number {
   return Number.parseInt(String(fd.get("id") ?? "-1"), 10);
 }
 
-const VALID = new Set(PRODUCT_KEYS);
-
-// The list each section edits when it has no override saved yet: a clone of
-// the site defaults. Mutating it and writing the whole list keeps untouched
-// rows intact.
-
-// ---- Products ---------------------------------------------------------------
-
-export async function saveProduct(fd: FormData) {
-  await requireUser();
-  const key = str(fd, "key") as ProductKey;
-  if (!VALID.has(key)) return;
-  const price = Number.parseInt(str(fd, "price"), 10);
-  const badge = str(fd, "badge");
-  const patch: NonNullable<Overrides["products"]>[ProductKey] = {
-    name: str(fd, "name"),
-    desc: str(fd, "desc"),
-    price: Number.isFinite(price) && price >= 0 ? price : 0,
-    tint: str(fd, "tint"),
-    l1: str(fd, "l1"),
-    l2: str(fd, "l2"),
-    badge: badge ? badge : undefined,
-    sachet: fd.get("sachet") === "on" ? true : undefined,
-  };
-  const o = await readOverrides();
-  o.products = { ...(o.products ?? {}), [key]: patch };
+async function save(o: Overrides) {
   await writeOverrides(o);
   updateTag("site-content");
 }
 
-// ---- Hero ---------------------------------------------------------------------
+/**
+ * The photo a form chose: a fresh upload, else a photo bank key or an earlier
+ * upload's /media path. A rejected upload sends the editor back to `page`
+ * with ?error=upload-<reason>, which the page explains.
+ */
+async function photoFrom(fd: FormData, page: string, userId: string): Promise<string> {
+  const file = fd.get("upload");
+  if (file instanceof File && file.size > 0) {
+    if (!(await hit(limitKey("upload", userId), 60, 60 * 60)).ok) redirect(`${page}?error=upload-rate`);
+    try {
+      return await uploadImage(file);
+    } catch (err) {
+      if (err instanceof UploadError) redirect(`${page}?error=upload-${err.code}`);
+      throw err;
+    }
+  }
+  const ref = str(fd, "photo");
+  return photoBank[ref] || isMediaPath(ref) ? ref : "";
+}
+
+// ---- Home banner: slide text and stats ----------------------------------------
 
 export async function saveHero(fd: FormData) {
   await requireUser();
@@ -82,98 +78,163 @@ export async function saveHero(fd: FormData) {
       stats: o.hero?.proof?.stats ?? heroCopy.proof.stats.map((s) => ({ ...s })),
     },
   };
-  await writeOverrides(o);
-  updateTag("site-content");
+  await save(o);
+}
+
+function statsOf(o: Overrides) {
+  return o.hero?.proof?.stats ?? heroCopy.proof.stats.map((s) => ({ ...s }));
+}
+
+function withStats(o: Overrides, stats: { value: string; label: string }[]) {
+  o.hero = { ...(o.hero ?? {}), proof: { tag: o.hero?.proof?.tag ?? heroCopy.proof.tag, line: o.hero?.proof?.line ?? "", stats } };
 }
 
 export async function addHeroStat() {
   await requireUser();
   const o = await readOverrides();
-  const stats = o.hero?.proof?.stats ?? heroCopy.proof.stats.map((s) => ({ ...s }));
-  o.hero = { ...(o.hero ?? {}), proof: { tag: o.hero?.proof?.tag ?? "", line: o.hero?.proof?.line ?? "", stats: [...stats, { value: "", label: "" }] } };
-  await writeOverrides(o);
-  updateTag("site-content");
+  withStats(o, [...statsOf(o), { value: "", label: "" }]);
+  await save(o);
 }
 
 export async function saveHeroStat(fd: FormData) {
   await requireUser();
   const i = id(fd);
   const o = await readOverrides();
-  const stats = o.hero?.proof?.stats ?? heroCopy.proof.stats.map((s) => ({ ...s }));
-  if (i >= 0 && i < stats.length) {
-    stats[i] = { value: str(fd, "value"), label: str(fd, "label") };
-    o.hero = { ...(o.hero ?? {}), proof: { tag: o.hero?.proof?.tag ?? "", line: o.hero?.proof?.line ?? "", stats } };
-    await writeOverrides(o);
-    updateTag("site-content");
-  }
+  const stats = statsOf(o);
+  if (i < 0 || i >= stats.length) return;
+  stats[i] = { value: str(fd, "value"), label: str(fd, "label") };
+  withStats(o, stats);
+  await save(o);
 }
 
 export async function deleteHeroStat(fd: FormData) {
   await requireUser();
   const i = id(fd);
   const o = await readOverrides();
-  const stats = o.hero?.proof?.stats ?? heroCopy.proof.stats.map((s) => ({ ...s }));
-  if (i >= 0 && i < stats.length) {
-    stats.splice(i, 1);
-    o.hero = { ...(o.hero ?? {}), proof: { tag: o.hero?.proof?.tag ?? "", line: o.hero?.proof?.line ?? "", stats } };
-    await writeOverrides(o);
-    updateTag("site-content");
-  }
+  const stats = statsOf(o);
+  if (i < 0 || i >= stats.length) return;
+  stats.splice(i, 1);
+  withStats(o, stats);
+  await save(o);
 }
 
-// ---- One-liner strings ---------------------------------------------------------
+// ---- Home banner: photos --------------------------------------------------------
 
-export async function saveAnnouncement(fd: FormData) {
+const slideOf = (fd: FormData): HeroSlide => (fd.get("slide") === "proof" ? "proof" : "lifestyle");
+
+export async function addHeroPhoto(fd: FormData) {
+  const user = await requireUser();
+  const photo = await photoFrom(fd, "/admin/home", user.id);
+  if (!photo) redirect("/admin/home?error=photo-missing");
+  const o = await readOverrides();
+  o.heroPhotos = [...(o.heroPhotos ?? defaultHeroPhotoDrafts()), { photo, alt: str(fd, "alt"), slide: slideOf(fd) }];
+  await save(o);
+}
+
+export async function saveHeroPhoto(fd: FormData) {
+  const user = await requireUser();
+  const i = id(fd);
+  const photo = await photoFrom(fd, "/admin/home", user.id);
+  const o = await readOverrides();
+  const list = o.heroPhotos ?? defaultHeroPhotoDrafts();
+  if (i < 0 || i >= list.length) return;
+  list[i] = { photo: photo || list[i].photo, alt: str(fd, "alt"), slide: slideOf(fd) };
+  o.heroPhotos = list;
+  await save(o);
+}
+
+export async function deleteHeroPhoto(fd: FormData) {
+  await requireUser();
+  const i = id(fd);
+  const o = await readOverrides();
+  const list = o.heroPhotos ?? defaultHeroPhotoDrafts();
+  if (i < 0 || i >= list.length) return;
+  if (list.length === 1) redirect("/admin/home?error=photo-last");
+  list.splice(i, 1);
+  o.heroPhotos = list;
+  await save(o);
+}
+
+/** Swap a banner photo with its neighbour (`dir` is "up" or "down"). */
+export async function moveHeroPhoto(fd: FormData) {
+  await requireUser();
+  const i = id(fd);
+  const j = fd.get("dir") === "up" ? i - 1 : i + 1;
+  const o = await readOverrides();
+  const list = o.heroPhotos ?? defaultHeroPhotoDrafts();
+  if (i < 0 || j < 0 || i >= list.length || j >= list.length) return;
+  [list[i], list[j]] = [list[j], list[i]];
+  o.heroPhotos = list;
+  await save(o);
+}
+
+// ---- About us: text ---------------------------------------------------------------
+
+const ABOUT_TEXT = ["eyebrow", "heading", "intro", "statement", "valuesHeading", "teamHeading", "teamSub"] as const;
+
+/** Saves whichever About fields the form carries; `story` is paragraphs separated by a blank line. */
+export async function saveAboutText(fd: FormData) {
   await requireUser();
   const o = await readOverrides();
-  o.announcement = str(fd, "lines")
-    .split("\n")
-    .map((l) => l.trim())
-    .filter(Boolean);
-  await writeOverrides(o);
-  updateTag("site-content");
+  const about = aboutOf(o);
+  for (const key of ABOUT_TEXT) if (fd.has(key)) about[key] = str(fd, key);
+  if (fd.has("story")) about.story = textToBody(String(fd.get("story") ?? "").slice(0, 100_000));
+  o.about = about;
+  await save(o);
 }
 
-export async function savePress(fd: FormData) {
+// ---- About us: principles ("What guides us") ----------------------------------------
+
+export async function addPrinciple() {
   await requireUser();
   const o = await readOverrides();
-  o.press = str(fd, "lines")
-    .split("\n")
-    .map((l) => l.trim())
-    .filter(Boolean);
-  await writeOverrides(o);
-  updateTag("site-content");
+  const about = aboutOf(o);
+  about.principles = [...about.principles, { label: "", title: "", body: "" }];
+  o.about = about;
+  await save(o);
 }
 
-export async function saveReviewCount(fd: FormData) {
+export async function savePrinciple(fd: FormData) {
   await requireUser();
+  const i = id(fd);
   const o = await readOverrides();
-  o.reviewCount = str(fd, "reviewCount");
-  await writeOverrides(o);
-  updateTag("site-content");
+  const about = aboutOf(o);
+  if (i < 0 || i >= about.principles.length) return;
+  about.principles[i] = { label: str(fd, "label"), title: str(fd, "title"), body: str(fd, "body") };
+  o.about = about;
+  await save(o);
 }
 
-// ---- Advisory board ------------------------------------------------------------
+export async function deletePrinciple(fd: FormData) {
+  await requireUser();
+  const i = id(fd);
+  const o = await readOverrides();
+  const about = aboutOf(o);
+  if (i < 0 || i >= about.principles.length) return;
+  about.principles.splice(i, 1);
+  o.about = about;
+  await save(o);
+}
+
+// ---- About us: scientists -------------------------------------------------------------
 
 export async function addDoctor() {
   await requireUser();
   const o = await readOverrides();
   o.doctors = [...(o.doctors ?? defaultDoctorDrafts()), { name: "", role: "", reviews: "" }];
-  await writeOverrides(o);
-  updateTag("site-content");
+  await save(o);
 }
 
 export async function saveDoctor(fd: FormData) {
-  await requireUser();
+  const user = await requireUser();
   const i = id(fd);
+  const photo = await photoFrom(fd, "/admin/about", user.id);
   const o = await readOverrides();
   const list = o.doctors ?? defaultDoctorDrafts();
-  if (i >= 0 && i < list.length) {
-    list[i] = { name: str(fd, "name"), role: str(fd, "role"), reviews: str(fd, "reviews") };
-    o.doctors = list;
-    await writeOverrides(o);
-    updateTag("site-content");
-  }
+  if (i < 0 || i >= list.length) return;
+  list[i] = { name: str(fd, "name"), role: str(fd, "role"), reviews: str(fd, "reviews"), ...(photo ? { photo } : {}) };
+  o.doctors = list;
+  await save(o);
 }
 
 export async function deleteDoctor(fd: FormData) {
@@ -181,112 +242,38 @@ export async function deleteDoctor(fd: FormData) {
   const i = id(fd);
   const o = await readOverrides();
   const list = o.doctors ?? defaultDoctorDrafts();
-  if (i >= 0 && i < list.length) {
-    list.splice(i, 1);
-    o.doctors = list;
-    await writeOverrides(o);
-    updateTag("site-content");
-  }
+  if (i < 0 || i >= list.length) return;
+  list.splice(i, 1);
+  o.doctors = list;
+  await save(o);
 }
 
-// ---- Moments & steps ------------------------------------------------------------
-
-export async function addMoment() {
-  await requireUser();
-  const o = await readOverrides();
-  o.moments = [...(o.moments ?? defaultMomentDrafts()), { photo: "", label: "", line: "" }];
-  await writeOverrides(o);
-  updateTag("site-content");
-}
-
-export async function saveMoment(fd: FormData) {
-  await requireUser();
-  const i = id(fd);
-  const o = await readOverrides();
-  const list = o.moments ?? defaultMomentDrafts();
-  if (i >= 0 && i < list.length) {
-    list[i] = { photo: str(fd, "photo"), label: str(fd, "label"), line: str(fd, "line") };
-    o.moments = list;
-    await writeOverrides(o);
-    updateTag("site-content");
-  }
-}
-
-export async function deleteMoment(fd: FormData) {
-  await requireUser();
-  const i = id(fd);
-  const o = await readOverrides();
-  const list = o.moments ?? defaultMomentDrafts();
-  if (i >= 0 && i < list.length) {
-    list.splice(i, 1);
-    o.moments = list;
-    await writeOverrides(o);
-    updateTag("site-content");
-  }
-}
-
-export async function addStep() {
-  await requireUser();
-  const o = await readOverrides();
-  o.steps = [...(o.steps ?? defaultStepDrafts()), { photo: "", pill: "", title: "", body: "" }];
-  await writeOverrides(o);
-  updateTag("site-content");
-}
-
-export async function saveStep(fd: FormData) {
-  await requireUser();
-  const i = id(fd);
-  const o = await readOverrides();
-  const list = o.steps ?? defaultStepDrafts();
-  if (i >= 0 && i < list.length) {
-    list[i] = { photo: str(fd, "photo"), pill: str(fd, "pill"), title: str(fd, "title"), body: str(fd, "body") };
-    o.steps = list;
-    await writeOverrides(o);
-    updateTag("site-content");
-  }
-}
-
-export async function deleteStep(fd: FormData) {
-  await requireUser();
-  const i = id(fd);
-  const o = await readOverrides();
-  const list = o.steps ?? defaultStepDrafts();
-  if (i >= 0 && i < list.length) {
-    list.splice(i, 1);
-    o.steps = list;
-    await writeOverrides(o);
-    updateTag("site-content");
-  }
-}
-
-// ---- Journal articles ------------------------------------------------------------
+// ---- Blog posts -----------------------------------------------------------------------
 
 export async function addArticle() {
   await requireUser();
   const o = await readOverrides();
-  o.articles = [...(o.articles ?? defaultArticleDrafts()), { photo: "", tag: "", title: "", author: "", date: "", body: [] }];
-  await writeOverrides(o);
-  updateTag("site-content");
+  o.articles = [{ photo: "bottle-hand", tag: "", title: "", author: "", date: "", body: [] }, ...(o.articles ?? defaultArticleDrafts())];
+  await save(o);
 }
 
 export async function saveArticle(fd: FormData) {
-  await requireUser();
+  const user = await requireUser();
   const i = id(fd);
+  const photo = await photoFrom(fd, "/admin/blog", user.id);
   const o = await readOverrides();
   const list = o.articles ?? defaultArticleDrafts();
-  if (i >= 0 && i < list.length) {
-    list[i] = {
-      photo: str(fd, "photo"),
-      tag: str(fd, "tag"),
-      title: str(fd, "title"),
-      author: str(fd, "author"),
-      date: str(fd, "date"),
-      body: textToBody(String(fd.get("body") ?? "").slice(0, 100_000)),
-    };
-    o.articles = list;
-    await writeOverrides(o);
-    updateTag("site-content");
-  }
+  if (i < 0 || i >= list.length) return;
+  list[i] = {
+    photo: photo || list[i].photo,
+    tag: str(fd, "tag"),
+    title: str(fd, "title"),
+    author: str(fd, "author"),
+    date: str(fd, "date"),
+    body: textToBody(String(fd.get("body") ?? "").slice(0, 100_000)),
+  };
+  o.articles = list;
+  await save(o);
 }
 
 export async function deleteArticle(fd: FormData) {
@@ -294,116 +281,8 @@ export async function deleteArticle(fd: FormData) {
   const i = id(fd);
   const o = await readOverrides();
   const list = o.articles ?? defaultArticleDrafts();
-  if (i >= 0 && i < list.length) {
-    list.splice(i, 1);
-    o.articles = list;
-    await writeOverrides(o);
-    updateTag("site-content");
-  }
-}
-
-// ---- Reviews ----------------------------------------------------------------------
-
-export async function addReview(fd: FormData) {
-  await requireUser();
-  const o = await readOverrides();
-  const product = str(fd, "product");
-  o.reviews = [
-    ...(o.reviews ?? defaultReviewDrafts()),
-    {
-      quote: str(fd, "quote"),
-      name: str(fd, "name"),
-      about: str(fd, "about"),
-      product: VALID.has(product as ProductKey) ? product : "daily",
-    },
-  ];
-  await writeOverrides(o);
-  updateTag("site-content");
-}
-
-export async function saveReview(fd: FormData) {
-  await requireUser();
-  const i = id(fd);
-  const o = await readOverrides();
-  const list = o.reviews ?? defaultReviewDrafts();
-  if (i >= 0 && i < list.length) {
-    const product = str(fd, "product");
-    list[i] = {
-      quote: str(fd, "quote"),
-      name: str(fd, "name"),
-      about: str(fd, "about"),
-      product: VALID.has(product as ProductKey) ? product : (list[i].product ?? "daily"),
-    };
-    o.reviews = list;
-    await writeOverrides(o);
-    updateTag("site-content");
-  }
-}
-
-export async function deleteReview(fd: FormData) {
-  await requireUser();
-  const i = id(fd);
-  const o = await readOverrides();
-  const list = o.reviews ?? defaultReviewDrafts();
-  if (i >= 0 && i < list.length) {
-    list.splice(i, 1);
-    o.reviews = list;
-    await writeOverrides(o);
-    updateTag("site-content");
-  }
-}
-
-// ---- FAQ -----------------------------------------------------------------------------
-
-export async function addFaqGroup(fd: FormData) {
-  await requireUser();
-  const o = await readOverrides();
-  o.faq = [...(o.faq ?? defaultFaqDrafts()), { group: str(fd, "group"), items: [] }];
-  await writeOverrides(o);
-  updateTag("site-content");
-}
-
-export async function saveFaqGroup(fd: FormData) {
-  await requireUser();
-  const i = id(fd);
-  const o = await readOverrides();
-  const list = o.faq ?? defaultFaqDrafts();
-  if (i >= 0 && i < list.length) {
-    const qs = fd.getAll("q").map((v) => String(v));
-    const as = fd.getAll("a").map((v) => String(v));
-    const drops = new Set<string>(fd.getAll("dropItem").map((v) => String(v)));
-    const items = qs
-      .map((q, k) => ({ q: q.trim(), a: as[k] ?? "" }))
-      .filter((it, k) => !drops.has(String(k)) && !(it.q === "" && it.a.trim() === ""));
-    list[i] = { group: str(fd, "group"), items };
-    o.faq = list;
-    await writeOverrides(o);
-    updateTag("site-content");
-  }
-}
-
-export async function addFaqItem(fd: FormData) {
-  await requireUser();
-  const i = id(fd);
-  const o = await readOverrides();
-  const list = o.faq ?? defaultFaqDrafts();
-  if (i >= 0 && i < list.length) {
-    list[i] = { group: list[i].group, items: [...list[i].items, { q: "", a: "" }] };
-    o.faq = list;
-    await writeOverrides(o);
-    updateTag("site-content");
-  }
-}
-
-export async function deleteFaqGroup(fd: FormData) {
-  await requireUser();
-  const i = id(fd);
-  const o = await readOverrides();
-  const list = o.faq ?? defaultFaqDrafts();
-  if (i >= 0 && i < list.length) {
-    list.splice(i, 1);
-    o.faq = list;
-    await writeOverrides(o);
-    updateTag("site-content");
-  }
+  if (i < 0 || i >= list.length) return;
+  list.splice(i, 1);
+  o.articles = list;
+  await save(o);
 }

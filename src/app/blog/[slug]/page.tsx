@@ -6,7 +6,7 @@ import { Suspense } from "react";
 import { Header } from "@/components/Header";
 import { Arrow, Silhouette } from "@/components/icons";
 import { Footer } from "@/components/sections/Footer";
-import { prelaunchNav } from "@/data/site";
+import { placeholderFor, prelaunchNav } from "@/data/site";
 import { getSiteData } from "@/data/store";
 
 // Article page: grey title block over the photo on the left (pinned on desktop),
@@ -84,7 +84,7 @@ async function Article({ params }: { params: PageProps<"/blog/[slug]">["params"]
           </h1>
         </header>
         <div className="art-ph">
-          <Image src={a.image.src} alt={a.image.alt} fill placeholder="blur" preload sizes="(min-width: 900px) 52vw, 100vw" />
+          <Image src={a.image.src} alt={a.image.alt} fill placeholder={placeholderFor(a.image.src)} preload sizes="(min-width: 900px) 52vw, 100vw" />
         </div>
       </div>
 

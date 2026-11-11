@@ -8,12 +8,12 @@ import { prelaunchNav } from "@/data/site";
 // `abin/future-update` branch; revert this commit to bring it back at launch.
 // Copy comes from the admin's merged content (data/store).
 export default async function Home() {
-  const { announcement, hero } = await getSiteData();
+  const { announcement, hero, heroPhotos } = await getSiteData();
   return (
     <>
       <Header slim items={prelaunchNav} announcement={announcement} />
       <main id="top">
-        <Hero copy={hero} />
+        <Hero copy={hero} photos={heroPhotos} />
       </main>
       <Footer />
     </>

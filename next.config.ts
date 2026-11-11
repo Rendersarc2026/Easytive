@@ -42,6 +42,10 @@ const nextConfig: NextConfig = {
   devIndicators: false,
   // Don't advertise the framework in a response header.
   poweredByHeader: false,
+  experimental: {
+    // Admin forms can carry one image upload (capped at 4 MB in src/lib/media.ts).
+    serverActions: { bodySizeLimit: "5mb" },
+  },
   turbopack: {
     rules: {
       "*.css": {

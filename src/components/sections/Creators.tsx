@@ -28,7 +28,7 @@ function TypeOverlay({ type }: { type: ReelType }) {
 
 function Media({ reel, auto, sizes }: { reel: Reel; auto?: boolean; sizes: string }) {
   if (reel.video)
-    return <video src={reel.video} poster={reel.image.src.src} muted playsInline loop autoPlay={auto} aria-label={reel.image.alt} />;
+    return <video src={reel.video} poster={typeof reel.image.src === "string" ? reel.image.src : reel.image.src.src} muted playsInline loop autoPlay={auto} aria-label={reel.image.alt} />;
   return <Image src={reel.image.src} alt={reel.image.alt} fill placeholder="blur" sizes={sizes} />;
 }
 

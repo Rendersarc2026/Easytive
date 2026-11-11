@@ -100,7 +100,7 @@ export async function signOutEverywhere(): Promise<void> {
 
 /**
  * Change your own password. Used by two screens:
- *  - /admin/account: must supply the current password;
+ *  - /admin/profile: must supply the current password;
  *  - /admin/set-password: first sign-in on a temporary password (the session
  *    was opened with it moments ago, so it isn't asked for again).
  * Either way every existing session ends and a fresh one starts.
@@ -108,7 +108,7 @@ export async function signOutEverywhere(): Promise<void> {
 export async function changePassword(formData: FormData): Promise<void> {
   const user = await getCurrentUser();
   if (!user) redirect("/admin/login");
-  const back = user.mustChangePassword ? "/admin/set-password" : "/admin/account";
+  const back = user.mustChangePassword ? "/admin/set-password" : "/admin/profile";
 
   const current = String(formData.get("current") ?? "");
   const next = String(formData.get("password") ?? "");
@@ -146,5 +146,5 @@ export async function changePassword(formData: FormData): Promise<void> {
   await revokeUserSessions(user.id);
   await createSession(user.id);
   await audit("password.change", user.id, {});
-  redirect(user.mustChangePassword ? "/admin" : "/admin/account?done=1");
+  redirect(user.mustChangePassword ? "/admin" : "/admin/profile?done=1");
 }

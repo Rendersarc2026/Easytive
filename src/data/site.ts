@@ -17,7 +17,11 @@ import sunsetDance from "@/assets/brand/sunset-dance.jpg";
 import sunsetRocks from "@/assets/brand/sunset-rocks.jpg";
 import windowBlur from "@/assets/brand/window-blur.jpg";
 
-type Photo = { src: StaticImageData; alt: string };
+// `src` is a built-in import, or a "/media/..." path for an image uploaded in the admin.
+type Photo = { src: StaticImageData | string; alt: string };
+
+/** next/image blur placeholders exist only for built-in imports. */
+export const placeholderFor = (src: StaticImageData | string) => (typeof src === "string" ? "empty" : "blur");
 
 export const announcement = ["Free shipping above Rs. 999", "Discreet packaging", "Cash on delivery"];
 
@@ -400,3 +404,56 @@ export const footerCols = [
 export function formatPrice(n: number) {
   return `Rs. ${n.toLocaleString("en-IN")}`;
 }
+
+// ---- About page ---------------------------------------------------------------
+// Copy from the "About Easytive" brief. Editable in the admin (About us); in
+// headings, *word* is shown in italics.
+
+export type AboutPrinciple = { label: string; title: string; body: string };
+
+export type AboutCopy = {
+  eyebrow: string;
+  heading: string;
+  intro: string;
+  statement: string;
+  story: string[];
+  valuesHeading: string;
+  principles: AboutPrinciple[];
+  teamHeading: string;
+  teamSub: string;
+};
+
+export const aboutCopy: AboutCopy = {
+  eyebrow: "About Easytive",
+  heading: "Make room for *more* of life.",
+  intro:
+    "Easytive is a science-led health brand committed to expanding the possibilities of everyday life. We bring together global health research and the expertise of doctors and scientists to develop thoughtful care that helps people live beyond the limitations of their health.",
+  statement: "No one should have to live a smaller life because of their body.",
+  story: [
+    "Health shapes how we experience the world. Yet, many health concerns quietly influence the choices we make, the experiences we avoid and the possibilities we hold back from.",
+    "We believe this should not be the way.",
+    "Easytive was founded on a simple conviction: better science should lead to better ways of living. We follow advances in health research, work alongside doctors and scientists, and translate scientific understanding into thoughtful every day care that makes a meaningful difference in people's lives.",
+    "We began with urinary health, an essential part of wellbeing that deserves greater understanding, better conversations and more considered care.",
+    "Our ambition goes beyond any one area of health. As science advances, so will our work, continually exploring new ways to help people experience life with greater freedom and fewer limitations.",
+  ],
+  valuesHeading: "What guides *us*",
+  principles: [
+    {
+      label: "Research",
+      title: "Grounded in science. Informed by the world.",
+      body: "We look beyond boundaries to follow the latest clinical research and scientific discoveries. We examine the evidence, understand its relevance and consider the needs of the people and communities we serve.",
+    },
+    {
+      label: "Formulation",
+      title: "Thoughtfully developed for real human needs.",
+      body: "Human health is complex and individual. We consider the science behind age, genetics, lifestyle and other influencing factors to develop formulations with purpose, precision and individual differences in mind.",
+    },
+    {
+      label: "Advice",
+      title: "Expertise behind every decision.",
+      body: "Medical knowledge is fundamental to what we do. Doctors and scientists guide our approach, bringing clinical understanding and scientific scrutiny to our formulations and the health information we share.",
+    },
+  ],
+  teamHeading: "Meet the minds behind the *science*.",
+  teamSub: "Doctors and scientists guide our approach to health, shape our formulations and bring scientific knowledge into everyday care.",
+};

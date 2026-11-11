@@ -256,6 +256,8 @@ header.site.lined { box-shadow: 0 1px 0 var(--hair); }
 .portrait { position: relative; aspect-ratio: 4 / 5; overflow: hidden; background: var(--tile); }
 .portrait svg.sil { position: absolute; left: 50%; bottom: 0; width: 78%; height: auto; color: #d6d4ce; transform: translateX(-50%); transition: transform 1s cubic-bezier(0.2, 0.7, 0.2, 1); }
 .doc:hover .portrait svg.sil { transform: translateX(-50%) scale(1.03); }
+.portrait img.photo { object-fit: cover; transition: transform 1s cubic-bezier(0.2, 0.7, 0.2, 1); }
+.doc:hover .portrait img.photo { transform: scale(1.03); }
 .portrait .mark { position: absolute; top: 16px; right: 16px; width: 24px; height: 24px; color: rgb(34 33 31 / 0.55); }
 .portrait .soon { position: absolute; left: 14px; top: 14px; font-size: 0.56rem; letter-spacing: 0.24em; text-transform: uppercase; color: var(--ink); background: rgb(255 255 255 / 0.85); padding: 5px 9px; border-radius: 99px; }
 .portrait .reviews {
@@ -454,6 +456,7 @@ header.site.lined { box-shadow: 0 1px 0 var(--hair); }
 .about-intro h1 { font-size: clamp(2.1rem, 4.2vw, 3.7rem); max-width: 22ch; margin-inline: auto; }
 .about-intro p { color: var(--muted); max-width: 56ch; margin: 26px auto 0; }
 .about-values { padding-block: var(--sec) 0; }
+.about-values .post h3 { font-style: italic; }
 .about-values .post p { color: var(--muted); font-size: 0.92rem; line-height: 1.6; }
 /* The board is the last section here, so give it extra room before the dark footer. */
 .about .board { padding-block-end: calc(var(--sec) * 1.5); }

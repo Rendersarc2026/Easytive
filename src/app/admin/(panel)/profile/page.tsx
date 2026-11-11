@@ -1,28 +1,28 @@
 import type { Metadata } from "next";
 import { requireUser } from "@/lib/auth";
-import { changePassword, signOutEverywhere } from "../../auth-actions";
+import { changePassword, logout, signOutEverywhere } from "../../auth-actions";
 import { passwordErrorMessage, passwordHint } from "../../messages";
 import { ConfirmButton } from "@/app/admin/buttons";
 
-export const metadata: Metadata = { title: "Account · Easytive admin" };
+export const metadata: Metadata = { title: "Profile · Easytive admin" };
 
-export default async function AccountPage({ searchParams }: { searchParams: Promise<{ error?: string; done?: string }> }) {
+export default async function ProfilePage({ searchParams }: { searchParams: Promise<{ error?: string; done?: string }> }) {
   const user = await requireUser();
   const { error: code, done } = await searchParams;
   const error = passwordErrorMessage(code);
 
   return (
     <>
-      <div className="a-toplabel">Account</div>
-      <h1>Your account</h1>
+      <div className="a-toplabel">Profile</div>
+      <h1>Your profile</h1>
       <p className="a-lede">
-        Signed in as <strong>{user.email}</strong> ({user.role}).
+        Signed in as <strong>{user.email}</strong> ({user.role === "admin" ? "admin: content and users" : "editor: content only"}).
       </p>
 
       <div className="a-cards">
         <section className="a-card">
           <div className="a-cardhead">
-            <h2>Change password</h2>
+            <h2>Password</h2>
           </div>
           {done && !error && (
             <p className="a-ok" role="status">
@@ -79,6 +79,18 @@ export default async function AccountPage({ searchParams }: { searchParams: Prom
               pendingLabel="Signing out…"
             >
               Sign out on every device
+            </ConfirmButton>
+          </form>
+        </section>
+
+        <section className="a-card">
+          <div className="a-cardhead">
+            <h2>Log out</h2>
+          </div>
+          <p className="a-cardhint">Ends your session on this device.</p>
+          <form action={logout} style={{ marginTop: 12 }}>
+            <ConfirmButton className="a-btn small" title="Log out?" message="You'll need your email and password to sign back in." confirmLabel="Log out" pendingLabel="Logging out…">
+              Log out
             </ConfirmButton>
           </form>
         </section>

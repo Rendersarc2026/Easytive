@@ -1,8 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { heroPhotos } from "@/data/site";
-import type { HeroCopy } from "@/data/store";
+import type { HeroCopy, HeroPhoto } from "@/data/store";
 import { Arrow } from "../icons";
 import { PhotoStack } from "../PhotoStack";
 
@@ -10,8 +9,8 @@ const SIZES = "100vw";
 
 // Photos change on their own (each photo's `hold` in data/site.ts) and loop.
 // The copy switches between the lifestyle line and the numbers. Pauses on hover.
-// `copy` comes from data/store (admin-editable); photos are static bank assets.
-export function Hero({ copy }: { copy: HeroCopy }) {
+// `copy` and `photos` come from data/store (admin-editable: Home banner).
+export function Hero({ copy, photos: heroPhotos }: { copy: HeroCopy; photos: HeroPhoto[] }) {
   const [active, setActive] = useState(0);
   const paused = useRef(false);
   const timer = useRef<number | undefined>(undefined);
@@ -19,15 +18,15 @@ export function Hero({ copy }: { copy: HeroCopy }) {
   const schedule = useCallback((i: number) => {
     window.clearTimeout(timer.current);
     if (paused.current || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    timer.current = window.setTimeout(() => setActive((i + 1) % heroPhotos.length), heroPhotos[i].hold);
-  }, []);
+    timer.current = window.setTimeout(() => setActive((i + 1) % heroPhotos.length), heroPhotos[i]?.hold ?? 5000);
+  }, [heroPhotos]);
 
   useEffect(() => {
     schedule(active);
     return () => window.clearTimeout(timer.current);
   }, [active, schedule]);
 
-  const slide = heroPhotos[active].slide;
+  const slide = (heroPhotos[active] ?? heroPhotos[0]).slide;
   const { lifestyle, proof } = copy;
   const tab = (s: typeof slide) => (slide === s ? undefined : -1);
 

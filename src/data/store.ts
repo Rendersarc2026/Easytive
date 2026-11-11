@@ -14,7 +14,8 @@ import { cacheLife, cacheTag } from "next/cache";
 import type { StaticImageData } from "next/image";
 import { requireUser } from "@/lib/auth";
 import { db } from "@/lib/db";
-import { slugify, doctors as defaultDoctors, faq as defaultFaq, heroCopy, press as defaultPress, products as defaultProducts, reviews as defaultReviews, articles as defaultArticles, moments as defaultMoments, steps as defaultSteps, announcement as defaultAnnouncement, reviewCount as defaultReviewCount, type Product, type ProductKey } from "./site";
+import { isMediaPath } from "@/lib/media-path";
+import { aboutCopy, heroPhotos as defaultHeroPhotos, type AboutCopy, slugify, doctors as defaultDoctors, faq as defaultFaq, heroCopy, press as defaultPress, products as defaultProducts, reviews as defaultReviews, articles as defaultArticles, moments as defaultMoments, steps as defaultSteps, announcement as defaultAnnouncement, reviewCount as defaultReviewCount, type Product, type ProductKey } from "./site";
 
 // Brand photo bank: every image the site ships, addressable by key. The admin
 // stores photo *keys* in overrides; the getters resolve them back to imports
@@ -47,13 +48,26 @@ export const photoBank: Record<string, { src: StaticImageData; alt: string }> = 
   "window-blur": { src: windowBlur, alt: "A woman by a window overlooking the sea, softly out of focus" },
 };
 
+/** Image source for a photo reference (bank key or /media path), or null. For admin previews. */
+export function photoSrc(ref: string | undefined): StaticImageData | string | null {
+  if (!ref) return null;
+  if (photoBank[ref]) return photoBank[ref].src;
+  return isMediaPath(ref) ? ref : null;
+}
+
 /** Photo choices for admin <select>s, in a stable order. */
 export const photoOptions = Object.entries(photoBank).map(([key, v]) => ({ key, label: v.alt }));
 
-export type Photo = { src: StaticImageData; alt: string };
+// A photo reference is a photo bank key ("bottle-hand") or the /media path of
+// an image uploaded in the admin.
+export type Photo = { src: StaticImageData | string; alt: string };
 
-function photoOf(key: string, fallback: Photo): Photo {
-  return photoBank[key] ?? fallback;
+function photoOf(ref: string | undefined, fallback: Photo, alt?: string): Photo {
+  if (!ref) return fallback;
+  const bank = photoBank[ref];
+  if (bank) return alt ? { src: bank.src, alt } : bank;
+  if (isMediaPath(ref)) return { src: ref, alt: alt ?? fallback.alt };
+  return fallback;
 }
 
 // ---- Editable shapes --------------------------------------------------------
@@ -68,7 +82,13 @@ export type HeroCopy = {
 export type Article = { slug: string; image: Photo; tag: string; title: string; author: string; date: string; body: string[] };
 export type Review = { quote: string; name: string; about: string; product: ProductKey };
 export type FaqGroups = { group: string; items: { q: string; a: string }[] }[];
-export type Doctor = { name: string; role: string; reviews: string };
+export type Doctor = { name: string; role: string; reviews: string; photo?: string };
+/** A board member as the pages get it: the photo reference resolved. */
+export type DoctorCard = { name: string; role: string; reviews: string; image?: Photo };
+export type HeroSlide = "lifestyle" | "proof";
+export type HeroPhotoDraft = { photo: string; alt: string; slide: HeroSlide };
+export type HeroPhoto = Photo & { slide: HeroSlide; hold: number; pos?: string };
+export type { AboutCopy };
 export type Moment = { image: Photo; label: string; line: string };
 export type Step = { image: Photo; pill: string; title: string; body: string };
 export type ProductsMap = Record<ProductKey, Product>;
@@ -89,10 +109,12 @@ export type Overrides = {
   steps?: { photo: string; pill: string; title: string; body: string }[];
   press?: string[];
   reviewCount?: string;
+  about?: Partial<AboutCopy>;
+  heroPhotos?: HeroPhotoDraft[];
 };
 
 // The sections that may be stored: one row each, keyed by these names.
-const OVERRIDE_KEYS = ["announcement", "hero", "products", "articles", "reviews", "faq", "doctors", "moments", "steps", "press", "reviewCount"] as const satisfies readonly (keyof Overrides)[];
+const OVERRIDE_KEYS = ["announcement", "hero", "products", "articles", "reviews", "faq", "doctors", "moments", "steps", "press", "reviewCount", "about", "heroPhotos"] as const satisfies readonly (keyof Overrides)[];
 
 type OverrideKey = (typeof OVERRIDE_KEYS)[number];
 
@@ -109,6 +131,8 @@ const SHAPES: Record<OverrideKey, "array" | "object" | "string"> = {
   steps: "array",
   press: "array",
   reviewCount: "string",
+  about: "object",
+  heroPhotos: "array",
 };
 
 function hasExpectedShape(key: OverrideKey, value: unknown): boolean {
@@ -213,7 +237,7 @@ export function productsOf(o: Overrides): ProductsMap {
 export function articlesOf(o: Overrides): Article[] {
   const list = o.articles
     ? o.articles.map((a, i) => ({
-        image: photoOf(a.photo, defaultArticles[i]?.image ?? photoBank["bottle-hand"]),
+        image: photoOf(a.photo, defaultArticles[i]?.image ?? photoBank["bottle-hand"], a.title || undefined),
         tag: a.tag,
         title: a.title,
         author: a.author,
@@ -245,13 +269,14 @@ export const textToBody = (text: string) =>
 // the override index always line up.
 
 const keyBySrc = new Map(Object.entries(photoBank).map(([key, v]) => [v.src, key]));
-const photoKeyOf = (img: StaticImageData | undefined): string => (img ? (keyBySrc.get(img) ?? "") : "");
+const photoKeyOf = (img: StaticImageData | string | undefined): string =>
+  typeof img === "string" ? img : img ? (keyBySrc.get(img) ?? "") : "";
 
 // Both shapes an element can be in: an override row (photo key) or a default
 // row (imported image). Read whichever side is present.
-type WithPhoto<T> = T & { photo?: string; image?: { src: StaticImageData } };
+type WithPhoto<T> = T & { photo?: string; image?: { src: StaticImageData | string } };
 
-const photoOfRaw = (raw: { photo?: string; image?: { src: StaticImageData } }) => raw.photo ?? photoKeyOf(raw.image?.src);
+const photoOfRaw = (raw: { photo?: string; image?: { src: StaticImageData | string } }) => raw.photo ?? photoKeyOf(raw.image?.src);
 
 export type ArticleDraft = { photo: string; tag: string; title: string; author: string; date: string; body: string[] };
 export type MomentDraft = { photo: string; label: string; line: string };
@@ -281,6 +306,23 @@ export function stepDrafts(o: Overrides): StepDraft[] {
 
 export function reviewDrafts(o: Overrides): ReviewDraft[] {
   return o.reviews ?? defaultReviews.map((r) => ({ ...r }));
+}
+
+export function heroPhotoDrafts(o: Overrides): HeroPhotoDraft[] {
+  return o.heroPhotos ?? defaultHeroPhotoDrafts();
+}
+
+export function defaultHeroPhotoDrafts(): HeroPhotoDraft[] {
+  return defaultHeroPhotos.map((p) => ({ photo: photoKeyOf(typeof p.src === "string" ? undefined : p.src), alt: p.alt, slide: p.slide }));
+}
+
+export function aboutOf(o: Overrides): AboutCopy {
+  return {
+    ...aboutCopy,
+    ...(o.about ?? {}),
+    story: o.about?.story ?? [...aboutCopy.story],
+    principles: o.about?.principles ?? aboutCopy.principles.map((p) => ({ ...p })),
+  };
 }
 
 export function doctorDrafts(o: Overrides): Doctor[] {
@@ -316,8 +358,10 @@ export function defaultFaqDrafts(): FaqGroups {
 export type SiteData = {
   announcement: string[];
   hero: HeroCopy;
+  heroPhotos: HeroPhoto[];
+  about: AboutCopy;
   articles: Article[];
-  doctors: Doctor[];
+  doctors: DoctorCard[];
   products: ProductsMap;
   reviews: Review[];
   faq: FaqGroups;
@@ -327,13 +371,27 @@ export type SiteData = {
   reviewCount: string;
 };
 
+/** Banner photos for the home page. Falls back to the defaults if none are left. */
+export function heroPhotosOf(o: Overrides): HeroPhoto[] {
+  const list = (o.heroPhotos ?? [])
+    .map((p) => ({ ...photoOf(p.photo, { src: "", alt: "" }, p.alt || undefined), slide: p.slide, hold: 5000 }))
+    .filter((p) => p.src !== "");
+  return list.length > 0 ? list : defaultHeroPhotos.map((p) => ({ ...p }));
+}
+
 /** Merge overrides over the defaults into fully-resolved page data. Pure. */
 export function siteDataOf(o: Overrides): SiteData {
   return {
     announcement: [...(o.announcement ?? defaultAnnouncement)],
     hero: heroOf(o),
-    articles: articlesOf(o),
-    doctors: o.doctors ?? defaultDoctors.map((d) => ({ ...d })),
+    heroPhotos: heroPhotosOf(o),
+    about: aboutOf(o),
+    // Untitled posts are drafts: listed in the admin, hidden from readers.
+    articles: articlesOf(o).filter((a) => a.title.trim() !== ""),
+    doctors: ((o.doctors ?? defaultDoctors) as Doctor[]).map((d) => {
+      const image = photoOf(d.photo, { src: "", alt: "" }, d.name);
+      return { name: d.name, role: d.role, reviews: d.reviews, image: image.src ? image : undefined };
+    }),
     products: productsOf(o),
     reviews:
       o.reviews?.map((r) => ({ ...r, product: (PRODUCT_KEYS as string[]).includes(r.product) ? (r.product as ProductKey) : "daily" })) ??

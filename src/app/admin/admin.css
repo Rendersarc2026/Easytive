@@ -398,11 +398,149 @@
   font-size: 13.5px;
 }
 
+/* ---- Photos (fields.tsx) --------------------------------------------------------- */
+
+.a-thumb {
+  flex: none;
+  display: block;
+  border-radius: 10px;
+  object-fit: cover;
+  background: #f0ede6;
+}
+
+.a-thumb.empty {
+  background: repeating-linear-gradient(45deg, #f4f1eb 0 6px, #ece8df 6px 12px);
+}
+
+.a-photofield {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.a-photocontrols {
+  flex: 1;
+  min-width: 0;
+  display: grid;
+  gap: 10px;
+}
+
+.a-file {
+  font: inherit;
+  font-size: 13px;
+  color: #4c4842;
+}
+
+.a-file::file-selector-button {
+  font: inherit;
+  font-size: 13px;
+  margin-right: 10px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  border: 1px solid #c9c4ba;
+  background: #fff;
+  color: #22211f;
+  cursor: pointer;
+}
+
+.a-file::file-selector-button:hover {
+  background: #f4f1eb;
+}
+
+/* "Add a photo" box under the banner photo list. */
+.a-addbox {
+  margin-top: 16px;
+  padding: 16px;
+  border: 1px dashed #d8d3c9;
+  border-radius: 12px;
+}
+
+.a-addbox h3 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+/* One-line rows: number + label + save (banner numbers), heading + save. */
+.a-statrow {
+  display: grid;
+  grid-template-columns: 110px 1fr auto;
+  gap: 8px;
+  align-items: center;
+}
+
+.a-inline {
+  display: flex;
+  gap: 10px;
+  align-items: flex-end;
+}
+
+/* ---- Blog list --------------------------------------------------------------------- */
+
+.a-post summary {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  cursor: pointer;
+  list-style: none;
+}
+
+.a-post summary::-webkit-details-marker {
+  display: none;
+}
+
+.a-postsum {
+  flex: 1;
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.a-postsum strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.a-edit {
+  font-size: 13px;
+  color: #7a7168;
+}
+
+.a-post details[open] .a-edit {
+  visibility: hidden;
+}
+
+.a-post summary:hover .a-edit {
+  color: #22211f;
+  text-decoration: underline;
+}
+
+.a-postform {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #f0ede6;
+}
+
+/* ---- Dashboard tiles ----------------------------------------------------------------- */
+
+.a-tile-count.small {
+  font-size: 22px;
+  overflow-wrap: anywhere;
+}
+
+.a-tile-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+
 /* ---- Overview tiles ---------------------------------------------------------- */
 
 .a-tiles {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
   gap: 14px;
 }
 
@@ -547,6 +685,16 @@
   .a-grid2,
   .a-grid3 {
     grid-template-columns: 1fr;
+  }
+  .a-photofield {
+    flex-direction: column;
+  }
+  .a-statrow {
+    grid-template-columns: 1fr;
+  }
+  .a-inline {
+    flex-direction: column;
+    align-items: stretch;
   }
 }
 

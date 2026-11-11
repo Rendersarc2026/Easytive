@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/sections/Footer";
 import { getSiteData } from "@/data/store";
-import { prelaunchNav } from "@/data/site";
+import { placeholderFor, prelaunchNav } from "@/data/site";
 
 // Pre-launch blog listing; each card opens its article at /blog/<slug>.
 // Articles come from the admin's merged content (data/store).
@@ -35,7 +35,7 @@ export default async function BlogPage() {
               {articles.map((a) => (
                 <Link className="post" href={`/blog/${a.slug}`} key={a.slug}>
                   <div className="ph">
-                    <Image src={a.image.src} alt={a.image.alt} fill placeholder="blur" sizes="(min-width: 860px) 33vw, 100vw" />
+                    <Image src={a.image.src} alt={a.image.alt} fill placeholder={placeholderFor(a.image.src)} sizes="(min-width: 860px) 33vw, 100vw" />
                   </div>
                   <span className="label">{a.tag}</span>
                   <h2>{a.title}</h2>

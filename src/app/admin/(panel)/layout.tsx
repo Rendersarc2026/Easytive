@@ -22,7 +22,7 @@ async function Guard({ children }: { children: ReactNode }) {
 async function AccountLinks() {
   const user = await getCurrentUser();
   if (!user) return null;
-  const links = [...(user.role === "admin" ? [{ href: "/admin/users", label: "Users" }] : []), { href: "/admin/account", label: "Account" }];
+  const links = [...(user.role === "admin" ? [{ href: "/admin/users", label: "Users" }] : []), { href: "/admin/profile", label: "Profile" }];
   return (
     <>
       <AdminNav links={links} label="Account" />
@@ -43,7 +43,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
           <Suspense fallback={null}>
             <AccountLinks />
           </Suspense>
-          <Link href="/" target="_blank">
+          <Link href="/" target="_blank" prefetch={false}>
             View public site
           </Link>
           <form action={logout}>

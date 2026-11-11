@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { articles } from "@/data/site";
+import { articles, placeholderFor } from "@/data/site";
 import { Arrow } from "../icons";
 
 export function Journal() {
@@ -18,7 +18,7 @@ export function Journal() {
           {articles.map((a) => (
             <a className="post" href="#journal" key={a.title}>
               <div className="ph">
-                <Image src={a.image.src} alt={a.image.alt} fill placeholder="blur" sizes="(min-width: 860px) 33vw, 100vw" />
+                <Image src={a.image.src} alt={a.image.alt} fill placeholder={placeholderFor(a.image.src)} sizes="(min-width: 860px) 33vw, 100vw" />
               </div>
               <span className="label">{a.tag}</span>
               <h3>{a.title}</h3>
