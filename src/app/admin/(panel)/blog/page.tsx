@@ -8,7 +8,7 @@ import { loadMoreAdminPostsAction } from "./load-more";
 import { PostFields, PostRow } from "./post-row";
 import { BlogViewProvider, ComposePanel, NewPostButton, PostList, ViewToggle } from "./view";
 
-export const metadata: Metadata = { title: "Blog · Easytive admin" };
+export const metadata: Metadata = { title: "Blog" };
 
 // Blog posts from easytive.blog_posts, newest first (the order /blog uses).
 // The first 9 render here; the rest load 9 at a time as the list is

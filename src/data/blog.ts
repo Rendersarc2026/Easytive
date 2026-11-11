@@ -160,6 +160,20 @@ export async function getPublishedSlugs(): Promise<string[]> {
   return rows.map((r) => r.slug);
 }
 
+/** Every published post's address and date, newest first (for the sitemap). */
+export async function getSitemapPosts(): Promise<{ slug: string; publishedOn: string | null }[]> {
+  "use cache";
+  cacheLife("hours");
+  cacheTag("blog");
+  const rows = await db()<{ slug: string; published_on: string | null }[]>`
+    select slug, published_on::text as published_on
+    from easytive.blog_posts
+    where is_active and slug is not null
+    order by coalesce(published_on, 'infinity'::date) desc, id desc
+  `;
+  return rows.map((r) => ({ slug: r.slug, publishedOn: r.published_on }));
+}
+
 /** How many posts are live and how many are untitled drafts. */
 export async function getPostCounts(): Promise<{ live: number; drafts: number }> {
   "use cache";

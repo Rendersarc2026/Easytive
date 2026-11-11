@@ -8,6 +8,8 @@ import { getSiteData } from "@/data/store";
 // About page. All copy is editable in the admin (About us); the defaults in
 // data/site.ts follow the "About Easytive" brief word for word.
 export const metadata: Metadata = {
+  title: "About us",
+  alternates: { canonical: "/about" },
   description:
     "Easytive is a science-led health brand committed to expanding the possibilities of everyday life, bringing together global health research and the expertise of doctors and scientists.",
 };

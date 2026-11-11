@@ -10,6 +10,8 @@ import { PostCard } from "./post-card";
 // Posts come from easytive.blog_posts (data/blog); covers from the bucket.
 // The first 9 render here; the rest load 9 at a time as the reader scrolls.
 export const metadata: Metadata = {
+  title: "The Easy Journal",
+  alternates: { canonical: "/blog" },
   description: "Notes on everyday urinary health from the Easytive team and advisory board.",
 };
 

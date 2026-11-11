@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { Montserrat } from "next/font/google";
 
@@ -7,6 +8,12 @@ const montserrat = Montserrat({
   variable: "--font-admin",
   subsets: ["latin"],
 });
+
+// Every admin page: "<title> · Easytive admin", kept out of search results.
+export const metadata: Metadata = {
+  title: { default: "Easytive admin", template: "%s · Easytive admin" },
+  robots: { index: false, follow: false },
+};
 
 export default function AdminRootLayout({ children }: { children: ReactNode }) {
   return <div className={`${montserrat.variable} a-font`}>{children}</div>;

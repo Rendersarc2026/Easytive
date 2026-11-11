@@ -6,7 +6,8 @@ import { Suspense } from "react";
 import { Header } from "@/components/Header";
 import { Arrow, Silhouette } from "@/components/icons";
 import { Footer } from "@/components/sections/Footer";
-import { getPostBySlug, getPublishedSlugs } from "@/data/blog";
+import { getPostBySlug, getPublishedSlugs, type PublishedPost } from "@/data/blog";
+import { absoluteUrl, excerpt, jsonLd, SITE_NAME, SITE_URL } from "@/lib/site";
 
 // Article page: grey title block over the photo on the left (pinned on desktop),
 // author + body on the right. Stacks title → photo → text on phones.
@@ -25,7 +26,45 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: PageProps<"/blog/[slug]">): Promise<Metadata> {
   const a = await findArticle((await params).slug);
   if (!a) return {};
-  return { title: `${a.title} · Easytive`, description: a.body[0]?.slice(0, 160) };
+  const description = a.body[0] ? excerpt(a.body[0]) : undefined;
+  const images = a.cover ? [{ url: a.cover, alt: a.coverAlt || a.title }] : undefined;
+  return {
+    title: a.title,
+    description,
+    alternates: { canonical: `/blog/${a.slug}` },
+    authors: a.author ? [{ name: a.author }] : undefined,
+    openGraph: {
+      type: "article",
+      siteName: SITE_NAME,
+      title: a.title,
+      description,
+      url: `/blog/${a.slug}`,
+      publishedTime: a.publishedOn || undefined,
+      authors: a.author ? [a.author] : undefined,
+      section: a.tag || undefined,
+      ...(images && { images }),
+    },
+    twitter: { title: a.title, description, ...(images && { images }) },
+  };
+}
+
+// BlogPosting structured data: lets search engines show the headline, date,
+// author and photo in results.
+function articleJsonLd(a: PublishedPost) {
+  const url = absoluteUrl(`/blog/${a.slug}`);
+  return {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    headline: a.title,
+    description: a.body[0] ? excerpt(a.body[0]) : undefined,
+    url,
+    mainEntityOfPage: url,
+    image: a.cover ? absoluteUrl(a.cover) : undefined,
+    datePublished: a.publishedOn || undefined,
+    author: a.author ? { "@type": "Person", name: a.author } : undefined,
+    articleSection: a.tag || undefined,
+    publisher: { "@type": "Organization", name: SITE_NAME, url: SITE_URL, logo: absoluteUrl("/easytive-logo.png") },
+  };
 }
 
 export default function ArticlePage({ params }: PageProps<"/blog/[slug]">) {
@@ -71,6 +110,7 @@ async function Article({ params }: { params: PageProps<"/blog/[slug]">["params"]
 
   return (
     <article className="article">
+      <script type="application/ld+json" dangerouslySetInnerHTML={jsonLd(articleJsonLd(a))} />
       <div className="art-l">
         <header className="art-head">
           {a.tag && <span className="label">{a.tag}</span>}

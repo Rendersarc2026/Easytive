@@ -4,7 +4,7 @@ import { changePassword, logout, signOutEverywhere } from "../../auth-actions";
 import { passwordErrorMessage, passwordHint } from "../../messages";
 import { ConfirmButton } from "@/app/admin/buttons";
 
-export const metadata: Metadata = { title: "Profile · Easytive admin" };
+export const metadata: Metadata = { title: "Profile" };
 
 export default async function ProfilePage({ searchParams }: { searchParams: Promise<{ error?: string; done?: string }> }) {
   const user = await requireUser();

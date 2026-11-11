@@ -6,7 +6,7 @@ import { Arrow } from "@/components/icons";
 import { Footer } from "@/components/sections/Footer";
 import { getPublicPage } from "@/data/blog";
 
-export const metadata: Metadata = { title: "Page not found · Easytive" };
+export const metadata: Metadata = { title: "Page not found", robots: { index: false } };
 
 // Shown for any address the site doesn't have, and when a page calls
 // notFound() (e.g. a blog post that was deleted). Points back home and

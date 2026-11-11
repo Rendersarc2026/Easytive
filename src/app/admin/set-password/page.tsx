@@ -7,7 +7,7 @@ import { passwordErrorMessage, passwordHint } from "../messages";
 import "../admin.css";
 import { ConfirmButton } from "@/app/admin/buttons";
 
-export const metadata: Metadata = { title: "Set your password · Easytive admin", robots: { index: false, follow: false } };
+export const metadata: Metadata = { title: "Set your password" };
 
 // First sign-in on a temporary password lands here, and nowhere else in the
 // panel opens until a personal password is set.

@@ -6,7 +6,7 @@ import { login } from "../auth-actions";
 import "../admin.css";
 import { SubmitButton } from "../buttons";
 
-export const metadata: Metadata = { title: "Admin · Easytive", robots: { index: false, follow: false } };
+export const metadata: Metadata = { title: "Sign in" };
 
 const errors: Record<string, string> = {
   rate: "Too many sign-in attempts. Wait a minute and try again.",
