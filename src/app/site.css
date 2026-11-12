@@ -277,12 +277,10 @@ footer.site-foot .wrap { max-width: none; padding-block: clamp(56px, 6vw, 96px) 
 }
 
 /* 404 page (app/not-found.tsx) */
-.nf-top { padding-block: calc(var(--sec) * 0.9) calc(var(--sec) * 0.6); display: grid; justify-items: start; gap: 20px; }
-.nf-code { font-size: 0.8rem; color: var(--muted); }
-.nf-top h1 { font-size: clamp(2.6rem, 6vw, 5.2rem); max-width: 14ch; }
-.nf-lede { color: var(--muted); max-width: 46ch; font-size: 1.05rem; }
-.nf-ctas { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 12px; }
-.nf-posts { border-top: 1px solid var(--hair); padding-top: calc(var(--sec) * 0.6); }
+.nf { min-height: calc(100svh - 68px); display: grid; place-content: center; justify-items: center; gap: 18px; padding: 40px 20px; text-align: center; }
+.nf h1 { font-size: clamp(6rem, 18vw, 13rem); line-height: 1; letter-spacing: -0.03em; font-variant-numeric: lining-nums; margin-bottom: 0.08em; }
+.nf p { color: var(--muted); font-size: 1.05rem; }
+.nf .btn { margin-top: 10px; }
 
 /* infinite scroll row under the /blog grid (components/InfiniteMore.tsx) */
 .more { grid-column: 1 / -1; display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 14px; padding-top: 24px; color: var(--muted); font-size: 0.9rem; }
