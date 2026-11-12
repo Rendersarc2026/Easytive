@@ -17,14 +17,34 @@ export function Hero() {
     if (!v) return;
     // iOS only autoplays muted video; set it on the element itself to be sure.
     v.muted = true;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    const still = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const play = () => {
+      if (still) return;
+      v.play().catch(() => {
+        // Autoplay blocked (e.g. low-power mode): the poster stays up.
+      });
+    };
+
+    // The browser picks a <source> once, at load. Re-check here and whenever
+    // the screen crosses the breakpoint (rotating, resizing, dev-tools device
+    // mode) so phones always play the 4:5 cut and wide screens the 16:9 one.
+    const mq = window.matchMedia(HERO_MOBILE_QUERY);
+    const pick = () => {
+      const want = new URL((mq.matches ? heroVideo.mobile : heroVideo.desktop).src, location.href).href;
+      if (v.currentSrc !== want) {
+        v.src = want;
+        v.load();
+      }
+      play();
+    };
+
+    if (still) {
       v.pause();
       v.removeAttribute("autoplay");
-      return;
     }
-    v.play().catch(() => {
-      // Autoplay blocked (e.g. low-power mode): the poster stays up.
-    });
+    pick();
+    mq.addEventListener("change", pick);
+    return () => mq.removeEventListener("change", pick);
   }, []);
 
   const { desktop, mobile } = heroVideo;
