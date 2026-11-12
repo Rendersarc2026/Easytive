@@ -1,19 +1,7 @@
 // Default content for the pre-launch site (Home and About). The full-site
 // content (products, reviews, FAQ, creators…) lives on the abin/future-update branch.
-// PLACEHOLDER: doctors and the dose/testing claims are sample copy. Replace with
-// verified Easytive content before launch.
-
-import type { StaticImageData } from "next/image";
-import bedJump from "@/assets/brand/bed-jump.jpg";
-import bottlesLight from "@/assets/brand/bottles-light.jpg";
-import hotelMorning from "@/assets/brand/hotel-morning.jpg";
-import sunsetDance from "@/assets/brand/sunset-dance.jpg";
-
-// `src` is a built-in import, or a "/media/..." path for an image uploaded in the admin.
-type Photo = { src: StaticImageData | string; alt: string };
-
-/** next/image blur placeholders exist only for built-in imports. */
-export const placeholderFor = (src: StaticImageData | string) => (typeof src === "string" ? "empty" : "blur");
+// PLACEHOLDER: the doctors are sample copy. Replace with verified Easytive
+// content before launch.
 
 // Pre-launch header: Home, About us and the blog, nothing else.
 export const prelaunchNav: { label: string; href: string }[] = [
@@ -43,32 +31,6 @@ export const heroVideo = {
 
 /** Screens that get the 4:5 cut. Phones (≤760px) also get a 4:5 hero frame in site.css. */
 export const HERO_MOBILE_QUERY = "(max-width: 760px), (orientation: portrait)";
-
-// ---- Hero photos (full site, abin/future-update) ------------------------------
-// Lifestyle photos share the lifestyle copy; the last photo carries the numbers.
-// `hold` is how long each photo stays up (ms). `pos` is the CSS object-position.
-
-export type BannerPhoto = Photo & { pos?: string };
-
-export const heroPhotos: (BannerPhoto & { slide: "lifestyle" | "proof"; hold: number })[] = [
-  { src: bedJump, alt: "A woman in a white robe leaps onto a hotel bed in warm lamplight", slide: "lifestyle", hold: 5000 },
-  { src: hotelMorning, alt: "A woman in a robe sipping from a mug on the edge of a hotel bed", slide: "lifestyle", hold: 5000 },
-  { src: sunsetDance, alt: "A couple dancing on a lakeside deck at sunset", slide: "lifestyle", hold: 5000, pos: "50% 30%" },
-  { src: bottlesLight, alt: "Two clear Easytive bottles with brushed metal caps in warm light", slide: "proof", hold: 5000 },
-];
-
-export const heroCopy = {
-  lifestyle: { tag: "Easy does it" },
-  proof: {
-    tag: "The proof",
-    stats: [
-      { value: "36 mg", label: "cranberry PACs, the dose used in published studies" },
-      { value: "2 g", label: "D-Mannose per serving" },
-      { value: "100%", label: "of batches checked by an independent lab" },
-      { value: "4", label: "doctors review every formula" },
-    ],
-  },
-};
 
 // ---- Medical advisory board ------------------------------------------------
 // PLACEHOLDER: names, roles and photos. Silhouettes until real headshots arrive.

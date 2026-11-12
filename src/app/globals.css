@@ -1,11 +1,4 @@
 @import "tailwindcss";
 
-/* Brand guidelines 2026: #22211F / #E4E3DF / #FFFFFF, serif display + Helvetica text.
-   Page styles live in site.css. */
-@theme {
-  --color-ink: #22211f;
-  --color-line: #e4e3df;
-  --color-paper: #ffffff;
-  --font-display: var(--font-playfair), ui-serif, Georgia, serif;
-  --font-sans: "Helvetica Neue", Helvetica, Arial, ui-sans-serif, system-ui, sans-serif;
-}
+/* Tailwind supplies the base reset (and the two utilities in layout.tsx).
+   Brand tokens and page styles live in site.css; admin styles in admin/admin.css. */

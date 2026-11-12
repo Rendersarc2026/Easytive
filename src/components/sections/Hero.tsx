@@ -50,7 +50,7 @@ export function Hero() {
   const { desktop, mobile } = heroVideo;
 
   return (
-    <section className="hero full hero-video" aria-labelledby="hero-title">
+    <section className="hero" aria-labelledby="hero-title">
       <picture className="hv-poster">
         <source media={HERO_MOBILE_QUERY} srcSet={mobile.poster} />
         <img src={desktop.poster} alt="" fetchPriority="high" />
