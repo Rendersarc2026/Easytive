@@ -11,7 +11,6 @@ export function Footer() {
         <div className="ftop solo">
           <div className="fbrand">
             <Image src="/easytive-logo.png" alt="Easytive" width={3202} height={700} sizes="120px" />
-            <p>Doctor-guided, third-party tested urinary wellness. Made in India.</p>
           </div>
           <div className="fnews" id="letter">
             <h4>The Easy Letter</h4>

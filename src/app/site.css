@@ -216,7 +216,6 @@ footer.site-foot { background: var(--obsidian); color: #e4e3df; }
 footer.site-foot .wrap { max-width: none; padding-block: clamp(56px, 6vw, 96px) 28px; }
 .ftop { display: grid; grid-template-columns: 1.3fr repeat(3, minmax(0, 1fr)) 1.4fr; gap: 32px; }
 .fbrand img { display: block; width: min(100%, 120px); height: auto; filter: brightness(0) invert(1); }
-.fbrand p { color: #a3a09a; margin-top: 16px; font-size: 0.9rem; max-width: 28ch; }
 .fnews h4 { margin: 0 0 12px; font-family: var(--display); font-weight: 400; font-size: 1.4rem; color: #fff; }
 .fnews p { color: #a3a09a; font-size: 0.88rem; margin-bottom: 16px; }
 .fnews form { display: flex; gap: 8px; flex-wrap: wrap; }
