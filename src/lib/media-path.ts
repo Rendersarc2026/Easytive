@@ -1,7 +1,7 @@
 // Shape of an uploaded image's public path. Kept free of server imports so
 // both the content store and the /media route can share it.
 
-const MEDIA_PATH = /^\/media\/(uploads\/\d{4}\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\.(?:jpg|png|webp|avif))$/;
+const MEDIA_PATH = /^\/media\/(uploads\/\d{4}\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\.(?:jpg|png|webp|avif|mp4))$/;
 
 /** True for a path this site serves from the storage bucket. */
 export function isMediaPath(ref: string): boolean {

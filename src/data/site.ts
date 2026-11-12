@@ -22,7 +22,29 @@ export const prelaunchNav: { label: string; href: string }[] = [
   { label: "Blogs", href: "/blog" },
 ];
 
-// ---- Hero: photos change automatically --------------------------------------
+// ---- Hero video (pre-launch home) --------------------------------------------
+// Two cuts in the storage bucket, uploaded with scripts/upload-media.mjs:
+// 1280×720 for wide screens, 1080×1344 for phones and portrait screens (the wide
+// cut would crop its headline there). Muted, ~8s, looped.
+// `poster` is each video's first frame, shown until it starts playing.
+// `line` is the headline burned into the video, given to screen readers and search.
+
+export const heroVideo = {
+  line: "Life should not be limited.",
+  desktop: {
+    src: "/media/uploads/2026/09335fcd-bd75-41a4-8d99-de9b6664d554.mp4",
+    poster: "/media/uploads/2026/b9f2d2da-1939-4799-813a-59dec2678cc6.jpg",
+  },
+  mobile: {
+    src: "/media/uploads/2026/d77f793c-5fdc-44e6-bba8-61d6044370cc.mp4",
+    poster: "/media/uploads/2026/db24a1ee-e5ba-4118-ae45-7b5bed2b698a.jpg",
+  },
+};
+
+/** Screens that get the 4:5 cut. Phones (≤760px) also get a 4:5 hero frame in site.css. */
+export const HERO_MOBILE_QUERY = "(max-width: 760px), (orientation: portrait)";
+
+// ---- Hero photos (full site, abin/future-update) ------------------------------
 // Lifestyle photos share the lifestyle copy; the last photo carries the numbers.
 // `hold` is how long each photo stays up (ms). `pos` is the CSS object-position.
 

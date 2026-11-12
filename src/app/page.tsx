@@ -2,7 +2,6 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/sections/Footer";
 import { Hero } from "@/components/sections/Hero";
 import type { Metadata } from "next";
-import { getSiteData } from "@/data/store";
 import { absoluteUrl, jsonLd, SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/site";
 
 export const metadata: Metadata = {
@@ -33,15 +32,14 @@ const structuredData = {
 
 // Pre-launch page: logo + blog header, hero and footer only. The full site lives on the
 // `abin/future-update` branch; revert this commit to bring it back at launch.
-// Copy comes from the admin's merged content (data/store).
-export default async function Home() {
-  const { hero, heroPhotos } = await getSiteData();
+// The hero is a video (data/site.ts → heroVideo).
+export default function Home() {
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={jsonLd(structuredData)} />
       <Header />
       <main id="top">
-        <Hero copy={hero} photos={heroPhotos} />
+        <Hero />
       </main>
       <Footer />
     </>

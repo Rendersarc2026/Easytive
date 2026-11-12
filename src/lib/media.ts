@@ -1,4 +1,4 @@
-// Image uploads, stored in the Supabase Storage bucket over its S3 API.
+// Image uploads (and the hero videos, added with scripts/upload-media.mjs), stored in the Supabase Storage bucket over its S3 API.
 //
 // The bucket is private. Uploaded images are served by this site at
 // /media/<key> (src/app/media/[...key]/route.ts), which fetches them from the
@@ -20,6 +20,7 @@ const TYPES = {
   png: "image/png",
   webp: "image/webp",
   avif: "image/avif",
+  mp4: "video/mp4",
 } as const;
 type Ext = keyof typeof TYPES;
 
@@ -84,9 +85,9 @@ export async function uploadImage(file: File): Promise<string> {
   return key;
 }
 
-/** Fetch a stored object (for the /media route). */
-export async function getObject(key: string): Promise<Response> {
+/** Fetch a stored object (for the /media route). `range` is passed on so videos can stream. */
+export async function getObject(key: string, range?: string | null): Promise<Response> {
   const { client, objectUrl } = config();
-  return client.fetch(objectUrl(key), { method: "GET" });
+  return client.fetch(objectUrl(key), { method: "GET", headers: range ? { Range: range } : undefined });
 }
 

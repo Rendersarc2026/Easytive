@@ -1,96 +1,54 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
-import type { HeroCopy, HeroPhoto } from "@/data/store";
+import { useEffect, useRef } from "react";
+import { HERO_MOBILE_QUERY, heroVideo } from "@/data/site";
 import { Arrow } from "../icons";
-import { PhotoStack } from "../PhotoStack";
 
-const SIZES = "100vw";
-
-// Photos change on their own (each photo's `hold` in data/site.ts) and loop.
-// The copy switches between the lifestyle line and the numbers. Pauses on hover.
-// `copy` and `photos` come from data/store (admin-editable: Home banner).
-export function Hero({ copy, photos: heroPhotos }: { copy: HeroCopy; photos: HeroPhoto[] }) {
-  const [active, setActive] = useState(0);
-  const paused = useRef(false);
-  const timer = useRef<number | undefined>(undefined);
-
-  const schedule = useCallback((i: number) => {
-    window.clearTimeout(timer.current);
-    if (paused.current || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    timer.current = window.setTimeout(() => setActive((i + 1) % heroPhotos.length), heroPhotos[i]?.hold ?? 5000);
-  }, [heroPhotos]);
+// Pre-launch hero: a muted, looping video (its headline is part of the video)
+// and the launch-updates button. Phones and portrait screens get the 4:5 cut,
+// the rest the 16:9 one; <source media> picks it, so only one file downloads.
+// The poster <picture> behind shows the matching first frame until playback
+// starts, and stays when the visitor prefers reduced motion.
+export function Hero() {
+  const video = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
-    schedule(active);
-    return () => window.clearTimeout(timer.current);
-  }, [active, schedule]);
+    const v = video.current;
+    if (!v) return;
+    // iOS only autoplays muted video; set it on the element itself to be sure.
+    v.muted = true;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      v.pause();
+      v.removeAttribute("autoplay");
+      return;
+    }
+    v.play().catch(() => {
+      // Autoplay blocked (e.g. low-power mode): the poster stays up.
+    });
+  }, []);
 
-  const slide = (heroPhotos[active] ?? heroPhotos[0]).slide;
-  const { lifestyle, proof } = copy;
-  const tab = (s: typeof slide) => (slide === s ? undefined : -1);
+  const { desktop, mobile } = heroVideo;
 
   return (
-    <section
-      className="hero full"
-      aria-label="Introduction"
-      aria-roledescription="carousel"
-      onMouseEnter={() => {
-        paused.current = true;
-        window.clearTimeout(timer.current);
-      }}
-      onMouseLeave={() => {
-        paused.current = false;
-        schedule(active);
-      }}
-    >
-      <PhotoStack photos={heroPhotos} active={active} sizes={SIZES} preloadFirst />
+    <section className="hero full hero-video" aria-labelledby="hero-title">
+      <picture className="hv-poster">
+        <source media={HERO_MOBILE_QUERY} srcSet={mobile.poster} />
+        <img src={desktop.poster} alt="" fetchPriority="high" />
+      </picture>
+      <video ref={video} className="hv" autoPlay muted loop playsInline preload="auto" aria-hidden="true" disablePictureInPicture>
+        <source media={HERO_MOBILE_QUERY} src={mobile.src} type="video/mp4" />
+        <source src={desktop.src} type="video/mp4" />
+      </video>
 
-      <div className={`hs${slide === "lifestyle" ? " on" : ""}`} aria-hidden={slide !== "lifestyle"}>
-        <div className="hero-copy">
-          <span className="tag">{lifestyle.tag}</span>
-          <h1>{lifestyle.line}</h1>
-          <div className="ctas">
-            <a className="btn btn-light" href="#letter" tabIndex={tab("lifestyle")}>
-              Get launch updates <Arrow />
-            </a>
-          </div>
+      <div className="hero-copy">
+        <h1 id="hero-title" className="sr">
+          {heroVideo.line}
+        </h1>
+        <div className="ctas">
+          <a className="btn btn-light" href="#letter">
+            Get launch updates <Arrow />
+          </a>
         </div>
-      </div>
-
-      <div className={`hs proof${slide === "proof" ? " on" : ""}`} aria-hidden={slide !== "proof"}>
-        <div className="hero-copy">
-          <span className="tag">{proof.tag}</span>
-          <p role="heading" aria-level={2} className="h1">
-            {proof.line}
-          </p>
-          <ul className="proof-row">
-            {proof.stats.map((s) => (
-              <li key={s.value}>
-                <b>{s.value}</b>
-                <span>{s.label}</span>
-              </li>
-            ))}
-          </ul>
-          <div className="ctas">
-            <a className="btn btn-light" href="#letter" tabIndex={tab("proof")}>
-              Get launch updates <Arrow />
-            </a>
-          </div>
-        </div>
-      </div>
-
-      <div className="hero-dots" role="group" aria-label="Hero photos">
-        {heroPhotos.map((p, i) => (
-          <button
-            key={i}
-            type="button"
-            aria-label={`Show photo ${i + 1} of ${heroPhotos.length}`}
-            aria-pressed={active === i}
-            className={active === i ? "on" : undefined}
-            onClick={() => setActive(i)}
-          />
-        ))}
       </div>
     </section>
   );
