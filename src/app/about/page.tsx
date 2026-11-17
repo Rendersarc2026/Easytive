@@ -14,6 +14,10 @@ export const metadata: Metadata = {
     "Easytive is a science-led health brand committed to expanding the possibilities of everyday life, bringing together global health research and the expertise of doctors and scientists.",
 };
 
+// "Meet the minds behind the science" team section — hidden for now.
+// Flip to true to show it again.
+const SHOW_TEAM = false;
+
 export default async function AboutPage() {
   const { about, doctors } = await getSiteData();
   return (
@@ -62,12 +66,14 @@ export default async function AboutPage() {
           </section>
         )}
 
-        <Board
-          doctors={doctors}
-          title={<Emphasis text={about.teamHeading} />}
-          sub={about.teamSub}
-          link={{ label: "Read the Easy Journal", href: "/blog" }}
-        />
+        {SHOW_TEAM && (
+          <Board
+            doctors={doctors}
+            title={<Emphasis text={about.teamHeading} />}
+            sub={about.teamSub}
+            link={{ label: "Read the Easy Journal", href: "/blog" }}
+          />
+        )}
       </main>
       <Footer />
     </>
