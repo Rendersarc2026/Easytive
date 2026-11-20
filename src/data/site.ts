@@ -3,11 +3,11 @@
 // PLACEHOLDER: the doctors are sample copy. Replace with verified Easytive
 // content before launch.
 
-// Pre-launch header: Home, About us and the blog, nothing else.
+// Pre-launch header: Home, About us and the journal, nothing else.
 export const prelaunchNav: { label: string; href: string }[] = [
   { label: "Home", href: "/" },
   { label: "About us", href: "/about" },
-  { label: "Blogs", href: "/blog" },
+  { label: "Journals", href: "/journal" },
 ];
 
 // ---- Hero video (pre-launch home) --------------------------------------------

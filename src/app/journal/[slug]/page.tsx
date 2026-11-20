@@ -23,7 +23,7 @@ export async function generateStaticParams() {
   return slugs.length ? slugs.map((slug) => ({ slug })) : [{ slug: "article" }];
 }
 
-export async function generateMetadata({ params }: PageProps<"/blog/[slug]">): Promise<Metadata> {
+export async function generateMetadata({ params }: PageProps<"/journal/[slug]">): Promise<Metadata> {
   const a = await findArticle((await params).slug);
   if (!a) return {};
   const description = a.body[0] ? excerpt(a.body[0]) : undefined;
@@ -31,14 +31,14 @@ export async function generateMetadata({ params }: PageProps<"/blog/[slug]">): P
   return {
     title: a.title,
     description,
-    alternates: { canonical: `/blog/${a.slug}` },
+    alternates: { canonical: `/journal/${a.slug}` },
     authors: a.author ? [{ name: a.author }] : undefined,
     openGraph: {
       type: "article",
       siteName: SITE_NAME,
       title: a.title,
       description,
-      url: `/blog/${a.slug}`,
+      url: `/journal/${a.slug}`,
       publishedTime: a.publishedOn || undefined,
       authors: a.author ? [a.author] : undefined,
       section: a.tag || undefined,
@@ -51,7 +51,7 @@ export async function generateMetadata({ params }: PageProps<"/blog/[slug]">): P
 // BlogPosting structured data: lets search engines show the headline, date,
 // author and photo in results.
 function articleJsonLd(a: PublishedPost) {
-  const url = absoluteUrl(`/blog/${a.slug}`);
+  const url = absoluteUrl(`/journal/${a.slug}`);
   return {
     "@context": "https://schema.org",
     "@type": "BlogPosting",
@@ -67,7 +67,7 @@ function articleJsonLd(a: PublishedPost) {
   };
 }
 
-export default function ArticlePage({ params }: PageProps<"/blog/[slug]">) {
+export default function ArticlePage({ params }: PageProps<"/journal/[slug]">) {
   return (
     <>
       <Header />
@@ -99,7 +99,7 @@ function keepHyphens(text: string) {
   return text.split(/(\S*\w-\w\S*)/).map((part, i) => (i % 2 ? <span className="nowrap" key={i}>{part}</span> : part));
 }
 
-async function Article({ params }: { params: PageProps<"/blog/[slug]">["params"] }) {
+async function Article({ params }: { params: PageProps<"/journal/[slug]">["params"] }) {
   const a = await findArticle((await params).slug);
   if (!a) notFound();
 
@@ -137,7 +137,7 @@ async function Article({ params }: { params: PageProps<"/blog/[slug]">["params"]
             <p key={i}>{p}</p>
           ))}
         </div>
-        <Link className="link art-back" href="/blog">
+        <Link className="link art-back" href="/journal">
           All articles <Arrow />
         </Link>
       </div>

@@ -9,7 +9,7 @@ type NavLink = { href: string; label: string };
 
 const contentLinks: NavLink[] = [
   { href: "/admin", label: "Dashboard" },
-  { href: "/admin/blog", label: "Blog" },
+  { href: "/admin/blog", label: "Journal" },
 ];
 
 // The links on their own, with no active section when the pathname is unknown.

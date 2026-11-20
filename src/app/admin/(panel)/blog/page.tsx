@@ -8,9 +8,9 @@ import { loadMoreAdminPostsAction } from "./load-more";
 import { PostFields, PostRow } from "./post-row";
 import { BlogViewProvider, ComposePanel, NewPostButton, PostList, ViewToggle } from "./view";
 
-export const metadata: Metadata = { title: "Blog" };
+export const metadata: Metadata = { title: "Journal" };
 
-// Blog posts from easytive.blog_posts, newest first (the order /blog uses).
+// Blog posts from easytive.blog_posts, newest first (the order /journal uses).
 // The first 9 render here; the rest load 9 at a time as the list is
 // scrolled (load-more.tsx). "New post" opens an empty form; the post is only
 // created when that form is submitted.
@@ -28,9 +28,9 @@ export default async function BlogAdminPage({ searchParams }: { searchParams: Pr
     <BlogViewProvider initial={view}>
       <header className="bp-head">
         <div>
-          <h1>Blog posts</h1>
+          <h1>Journal posts</h1>
           <p className="bp-count">
-            {counts.live} live on <a href="/blog" target="_blank" rel="noreferrer">/blog</a>
+            {counts.live} live on <a href="/journal" target="_blank" rel="noreferrer">/journal</a>
             {counts.drafts > 0 && <>, {counts.drafts} {counts.drafts === 1 ? "draft" : "drafts"}</>}
           </p>
         </div>

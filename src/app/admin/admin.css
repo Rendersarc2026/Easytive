@@ -434,7 +434,7 @@
 
 /* ---- Blog list --------------------------------------------------------------------- */
 /* Reads like the journal's contents page: wide covers and serif titles, the
-   same as /blog. Each post is its own panel; the edit form opens inside it. */
+   same as /journal. Each post is its own panel; the edit form opens inside it. */
 
 .bp-head {
   display: flex;

@@ -6,12 +6,12 @@ import { getPublicPage, PAGE_SIZE } from "@/data/blog";
 import { loadMorePostsAction } from "./load-more";
 import { PostCard } from "./post-card";
 
-// Pre-launch blog listing; each card opens its article at /blog/<slug>.
+// Pre-launch blog listing; each card opens its article at /journal/<slug>.
 // Posts come from easytive.blog_posts (data/blog); covers from the bucket.
 // The first 9 render here; the rest load 9 at a time as the reader scrolls.
 export const metadata: Metadata = {
   title: "The Easy Journal",
-  alternates: { canonical: "/blog" },
+  alternates: { canonical: "/journal" },
   description: "Notes on everyday urinary health from the Easytive team and advisory board.",
 };
 

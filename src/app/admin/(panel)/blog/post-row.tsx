@@ -117,7 +117,7 @@ export function PostRow({ post: d }: { post: BlogPost }) {
               Save post
             </SubmitButton>
             {d.slug && (
-              <a className="a-btn small ghost" href={`/blog/${d.slug}`} target="_blank" rel="noreferrer">
+              <a className="a-btn small ghost" href={`/journal/${d.slug}`} target="_blank" rel="noreferrer">
                 View on site
               </a>
             )}
@@ -126,7 +126,7 @@ export function PostRow({ post: d }: { post: BlogPost }) {
       </details>
       <div className="bp-side">
         {d.slug && (
-          <a className="bp-icon" href={`/blog/${d.slug}`} target="_blank" rel="noreferrer" title="View on site">
+          <a className="bp-icon" href={`/journal/${d.slug}`} target="_blank" rel="noreferrer" title="View on site">
             <svg {...icon}>
               <path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5" />
             </svg>

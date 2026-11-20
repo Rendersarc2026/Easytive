@@ -15,10 +15,10 @@ export default async function DashboardPage() {
   const tiles = [
     {
       href: "/admin/blog",
-      title: "Blog",
+      title: "Journal",
       stat: `${counts.live} ${counts.live === 1 ? "post" : "posts"}`,
       line: blogEdit ? `Last edited ${when(blogEdit.at)}${blogEdit.email ? ` by ${blogEdit.email}` : ""}` : "No posts yet",
-      view: "/blog",
+      view: "/journal",
     },
   ];
 
@@ -26,7 +26,7 @@ export default async function DashboardPage() {
     <>
       <div className="a-toplabel">Dashboard</div>
       <h1>Welcome back</h1>
-      <p className="a-lede">Add, edit or remove blog posts. Every save goes live on the site straight away; no deploy needed.</p>
+      <p className="a-lede">Add, edit or remove journal posts. Every save goes live on the site straight away; no deploy needed.</p>
 
       <div className="a-tiles">
         {tiles.map((t) => (

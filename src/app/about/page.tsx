@@ -71,7 +71,7 @@ export default async function AboutPage() {
             doctors={doctors}
             title={<Emphasis text={about.teamHeading} />}
             sub={about.teamSub}
-            link={{ label: "Read the Easy Journal", href: "/blog" }}
+            link={{ label: "Read the Easy Journal", href: "/journal" }}
           />
         )}
       </main>

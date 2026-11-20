@@ -16,7 +16,7 @@ export function Header() {
   const pathname = usePathname();
   const headerRef = useRef<HTMLElement | null>(null);
 
-  // Links stay lit on their sub-pages (/blog → /blog/<slug>).
+  // Links stay lit on their sub-pages (/journal → /journal/<slug>).
   const isActive = (href: string) => pathname === href || (href !== "/" && pathname.startsWith(`${href}/`));
 
   useEffect(() => {

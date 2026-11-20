@@ -10,7 +10,7 @@ export const SITE_NAME = "Easytive";
 export const SITE_DESCRIPTION =
   "Doctor-guided, third-party tested supplements for everyday bladder and urinary tract comfort.";
 
-/** Absolute URL for a site path ("/blog" → "https://…/blog"). */
+/** Absolute URL for a site path ("/journal" → "https://…/journal"). */
 export const absoluteUrl = (path: string) => `${SITE_URL}${path.startsWith("/") ? path : `/${path}`}`;
 
 /** JSON-LD for a <script type="application/ld+json">; "<" is escaped so text can't close the tag. */

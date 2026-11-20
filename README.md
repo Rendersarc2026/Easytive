@@ -2,7 +2,7 @@
 
 Website for Easytive, a urinary wellness supplement brand. Next.js 16 (App Router, Cache Components), deployed on Vercel. Data in Supabase Postgres, images and videos in a Supabase Storage bucket.
 
-`main` is the pre-launch site: video hero + newsletter footer, About, and the blog. The full shop site lives on the `abin/future-update` branch.
+`main` is the pre-launch site: video hero + newsletter footer, About, and the journal. The full shop site lives on the `abin/future-update` branch.
 
 ## Setup
 
@@ -26,7 +26,7 @@ npm run dev
 
 ## Where things are
 
-- `src/app` – pages. Public: `/`, `/about`, `/blog`, `/blog/[slug]`. Admin: `/admin` (blog posts, profile).
+- `src/app` – pages. Public: `/`, `/about`, `/journal`, `/journal/[slug]` (old `/blog` URLs redirect). Admin: `/admin` (journal posts, profile).
 - `src/data/site.ts` – default copy, nav, hero video paths. `store.ts` – About page content (saved overrides over the defaults). `blog.ts` – blog posts.
 - `src/app/site.css` – public site styles. `src/app/admin/admin.css` – admin styles.
 - `src/app/media/[...key]` – serves bucket files at `/media/uploads/…`.

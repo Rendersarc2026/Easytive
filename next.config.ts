@@ -55,6 +55,10 @@ const nextConfig: NextConfig = {
       },
     },
   },
+  // The blog was renamed to the journal; keep old links and search results working.
+  async redirects() {
+    return [{ source: "/blog/:path*", destination: "/journal/:path*", permanent: true }];
+  },
   async headers() {
     return [
       { source: "/:path*", headers: securityHeaders },

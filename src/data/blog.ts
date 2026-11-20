@@ -17,7 +17,7 @@ import { db } from "@/lib/db";
 
 export type BlogPost = {
   id: number;
-  /** URL part (/blog/<slug>); null for an untitled draft. */
+  /** URL part (/journal/<slug>); null for an untitled draft. */
   slug: string | null;
   title: string;
   tag: string;
@@ -151,7 +151,7 @@ export async function getPostBySlug(slug: string): Promise<PublishedPost | undef
   return row ? (toPost(row) as PublishedPost) : undefined;
 }
 
-/** Every published post's address (for prerendering /blog/<slug>). */
+/** Every published post's address (for prerendering /journal/<slug>). */
 export async function getPublishedSlugs(): Promise<string[]> {
   "use cache";
   cacheLife("hours");
