@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Playfair_Display } from "next/font/google";
 import "./globals.css";
 import "./site.css";
-import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/site";
+import { SITE_DESCRIPTION, SITE_NAME, SITE_URL, siteOpenGraph } from "@/lib/site";
 
 const playfair = Playfair_Display({
   variable: "--font-playfair",
@@ -17,7 +17,7 @@ export const metadata: Metadata = {
   title: { default: `${SITE_NAME} · Everyday bladder and urinary tract comfort`, template: `%s · ${SITE_NAME}` },
   description: SITE_DESCRIPTION,
   applicationName: SITE_NAME,
-  openGraph: { type: "website", siteName: SITE_NAME },
+  openGraph: siteOpenGraph,
   twitter: { card: "summary_large_image" },
   formatDetection: { telephone: false, email: false, address: false },
 };

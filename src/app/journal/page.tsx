@@ -3,6 +3,7 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/sections/Footer";
 import { InfiniteMore } from "@/components/InfiniteMore";
 import { getPublicPage, PAGE_SIZE } from "@/data/blog";
+import { siteOpenGraph } from "@/lib/site";
 import { loadMorePostsAction } from "./load-more";
 import { PostCard } from "./post-card";
 
@@ -12,6 +13,7 @@ import { PostCard } from "./post-card";
 export const metadata: Metadata = {
   title: "The Easy Journal",
   alternates: { canonical: "/journal" },
+  openGraph: { ...siteOpenGraph, url: "/journal" },
   description: "Notes on everyday urinary health from the Easytive team and advisory board.",
 };
 

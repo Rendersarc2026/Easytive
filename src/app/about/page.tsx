@@ -4,12 +4,14 @@ import { Header } from "@/components/Header";
 import { Board } from "@/components/sections/Board";
 import { Footer } from "@/components/sections/Footer";
 import { getSiteData } from "@/data/store";
+import { siteOpenGraph } from "@/lib/site";
 
 // About page. All copy is editable in the admin (About us); the defaults in
 // data/site.ts follow the "About Easytive" brief word for word.
 export const metadata: Metadata = {
   title: "About us",
   alternates: { canonical: "/about" },
+  openGraph: { ...siteOpenGraph, url: "/about" },
   description:
     "Easytive is a science-led health brand committed to expanding the possibilities of everyday life, bringing together global health research and the expertise of doctors and scientists.",
 };

@@ -2,10 +2,11 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/sections/Footer";
 import { Hero } from "@/components/sections/Hero";
 import type { Metadata } from "next";
-import { absoluteUrl, jsonLd, SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/site";
+import { absoluteUrl, jsonLd, SITE_DESCRIPTION, SITE_NAME, SITE_URL, siteOpenGraph } from "@/lib/site";
 
 export const metadata: Metadata = {
   alternates: { canonical: "/" },
+  openGraph: { ...siteOpenGraph, url: "/" },
 };
 
 // Tells search engines who the brand is (name, logo) and what the site is called.

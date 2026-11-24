@@ -10,6 +10,12 @@ export const SITE_NAME = "Easytive";
 export const SITE_DESCRIPTION =
   "Doctor-guided, third-party tested supplements for everyday bladder and urinary tract comfort.";
 
+/**
+ * Open Graph defaults. A page that sets its own `openGraph` replaces the layout's
+ * whole object (Next.js doesn't merge it), so pages spread this and add their `url`.
+ */
+export const siteOpenGraph = { type: "website", siteName: SITE_NAME } as const;
+
 /** Absolute URL for a site path ("/journal" → "https://…/journal"). */
 export const absoluteUrl = (path: string) => `${SITE_URL}${path.startsWith("/") ? path : `/${path}`}`;
 

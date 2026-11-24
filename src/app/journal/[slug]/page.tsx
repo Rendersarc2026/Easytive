@@ -40,6 +40,7 @@ export async function generateMetadata({ params }: PageProps<"/journal/[slug]">)
       description,
       url: `/journal/${a.slug}`,
       publishedTime: a.publishedOn || undefined,
+      modifiedTime: a.updatedAt,
       authors: a.author ? [a.author] : undefined,
       section: a.tag || undefined,
       ...(images && { images }),
@@ -49,11 +50,11 @@ export async function generateMetadata({ params }: PageProps<"/journal/[slug]">)
 }
 
 // BlogPosting structured data: lets search engines show the headline, date,
-// author and photo in results.
+// author and photo in results. The breadcrumb (Home › Journal › article)
+// replaces the bare URL under the result.
 function articleJsonLd(a: PublishedPost) {
   const url = absoluteUrl(`/journal/${a.slug}`);
-  return {
-    "@context": "https://schema.org",
+  const posting = {
     "@type": "BlogPosting",
     headline: a.title,
     description: a.body[0] ? excerpt(a.body[0]) : undefined,
@@ -61,10 +62,20 @@ function articleJsonLd(a: PublishedPost) {
     mainEntityOfPage: url,
     image: a.cover ? absoluteUrl(a.cover) : undefined,
     datePublished: a.publishedOn || undefined,
+    dateModified: a.updatedAt,
     author: a.author ? { "@type": "Person", name: a.author } : undefined,
     articleSection: a.tag || undefined,
     publisher: { "@type": "Organization", name: SITE_NAME, url: SITE_URL, logo: absoluteUrl("/easytive-logo.png") },
   };
+  const breadcrumb = {
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: absoluteUrl("/") },
+      { "@type": "ListItem", position: 2, name: "The Easy Journal", item: absoluteUrl("/journal") },
+      { "@type": "ListItem", position: 3, name: a.title },
+    ],
+  };
+  return { "@context": "https://schema.org", "@graph": [posting, breadcrumb] };
 }
 
 export default function ArticlePage({ params }: PageProps<"/journal/[slug]">) {

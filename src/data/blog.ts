@@ -26,6 +26,8 @@ export type BlogPost = {
   publishedOn: string;
   /** The date as readers see it: "12 Oct 2026". */
   date: string;
+  /** When the post was last saved, as an ISO timestamp (for search engines). */
+  updatedAt: string;
   body: string[];
   /** /media path of the cover image, or null. */
   cover: string | null;
@@ -39,6 +41,7 @@ export type BlogPostRow = {
   tag: string;
   author: string;
   published_on: string | null;
+  updated_at: string;
   body: string;
   cover_key: string | null;
   cover_alt: string;
@@ -80,6 +83,7 @@ function toPost(r: BlogPostRow): BlogPost {
     author: r.author,
     publishedOn: r.published_on ?? "",
     date: formatPostDate(r.published_on),
+    updatedAt: r.updated_at,
     body: textToBody(r.body),
     cover: r.cover_key ? `/media/${r.cover_key}` : null,
     coverAlt: r.cover_alt || r.title,
@@ -122,7 +126,7 @@ async function postsPage(scope: "public" | "all", cursor: string | null, limit: 
   const size = Math.min(Math.max(1, Math.floor(limit)), MAX_PAGE);
   const at = cursor ? CURSOR.exec(cursor) : null;
   const rows = await sql<BlogPostRow[]>`
-    select id, slug, title, tag, author, published_on::text as published_on, body, cover_key, cover_alt
+    select id, slug, title, tag, author, published_on::text as published_on, to_char(updated_at at time zone 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS"Z"') as updated_at, body, cover_key, cover_alt
     from easytive.blog_posts
     where is_active
       ${scope === "public" ? sql`and slug is not null` : sql``}
@@ -144,7 +148,7 @@ export async function getPostBySlug(slug: string): Promise<PublishedPost | undef
   cacheLife("hours");
   cacheTag("blog");
   const [row] = await db()<BlogPostRow[]>`
-    select id, slug, title, tag, author, published_on::text as published_on, body, cover_key, cover_alt
+    select id, slug, title, tag, author, published_on::text as published_on, to_char(updated_at at time zone 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS"Z"') as updated_at, body, cover_key, cover_alt
     from easytive.blog_posts
     where is_active and slug = ${slug}
   `;
@@ -160,18 +164,18 @@ export async function getPublishedSlugs(): Promise<string[]> {
   return rows.map((r) => r.slug);
 }
 
-/** Every published post's address and date, newest first (for the sitemap). */
-export async function getSitemapPosts(): Promise<{ slug: string; publishedOn: string | null }[]> {
+/** Every published post's address, date and last save, newest first (for the sitemap). */
+export async function getSitemapPosts(): Promise<{ slug: string; publishedOn: string | null; updatedAt: string }[]> {
   "use cache";
   cacheLife("hours");
   cacheTag("blog");
-  const rows = await db()<{ slug: string; published_on: string | null }[]>`
-    select slug, published_on::text as published_on
+  const rows = await db()<{ slug: string; published_on: string | null; updated_at: string }[]>`
+    select slug, published_on::text as published_on, to_char(updated_at at time zone 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS"Z"') as updated_at
     from easytive.blog_posts
     where is_active and slug is not null
     order by coalesce(published_on, 'infinity'::date) desc, id desc
   `;
-  return rows.map((r) => ({ slug: r.slug, publishedOn: r.published_on }));
+  return rows.map((r) => ({ slug: r.slug, publishedOn: r.published_on, updatedAt: r.updated_at }));
 }
 
 /** How many posts are live and how many are untitled drafts. */
