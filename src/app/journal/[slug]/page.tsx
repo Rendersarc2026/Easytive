@@ -4,7 +4,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { Header } from "@/components/Header";
-import { Arrow, Silhouette } from "@/components/icons";
+import { Arrow } from "@/components/icons";
 import { Footer } from "@/components/sections/Footer";
 import { getPostBySlug, getPublishedSlugs, type PublishedPost } from "@/data/blog";
 import { absoluteUrl, excerpt, jsonLd, SITE_NAME, SITE_URL } from "@/lib/site";
@@ -120,6 +120,16 @@ async function Article({ params }: { params: PageProps<"/journal/[slug]">["param
   const a = await findArticle((await params).slug);
   if (!a) notFound();
 
+  // A closing "Medically reviewed by …" paragraph typed into the post goes
+  // below the separator line, like the Review note field.
+  let body = a.body;
+  let reviewNote = a.reviewNote;
+  const lastPara = body[body.length - 1];
+  if (!reviewNote && lastPara && /^medically reviewed\b/i.test(lastPara)) {
+    reviewNote = lastPara;
+    body = body.slice(0, -1);
+  }
+
   // Last word in italics, like the site's other headings ("you *today*?").
   const cut = a.title.lastIndexOf(" ");
   const lead = cut > 0 ? a.title.slice(0, cut + 1) : "";
@@ -147,21 +157,30 @@ async function Article({ params }: { params: PageProps<"/journal/[slug]">["param
 
       <div className="art-r">
         <div className="art-by">
-          <span className="av" aria-hidden="true">
-            <Silhouette />
-          </span>
+          <svg className="av" viewBox="0 0 100 100" aria-hidden="true">
+            <clipPath id="av-clip">
+              <circle cx="50" cy="50" r="50" />
+            </clipPath>
+            <g clipPath="url(#av-clip)">
+              <circle cx="50" cy="40" r="38" />
+              <path d="M0 100V84C0 74 22 68 50 68s50 6 50 16v16z" />
+            </g>
+          </svg>
           <div>
             <b>{a.author}</b>
-            <span>{a.date}</span>
+            {a.authorQualifications && <span>{a.authorQualifications}</span>}
+            {a.authorRegistration && <span>{a.authorRegistration}</span>}
           </div>
         </div>
         <div className="art-body">
-          {a.body.map((p, i) => {
+          {body.map((p, i) => {
             // A paragraph that is only *text* is a section heading.
             const heading = /^\*([^*\n]+)\*$/.exec(p);
             return heading ? <h2 key={i}>{heading[1]}</h2> : <p key={i}>{withBold(p)}</p>;
           })}
         </div>
+        <hr className="art-rule" />
+        {reviewNote && <p className="art-review">{reviewNote}</p>}
         <Link className="link art-back" href="/journal">
           All articles <Arrow />
         </Link>

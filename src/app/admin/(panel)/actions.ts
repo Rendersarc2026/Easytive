@@ -44,6 +44,15 @@ async function uploadedKey(fd: FormData, userId: string): Promise<string | undef
   }
 }
 
+/** Multi-line text: lines trimmed, blank lines dropped. */
+function lines(fd: FormData, key: string, max: number): string {
+  return str(fd, key, max)
+    .split(/\r?\n/)
+    .map((l) => l.trim())
+    .filter(Boolean)
+    .join("\n");
+}
+
 function readPost(fd: FormData) {
   return {
     title: str(fd, "title", 200),
@@ -51,8 +60,11 @@ function readPost(fd: FormData) {
     subtitleNote: str(fd, "subtitleNote", 120),
     tag: str(fd, "tag", 80),
     author: str(fd, "author", 120),
+    authorQualifications: str(fd, "authorQualifications", 150),
+    authorRegistration: str(fd, "authorRegistration", 150),
     publishedOn: str(fd, "date", 10),
     body: textToBody(String(fd.get("body") ?? "").slice(0, 100_000)),
+    reviewNote: lines(fd, "reviewNote", 500),
   };
 }
 

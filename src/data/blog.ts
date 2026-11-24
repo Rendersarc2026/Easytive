@@ -26,6 +26,10 @@ export type BlogPost = {
   subtitleNote: string;
   tag: string;
   author: string;
+  /** First line under the author's name ("MBBS, MD (Pathology),"), or "". */
+  authorQualifications: string;
+  /** Second line under it ("Reg. No. 37061, Delhi Medical Council"), or "". */
+  authorRegistration: string;
   /** "YYYY-MM-DD", or "" when no date is set. For the admin's date input. */
   publishedOn: string;
   /** The date as readers see it: "12 Oct 2026". */
@@ -33,6 +37,8 @@ export type BlogPost = {
   /** When the post was last saved, as an ISO timestamp (for search engines). */
   updatedAt: string;
   body: string[];
+  /** Note after the article ("Medically reviewed by …"), lines kept, or "". */
+  reviewNote: string;
   /** /media path of the cover image, or null. */
   cover: string | null;
   coverAlt: string;
@@ -46,9 +52,12 @@ export type BlogPostRow = {
   subtitle_note: string;
   tag: string;
   author: string;
+  author_qualifications: string;
+  author_registration: string;
   published_on: string | null;
   updated_at: string;
   body: string;
+  review_note: string;
   cover_key: string | null;
   cover_alt: string;
 };
@@ -89,10 +98,13 @@ function toPost(r: BlogPostRow): BlogPost {
     subtitleNote: r.subtitle_note,
     tag: r.tag,
     author: r.author,
+    authorQualifications: r.author_qualifications,
+    authorRegistration: r.author_registration,
     publishedOn: r.published_on ?? "",
     date: formatPostDate(r.published_on),
     updatedAt: r.updated_at,
     body: textToBody(r.body),
+    reviewNote: r.review_note,
     cover: r.cover_key ? `/media/${r.cover_key}` : null,
     coverAlt: r.cover_alt || r.title,
   };
@@ -134,7 +146,7 @@ async function postsPage(scope: "public" | "all", cursor: string | null, limit: 
   const size = Math.min(Math.max(1, Math.floor(limit)), MAX_PAGE);
   const at = cursor ? CURSOR.exec(cursor) : null;
   const rows = await sql<BlogPostRow[]>`
-    select id, slug, title, subtitle, subtitle_note, tag, author, published_on::text as published_on, to_char(updated_at at time zone 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS"Z"') as updated_at, body, cover_key, cover_alt
+    select id, slug, title, subtitle, subtitle_note, tag, author, author_qualifications, author_registration, published_on::text as published_on, to_char(updated_at at time zone 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS"Z"') as updated_at, body, review_note, cover_key, cover_alt
     from easytive.blog_posts
     where is_active
       ${scope === "public" ? sql`and slug is not null` : sql``}
@@ -156,7 +168,7 @@ export async function getPostBySlug(slug: string): Promise<PublishedPost | undef
   cacheLife("hours");
   cacheTag("blog");
   const [row] = await db()<BlogPostRow[]>`
-    select id, slug, title, subtitle, subtitle_note, tag, author, published_on::text as published_on, to_char(updated_at at time zone 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS"Z"') as updated_at, body, cover_key, cover_alt
+    select id, slug, title, subtitle, subtitle_note, tag, author, author_qualifications, author_registration, published_on::text as published_on, to_char(updated_at at time zone 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS"Z"') as updated_at, body, review_note, cover_key, cover_alt
     from easytive.blog_posts
     where is_active and slug = ${slug}
   `;
@@ -207,8 +219,11 @@ export type PostInput = {
   subtitleNote: string;
   tag: string;
   author: string;
+  authorQualifications: string;
+  authorRegistration: string;
   publishedOn: string; // "YYYY-MM-DD" or ""
   body: string[];
+  reviewNote: string;
   /** New cover object key, or undefined to keep the current one. */
   coverKey?: string;
 };
@@ -233,8 +248,8 @@ export async function createPost(input: PostInput & { coverKey: string }): Promi
   const user = await requireUser();
   const slug = await freeSlug(input.title, 0);
   const [row] = await db()<{ id: string }[]>`
-    insert into easytive.blog_posts (slug, title, subtitle, subtitle_note, tag, author, published_on, body, cover_key, cover_alt, updated_by)
-    values (${slug}, ${input.title}, ${input.subtitle}, ${input.subtitleNote}, ${input.tag}, ${input.author}, ${input.publishedOn}, ${input.body.join("\n\n")}, ${input.coverKey}, ${input.title}, ${user.id})
+    insert into easytive.blog_posts (slug, title, subtitle, subtitle_note, tag, author, author_qualifications, author_registration, published_on, body, review_note, cover_key, cover_alt, updated_by)
+    values (${slug}, ${input.title}, ${input.subtitle}, ${input.subtitleNote}, ${input.tag}, ${input.author}, ${input.authorQualifications}, ${input.authorRegistration}, ${input.publishedOn}, ${input.body.join("\n\n")}, ${input.reviewNote}, ${input.coverKey}, ${input.title}, ${user.id})
     returning id
   `;
   return Number(row.id);
@@ -253,8 +268,11 @@ export async function updatePost(id: number, input: PostInput): Promise<boolean>
       subtitle_note = ${input.subtitleNote},
       tag = ${input.tag},
       author = ${input.author},
+      author_qualifications = ${input.authorQualifications},
+      author_registration = ${input.authorRegistration},
       published_on = ${date},
       body = ${input.body.join("\n\n")},
+      review_note = ${input.reviewNote},
       cover_key = coalesce(${input.coverKey ?? null}, p.cover_key),
       cover_alt = ${input.title},
       updated_at = now(),

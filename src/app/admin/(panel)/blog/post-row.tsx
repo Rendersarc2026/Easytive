@@ -62,7 +62,7 @@ export function PostFields({ post, idPrefix, autoFocus = false }: { post?: BlogP
             Author
             <Req />
           </label>
-          <input className="a-input" id={id("author")} name="author" defaultValue={post?.author} required maxLength={120} />
+          <input className="a-input" id={id("author")} name="author" defaultValue={post?.author} placeholder="Dr. Pankaj Tripathi" required maxLength={120} />
           <span className="a-fielderr">Add the author.</span>
         </div>
         <div className="a-field">
@@ -74,6 +74,34 @@ export function PostFields({ post, idPrefix, autoFocus = false }: { post?: BlogP
           <span className="a-fielderr">Pick a date.</span>
         </div>
       </div>
+      <div className="a-grid2 even">
+        <div className="a-field">
+          <label className="a-label" htmlFor={id("authorQualifications")}>
+            Author qualifications
+          </label>
+          <input
+            className="a-input"
+            id={id("authorQualifications")}
+            name="authorQualifications"
+            defaultValue={post?.authorQualifications}
+            placeholder="MBBS, MD (Pathology),"
+            maxLength={150}
+          />
+        </div>
+        <div className="a-field">
+          <label className="a-label" htmlFor={id("authorRegistration")}>
+            Author registration
+          </label>
+          <input
+            className="a-input"
+            id={id("authorRegistration")}
+            name="authorRegistration"
+            defaultValue={post?.authorRegistration}
+            placeholder="Reg. No. 37061, Delhi Medical Council"
+            maxLength={150}
+          />
+        </div>
+      </div>
       <PhotoField current={post?.cover ?? ""} id={id("cover")} label="Cover photo" required={!post?.cover} />
       <div className="a-field">
         <label className="a-label" htmlFor={id("body")}>
@@ -83,6 +111,21 @@ export function PostFields({ post, idPrefix, autoFocus = false }: { post?: BlogP
         <textarea className="a-input area tall" id={id("body")} name="body" rows={12} defaultValue={post ? bodyToText(post.body) : undefined} required />
         <span className="a-fielderr">Write the post.</span>
         <span className="a-cardhint">Leave a blank line between paragraphs. Wrap words in *stars* to make them bold.</span>
+      </div>
+      <div className="a-field">
+        <label className="a-label" htmlFor={id("reviewNote")}>
+          Review note
+        </label>
+        <textarea
+          className="a-input area"
+          id={id("reviewNote")}
+          name="reviewNote"
+          rows={2}
+          defaultValue={post?.reviewNote}
+          placeholder={"Medically reviewed by Dr Pankaj Tripathi, MBBS, MD (Pathology)·\nReg. No. 37061, Delhi Medical Council."}
+          maxLength={500}
+        />
+        <span className="a-cardhint">Shown at the end of the post, under the line, in small italics. Each line stays on its own line.</span>
       </div>
     </>
   );
