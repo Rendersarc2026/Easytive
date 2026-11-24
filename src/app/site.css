@@ -178,6 +178,8 @@ header.site.lined {
 .art-head .label { display: block; margin-bottom: 18px; }
 .art-head h1 { font-size: clamp(2.4rem, 4.4vw, 4.4rem); line-height: 1.04; max-width: 14ch; }
 .art-head .nowrap { white-space: nowrap; }
+.art-sub { margin: clamp(16px, 2.2vw, 24px) 0 0; display: grid; gap: 2px; font-size: clamp(0.95rem, 1.2vw, 1.1rem); line-height: 1.45; color: var(--ink); }
+.art-sub .note { color: var(--muted); font-weight: 300; }
 .art-ph { position: relative; overflow: hidden; background: var(--tile); }
 .art-ph img { object-fit: cover; }
 .art-r { padding: clamp(56px, 22vh, 220px) var(--pad) calc(var(--sec) * 1.2); max-width: 680px; }

@@ -47,6 +47,8 @@ async function uploadedKey(fd: FormData, userId: string): Promise<string | undef
 function readPost(fd: FormData) {
   return {
     title: str(fd, "title", 200),
+    subtitle: str(fd, "subtitle", 200),
+    subtitleNote: str(fd, "subtitleNote", 120),
     tag: str(fd, "tag", 80),
     author: str(fd, "author", 120),
     publishedOn: str(fd, "date", 10),

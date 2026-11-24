@@ -23,7 +23,7 @@ function readMinutes(body: string[]): number {
   return Math.max(1, Math.round(words / 200));
 }
 
-/** Title, tag, author, date, cover and text. `post` prefills them (editing); without it they start empty. */
+/** Title, subtitle, tag, author, date, cover and text. `post` prefills them (editing); without it they start empty. */
 export function PostFields({ post, idPrefix, autoFocus = false }: { post?: BlogPost; idPrefix: string; autoFocus?: boolean }) {
   const id = (name: string) => `${idPrefix}-${name}`;
   return (
@@ -35,6 +35,20 @@ export function PostFields({ post, idPrefix, autoFocus = false }: { post?: BlogP
         </label>
         <input className="a-input" id={id("title")} name="title" defaultValue={post?.title} required maxLength={200} autoFocus={autoFocus} />
         <span className="a-fielderr">Add a title.</span>
+      </div>
+      <div className="a-grid2">
+        <div className="a-field">
+          <label className="a-label" htmlFor={id("subtitle")}>
+            Subtitle
+          </label>
+          <input className="a-input" id={id("subtitle")} name="subtitle" defaultValue={post?.subtitle} placeholder="Common Reasons Explained" maxLength={200} />
+        </div>
+        <div className="a-field">
+          <label className="a-label" htmlFor={id("subtitleNote")}>
+            Subtitle note
+          </label>
+          <input className="a-input" id={id("subtitleNote")} name="subtitleNote" defaultValue={post?.subtitleNote} placeholder="( Doctor-reviewed )" maxLength={120} />
+        </div>
       </div>
       <div className="a-grid3">
         <div className="a-field">

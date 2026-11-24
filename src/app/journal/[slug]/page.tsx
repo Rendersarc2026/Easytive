@@ -134,6 +134,12 @@ async function Article({ params }: { params: PageProps<"/journal/[slug]">["param
             {keepHyphens(lead)}
             <em>{keepHyphens(last)}</em>
           </h1>
+          {(a.subtitle || a.subtitleNote) && (
+            <p className="art-sub">
+              {a.subtitle && <span>{a.subtitle}</span>}
+              {a.subtitleNote && <span className="note">{a.subtitleNote}</span>}
+            </p>
+          )}
         </header>
         <div className="art-ph">{a.cover && <Image src={a.cover} alt={a.coverAlt} fill preload sizes="(min-width: 900px) 52vw, 100vw" />}</div>
       </div>

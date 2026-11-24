@@ -284,6 +284,12 @@
   gap: 12px;
 }
 
+.a-grid2 {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 12px;
+}
+
 .a-form {
   display: grid;
   gap: 12px;
@@ -876,7 +882,8 @@ html:has(.a-shell[data-menu="open"]) {
   .a-card {
     padding: 16px;
   }
-  .a-grid3 {
+  .a-grid3,
+  .a-grid2 {
     grid-template-columns: 1fr;
   }
   .a-photofield {
