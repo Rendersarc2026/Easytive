@@ -186,6 +186,7 @@ header.site.lined {
 .art-by .av .sil { width: 84%; height: auto; display: block; margin-bottom: -4%; }
 .art-by b { display: block; font-weight: 700; font-size: clamp(1.15rem, 1.6vw, 1.5rem); line-height: 1.25; }
 .art-by span:not(.av) { display: block; margin-top: 4px; color: var(--ink); font-size: 1rem; }
+.art-body strong { font-weight: 600; color: #2b2a27; }
 .art-body { display: grid; gap: 1.1em; color: #4a4843; font-size: 0.95rem; line-height: 1.7; }
 .art-back { margin-top: clamp(36px, 5vw, 56px); }
 @media (min-width: 900px) { .art-body { text-align: justify; hyphens: auto; } }

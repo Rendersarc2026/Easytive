@@ -68,7 +68,7 @@ export function PostFields({ post, idPrefix, autoFocus = false }: { post?: BlogP
         </label>
         <textarea className="a-input area tall" id={id("body")} name="body" rows={12} defaultValue={post ? bodyToText(post.body) : undefined} required />
         <span className="a-fielderr">Write the post.</span>
-        <span className="a-cardhint">Leave a blank line between paragraphs.</span>
+        <span className="a-cardhint">Leave a blank line between paragraphs. Wrap words in *stars* to make them bold.</span>
       </div>
     </>
   );

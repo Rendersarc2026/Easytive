@@ -24,7 +24,7 @@ export const jsonLd = (data: object) => ({ __html: JSON.stringify(data).replace(
 
 /** First ~155 characters of some text, cut at a word, for meta descriptions. */
 export function excerpt(text: string, max = 155): string {
-  const clean = text.replace(/\s+/g, " ").trim();
+  const clean = text.replace(/\*([^*\n]+)\*/g, "$1").replace(/\s+/g, " ").trim();
   if (clean.length <= max) return clean;
   const cut = clean.slice(0, max);
   return `${cut.slice(0, cut.lastIndexOf(" ") > 80 ? cut.lastIndexOf(" ") : max).replace(/[,;:.\s]+$/, "")}…`;

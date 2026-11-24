@@ -110,6 +110,11 @@ function keepHyphens(text: string) {
   return text.split(/(\S*\w-\w\S*)/).map((part, i) => (i % 2 ? <span className="nowrap" key={i}>{part}</span> : part));
 }
 
+// *word* in the post body renders bold (the admin types it in plain text).
+function withBold(text: string) {
+  return text.split(/\*([^*\n]+)\*/).map((part, i) => (i % 2 ? <strong key={i}>{part}</strong> : part));
+}
+
 async function Article({ params }: { params: PageProps<"/journal/[slug]">["params"] }) {
   const a = await findArticle((await params).slug);
   if (!a) notFound();
@@ -145,7 +150,7 @@ async function Article({ params }: { params: PageProps<"/journal/[slug]">["param
         </div>
         <div className="art-body">
           {a.body.map((p, i) => (
-            <p key={i}>{p}</p>
+            <p key={i}>{withBold(p)}</p>
           ))}
         </div>
         <Link className="link art-back" href="/journal">
