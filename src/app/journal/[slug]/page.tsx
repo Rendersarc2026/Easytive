@@ -49,11 +49,30 @@ export async function generateMetadata({ params }: PageProps<"/journal/[slug]">)
   };
 }
 
+// A closing "Medically reviewed by …" paragraph typed into the post goes
+// below the separator line, like the Review note field.
+function splitReview(a: PublishedPost): { body: string[]; reviewNote: string } {
+  const last = a.body[a.body.length - 1];
+  if (!a.reviewNote && last && /^medically reviewed\b/i.test(last)) return { body: a.body.slice(0, -1), reviewNote: last };
+  return { body: a.body, reviewNote: a.reviewNote };
+}
+
 // BlogPosting structured data: lets search engines show the headline, date,
 // author and photo in results. The breadcrumb (Home › Journal › article)
 // replaces the bare URL under the result.
 function articleJsonLd(a: PublishedPost) {
   const url = absoluteUrl(`/journal/${a.slug}`);
+  // The author's credentials (E-E-A-T for health content): degrees as the
+  // name suffix, registration as the description.
+  const author = a.author
+    ? {
+        "@type": "Person",
+        name: a.author,
+        honorificSuffix: a.authorQualifications.replace(/[,\s]+$/, "") || undefined,
+        description: a.authorRegistration || undefined,
+      }
+    : undefined;
+  const reviewed = Boolean(splitReview(a).reviewNote);
   const posting = {
     "@type": "BlogPosting",
     headline: a.title,
@@ -63,7 +82,7 @@ function articleJsonLd(a: PublishedPost) {
     image: a.cover ? absoluteUrl(a.cover) : undefined,
     datePublished: a.publishedOn || undefined,
     dateModified: a.updatedAt,
-    author: a.author ? { "@type": "Person", name: a.author } : undefined,
+    author,
     articleSection: a.tag || undefined,
     publisher: { "@type": "Organization", name: SITE_NAME, url: SITE_URL, logo: absoluteUrl("/easytive-logo.png") },
   };
@@ -75,7 +94,9 @@ function articleJsonLd(a: PublishedPost) {
       { "@type": "ListItem", position: 3, name: a.title },
     ],
   };
-  return { "@context": "https://schema.org", "@graph": [posting, breadcrumb] };
+  // "Medically reviewed by …": the page was reviewed by the author.
+  const page = reviewed && author ? { "@type": "MedicalWebPage", "@id": url, url, name: a.title, reviewedBy: author, lastReviewed: a.publishedOn || undefined } : null;
+  return { "@context": "https://schema.org", "@graph": page ? [posting, page, breadcrumb] : [posting, breadcrumb] };
 }
 
 export default function ArticlePage({ params }: PageProps<"/journal/[slug]">) {
@@ -120,15 +141,7 @@ async function Article({ params }: { params: PageProps<"/journal/[slug]">["param
   const a = await findArticle((await params).slug);
   if (!a) notFound();
 
-  // A closing "Medically reviewed by …" paragraph typed into the post goes
-  // below the separator line, like the Review note field.
-  let body = a.body;
-  let reviewNote = a.reviewNote;
-  const lastPara = body[body.length - 1];
-  if (!reviewNote && lastPara && /^medically reviewed\b/i.test(lastPara)) {
-    reviewNote = lastPara;
-    body = body.slice(0, -1);
-  }
+  const { body, reviewNote } = splitReview(a);
 
   // Last word in italics, like the site's other headings ("you *today*?").
   const cut = a.title.lastIndexOf(" ");
