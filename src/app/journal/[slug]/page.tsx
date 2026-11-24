@@ -110,7 +110,8 @@ function keepHyphens(text: string) {
   return text.split(/(\S*\w-\w\S*)/).map((part, i) => (i % 2 ? <span className="nowrap" key={i}>{part}</span> : part));
 }
 
-// *word* in the post body renders bold (the admin types it in plain text).
+// *word* in the post body renders bold (the admin types it in plain text);
+// a paragraph that is all *...* becomes a heading.
 function withBold(text: string) {
   return text.split(/\*([^*\n]+)\*/).map((part, i) => (i % 2 ? <strong key={i}>{part}</strong> : part));
 }
@@ -155,9 +156,11 @@ async function Article({ params }: { params: PageProps<"/journal/[slug]">["param
           </div>
         </div>
         <div className="art-body">
-          {a.body.map((p, i) => (
-            <p key={i}>{withBold(p)}</p>
-          ))}
+          {a.body.map((p, i) => {
+            // A paragraph that is only *text* is a section heading.
+            const heading = /^\*([^*\n]+)\*$/.exec(p);
+            return heading ? <h2 key={i}>{heading[1]}</h2> : <p key={i}>{withBold(p)}</p>;
+          })}
         </div>
         <Link className="link art-back" href="/journal">
           All articles <Arrow />
