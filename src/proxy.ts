@@ -1,21 +1,45 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { ADMIN_COOKIE, looksLikeSessionToken } from "@/lib/session";
 
-// Outer fence for /admin, before any rendering starts: a request with no
-// plausible session cookie is sent to the login page straight away.
+// Two jobs, before any rendering starts:
 //
-// This is deliberately only a shape check. The real decision (is this token
-// in the database, unexpired, and its account enabled?) is made on every page
-// and in every server action by lib/auth.ts, which is what actually protects
-// the data. Keeping the database out of the proxy keeps it fast, and a forged
-// cookie that passes here still gets nothing.
+// 1. Link previews are switched off. Chat and social apps (WhatsApp, iMessage,
+//    Facebook, X, LinkedIn, Slack, Telegram, Discord…) fetch a shared link with
+//    their own bot and build a card from its title, description and image. Those
+//    bots get an empty 403 here, so a shared link shows as a bare URL. Search
+//    engine crawlers (Googlebot, Bingbot) are not on the list and see the site as
+//    normal. To bring previews back, delete PREVIEW_BOT and its check below; the
+//    Open Graph tags and app/opengraph-image.jpg are still in place.
+//
+// 2. Outer fence for /admin: a request with no plausible session cookie is sent
+//    to the login page straight away. This is deliberately only a shape check.
+//    The real decision (is this token in the database, unexpired, and its account
+//    enabled?) is made on every page and in every server action by lib/auth.ts,
+//    which is what actually protects the data. Keeping the database out of the
+//    proxy keeps it fast, and a forged cookie that passes here still gets nothing.
 
-const OPEN_PATHS = new Set(["/admin/login"]);
+// iMessage's preview fetch identifies itself as facebookexternalhit + Twitterbot;
+// Microsoft Teams and Skype as SkypeUriPreview. Only bot names here: in-app
+// browsers (Instagram, LINE, Snapchat…) carry their app's name in real visitors'
+// user agents, so matching on those would lock people out.
+const PREVIEW_BOT =
+  /WhatsApp|facebookexternalhit|Facebot|Twitterbot|LinkedInBot|Slackbot|TelegramBot|Discordbot|SkypeUriPreview|Pinterestbot|redditbot|vkShare|Embedly|Iframely/i;
+
+const ADMIN_OPEN_PATHS = new Set(["/admin/login"]);
 
 export function proxy(request: NextRequest) {
-  const { pathname } = request.nextUrl;
+  if (PREVIEW_BOT.test(request.headers.get("user-agent") ?? "")) {
+    return new NextResponse(null, {
+      status: 403,
+      // Don't let a CDN serve this empty answer to anyone else.
+      headers: { "Cache-Control": "private, no-store", Vary: "User-Agent" },
+    });
+  }
 
-  if (!OPEN_PATHS.has(pathname) && !looksLikeSessionToken(request.cookies.get(ADMIN_COOKIE)?.value)) {
+  const { pathname } = request.nextUrl;
+  if (pathname !== "/admin" && !pathname.startsWith("/admin/")) return NextResponse.next();
+
+  if (!ADMIN_OPEN_PATHS.has(pathname) && !looksLikeSessionToken(request.cookies.get(ADMIN_COOKIE)?.value)) {
     return NextResponse.redirect(new URL("/admin/login", request.url));
   }
 
@@ -27,5 +51,6 @@ export function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/admin", "/admin/:path*"],
+  // Every page and the share image; not build assets or files search engines need.
+  matcher: ["/((?!_next/static|_next/image|favicon.ico|robots.txt|sitemap.xml).*)"],
 };
