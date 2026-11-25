@@ -112,6 +112,12 @@ header.site.lined {
 .slim-drop a:hover, .slim-drop a.on { color: #000; }
 @keyframes dropIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: none; } }
 
+/* Content pages (about, journal, articles) fill at least the screen under the
+   68px header, so the footer always starts below the fold instead of floating
+   up the page when there's little content. The home page's hero sets its own
+   height, and the 404 page (.nf) does the same thing itself. */
+main:not(#top) { min-height: calc(100svh - 68px); }
+
 /* Pre-launch hero: a looping video under the 68px sticky header. Full screen
    on wider screens, a 4:5 frame (the mobile cut's shape) on phones. */
 .hero { position: relative; overflow: hidden; height: calc(100svh - 68px); min-height: 520px; background: #3a2716; color: var(--white); }
