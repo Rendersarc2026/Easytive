@@ -3,6 +3,7 @@ import { Playfair_Display } from "next/font/google";
 import "./globals.css";
 import "./site.css";
 import { SITE_DESCRIPTION, SITE_NAME, SITE_URL, siteOpenGraph } from "@/lib/site";
+import { WhatsAppButton } from "@/components/WhatsAppButton";
 
 const playfair = Playfair_Display({
   variable: "--font-playfair",
@@ -25,7 +26,10 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="en" data-scroll-behavior="smooth" className={`${playfair.variable} antialiased`}>
-      <body className="min-h-screen">{children}</body>
+      <body className="min-h-screen">
+        {children}
+        <WhatsAppButton />
+      </body>
     </html>
   );
 }

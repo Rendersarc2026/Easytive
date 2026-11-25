@@ -10,6 +10,13 @@ export const prelaunchNav: { label: string; href: string }[] = [
   { label: "Journals", href: "/journal" },
 ];
 
+// ---- WhatsApp (floating chat button, components/WhatsAppButton.tsx) ----------
+// Easytive Support business number, digits only with country code (+91 90481 18666).
+export const whatsapp = {
+  number: "919048118666",
+  message: "Hi Easytive, I have a question.",
+};
+
 // ---- Hero video (pre-launch home) --------------------------------------------
 // Two cuts in the storage bucket, uploaded with scripts/upload-media.mjs:
 // 1280×720 for wide screens, 1080×1344 for phones and portrait screens (the wide

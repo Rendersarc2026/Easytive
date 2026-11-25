@@ -280,3 +280,17 @@ footer.site-foot .wrap { max-width: none; padding-block: clamp(56px, 6vw, 96px) 
 .more-spin { width: 14px; height: 14px; border: 2px solid currentColor; border-right-color: transparent; border-radius: 50%; animation: more-spin 0.7s linear infinite; }
 @keyframes more-spin { to { transform: rotate(360deg); } }
 @media (prefers-reduced-motion: reduce) { .more-spin { animation-duration: 2s; } }
+
+/* Floating WhatsApp chat button (components/WhatsAppButton.tsx), bottom-right on every public page.
+   Above the header (z 50) and its menu (z 60); clears the iPhone home bar. */
+.wa-fab {
+  position: fixed; right: clamp(16px, 2.5vw, 28px); bottom: calc(clamp(16px, 2.5vw, 28px) + env(safe-area-inset-bottom));
+  z-index: 70; display: grid; place-items: center; width: 56px; height: 56px; border-radius: 50%;
+  background: #25d366; color: #fff; box-shadow: 0 6px 20px rgb(0 0 0 / 0.18);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.wa-fab svg { width: 30px; height: 30px; }
+.wa-fab:hover { transform: translateY(-2px); box-shadow: 0 10px 26px rgb(0 0 0 / 0.24); }
+.wa-fab:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+@media (max-width: 760px) { .wa-fab { width: 50px; height: 50px; } .wa-fab svg { width: 27px; height: 27px; } }
+@media (prefers-reduced-motion: reduce) { .wa-fab { transition: none; } .wa-fab:hover { transform: none; } }
