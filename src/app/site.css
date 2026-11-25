@@ -123,6 +123,11 @@ header.site.lined {
 }
 .hero-copy .ctas { display: flex; justify-content: center; }
 .hero-copy .btn-light:hover { background: var(--white); opacity: 0.9; }
+/* Smaller launch-updates button on phones so it doesn't crowd the video. */
+@media (max-width: 760px) {
+  .hero-copy .btn { height: 38px; padding: 0 18px; gap: 9px; font-size: 0.62rem; letter-spacing: 0.2em; }
+  .hero-copy .btn svg { width: 12px; height: 8px; }
+}
 
 /* medical advisory board */
 .board { padding-block: var(--sec) 0; }
@@ -228,6 +233,12 @@ footer.site-foot .wrap { max-width: none; padding-block: clamp(56px, 6vw, 96px) 
 .fnews input::placeholder { color: #8e8b85; }
 .fnews .btn { height: 46px; border-color: #e4e3df; color: #e4e3df; }
 .fnews .btn:hover { background: #e4e3df; color: var(--obsidian); }
+/* Smaller email field and Subscribe button on phones, matching the hero button.
+   The field's text stays 16px: smaller and iOS zooms the page when it's tapped. */
+@media (max-width: 760px) {
+  .fnews input { height: 38px; padding: 0 16px; font-size: 16px; }
+  .fnews .btn { height: 38px; padding: 0 18px; gap: 9px; font-size: 0.62rem; letter-spacing: 0.2em; }
+}
 .fnote { font-size: 0.8rem; color: #a3a09a; margin-top: 10px; min-height: 1.2em; }
 .fine { display: flex; justify-content: space-between; gap: 24px; flex-wrap: wrap; margin-top: clamp(48px, 5vw, 72px); padding-top: 20px; border-top: 1px solid #3b3a36; font-size: 0.74rem; color: #8e8b85; }
 .fine p { max-width: 84ch; }
