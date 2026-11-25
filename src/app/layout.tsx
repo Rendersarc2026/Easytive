@@ -12,7 +12,7 @@ const playfair = Playfair_Display({
 });
 
 // Defaults for every page. Pages set their own `title` (shown as "<title> · Easytive")
-// and `alternates.canonical`. The share image is app/opengraph-image.jpg.
+// and `alternates.canonical`.
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: { default: `${SITE_NAME} · Everyday bladder and urinary tract comfort`, template: `%s · ${SITE_NAME}` },
