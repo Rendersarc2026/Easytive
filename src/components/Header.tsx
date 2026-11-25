@@ -26,6 +26,15 @@ export function Header() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  // Widening the window past the menu breakpoint closes the dropdown, so it
+  // isn't still open when the screen narrows again.
+  useEffect(() => {
+    const wide = window.matchMedia("(min-width: 901px)");
+    const onChange = () => wide.matches && setOpen(false);
+    wide.addEventListener("change", onChange);
+    return () => wide.removeEventListener("change", onChange);
+  }, []);
+
   // While the dropdown is open, Esc or a click outside closes it.
   useEffect(() => {
     if (!open) return;

@@ -87,6 +87,8 @@ header.site.lined {
 .logo svg { height: 20px; width: auto; display: block; color: var(--ink); }
 .menu-btn { display: none; }
 @media (max-width: 900px) { .hbar nav { display: none; } .menu-btn { display: block; justify-self: start; } }
+/* The dropdown belongs to the narrow layout only; never show it beside the full nav. */
+@media (min-width: 901px) { .slim-drop { display: none; } }
 /* Slim header's hamburger: three bars that become an X while the dropdown is open. */
 .menu-btn.icon-btn { width: 38px; height: 38px; padding: 0; }
 .menu-btn.icon-btn span { width: 18px; height: 2px; background: var(--ink); transition: transform 0.2s ease, opacity 0.2s ease; }
