@@ -15,13 +15,15 @@ const securityHeaders = [
   { key: "Cross-Origin-Opener-Policy", value: "same-origin" },
 ];
 
-// Content Security Policy for the admin panel: everything must come from this
-// site. Inline scripts stay allowed because the prerendered page shell that
-// Next.js emits depends on them (a per-request nonce can't be put into a shell
-// built ahead of time); the rest of the policy still blocks plugin content,
-// foreign frames, <base> hijacking, forms posting elsewhere, and any request
-// to another origin, which is where injected markup would send stolen data.
-const adminCsp = [
+// Content Security Policy for every page (public site and admin): everything
+// must come from this site. Inline scripts stay allowed because the
+// prerendered page shell that Next.js emits depends on them (a per-request
+// nonce can't be put into a shell built ahead of time); the rest of the policy
+// still blocks plugin content, foreign frames, <base> hijacking, forms posting
+// elsewhere, and any request to another origin, which is where injected markup
+// would send stolen data. If a third-party script or embed is added later
+// (analytics, chat widget), its origin must be added here.
+const csp = [
   "default-src 'self'",
   `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""}`,
   "style-src 'self' 'unsafe-inline'",
@@ -61,9 +63,7 @@ const nextConfig: NextConfig = {
   },
   async headers() {
     return [
-      { source: "/:path*", headers: securityHeaders },
-      { source: "/admin/:path*", headers: [{ key: "Content-Security-Policy", value: adminCsp }] },
-      { source: "/admin", headers: [{ key: "Content-Security-Policy", value: adminCsp }] },
+      { source: "/:path*", headers: [...securityHeaders, { key: "Content-Security-Policy", value: csp }] },
     ];
   },
 };

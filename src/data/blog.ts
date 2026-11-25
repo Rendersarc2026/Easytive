@@ -122,20 +122,36 @@ const MAX_PAGE = 90;
 // sort first).
 const CURSOR = /^(\d{4}-\d{2}-\d{2}|infinity)_(\d{1,18})$/;
 
+/** A well-formed cursor whose date is a real calendar date (else Postgres would throw). */
 export function isCursor(value: unknown): value is string {
-  return typeof value === "string" && CURSOR.test(value);
+  if (typeof value !== "string") return false;
+  const m = CURSOR.exec(value);
+  if (!m) return false;
+  if (m[1] === "infinity") return true;
+  const d = new Date(`${m[1]}T00:00:00Z`);
+  return !Number.isNaN(d.getTime()) && d.toISOString().startsWith(m[1]);
+}
+
+/**
+ * Page size from a caller (the load-more actions are callable by anyone):
+ * rounded up to a whole number of pages and capped, so junk input can't
+ * break the query or spread the cache over countless keys.
+ */
+function pageLimit(limit: unknown): number {
+  if (typeof limit !== "number" || !Number.isFinite(limit) || limit < 1) return PAGE_SIZE;
+  return Math.min(MAX_PAGE, Math.ceil(limit / PAGE_SIZE) * PAGE_SIZE);
 }
 
 export type PostPage<T extends BlogPost = BlogPost> = { posts: T[]; next: string | null };
 
 /** One page of what readers see (posts with a title), newest first. */
 export async function getPublicPage(cursor: string | null, limit: number = PAGE_SIZE): Promise<PostPage<PublishedPost>> {
-  return (await postsPage("public", cursor, limit)) as PostPage<PublishedPost>;
+  return (await postsPage("public", cursor, pageLimit(limit))) as PostPage<PublishedPost>;
 }
 
 /** One page of every post, untitled drafts first, then newest first. For the admin. */
 export async function getAdminPage(cursor: string | null, limit: number = PAGE_SIZE): Promise<PostPage> {
-  return postsPage("all", cursor, limit);
+  return postsPage("all", cursor, pageLimit(limit));
 }
 
 async function postsPage(scope: "public" | "all", cursor: string | null, limit: number): Promise<PostPage> {

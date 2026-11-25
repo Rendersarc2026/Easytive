@@ -10,6 +10,7 @@
 
 import { randomUUID } from "node:crypto";
 import { AwsClient } from "aws4fetch";
+import sharp from "sharp";
 export { mediaKey } from "./media-path";
 
 /** Largest accepted upload. Vercel rejects request bodies over 4.5 MB. */
@@ -60,16 +61,46 @@ export class UploadError extends Error {
   }
 }
 
+// Largest decoded image accepted (~70 megapixels), so a small file that
+// decodes to a huge bitmap (a "decompression bomb") is refused.
+const MAX_PIXELS = 70_000_000;
+
+/**
+ * Re-encode an image so nothing but its pixels (and colour profile) is
+ * published. Phone photos carry EXIF: GPS location, device serial, capture
+ * time, sometimes the owner's name; served as-is at /media they would leak
+ * all of it. The EXIF orientation is applied to the pixels first, so photos
+ * stay the right way up. Anything that doesn't decode is rejected.
+ */
+async function stripMetadata(bytes: Uint8Array, ext: Exclude<Ext, "mp4">): Promise<Uint8Array<ArrayBuffer>> {
+  try {
+    const img = sharp(bytes, { limitInputPixels: MAX_PIXELS, failOn: "error" }).autoOrient().keepIccProfile();
+    const out =
+      ext === "jpg"
+        ? img.jpeg({ quality: 90, mozjpeg: true })
+        : ext === "png"
+          ? img.png()
+          : ext === "webp"
+            ? img.webp({ quality: 90 })
+            : img.avif({ quality: 70, effort: 2 });
+    return new Uint8Array(await out.toBuffer());
+  } catch {
+    throw new UploadError("type");
+  }
+}
+
 /**
  * Store an uploaded image and return its bucket key. Only JPEG, PNG, WebP
  * and AVIF are accepted, checked from the file's contents, up to 4 MB.
+ * Metadata (EXIF/GPS, XMP, IPTC, comments) is stripped before storing.
  */
 export async function uploadImage(file: File): Promise<string> {
   if (file.size === 0) throw new UploadError("empty");
   if (file.size > MAX_UPLOAD_BYTES) throw new UploadError("size");
-  const bytes = new Uint8Array(await file.arrayBuffer());
-  const ext = sniff(bytes.subarray(0, 16));
-  if (!ext) throw new UploadError("type");
+  const raw = new Uint8Array(await file.arrayBuffer());
+  const ext = sniff(raw.subarray(0, 16));
+  if (!ext || ext === "mp4") throw new UploadError("type");
+  const bytes = await stripMetadata(raw, ext);
 
   const key = `uploads/${new Date().getUTCFullYear()}/${randomUUID()}.${ext}`;
   const { client, objectUrl } = config();
