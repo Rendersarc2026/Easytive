@@ -1,11 +1,12 @@
 "use client";
 
+import { Suspense } from "react";
 import { usePathname } from "next/navigation";
 import { whatsapp } from "@/data/site";
 
 // Floating "chat on WhatsApp" button, bottom-right on every public page.
 // Opens a chat with Easytive Support (number in data/site.ts) with a greeting filled in.
-export function WhatsAppButton() {
+function WhatsAppFab() {
   const pathname = usePathname();
   if (pathname?.startsWith("/admin")) return null;
 
@@ -19,5 +20,15 @@ export function WhatsAppButton() {
         />
       </svg>
     </a>
+  );
+}
+
+// usePathname() can't resolve while an unknown dynamic route (/admin/[...missing])
+// is prerendered under Cache Components, so keep it inside a Suspense boundary.
+export function WhatsAppButton() {
+  return (
+    <Suspense fallback={null}>
+      <WhatsAppFab />
+    </Suspense>
   );
 }
