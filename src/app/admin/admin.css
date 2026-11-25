@@ -31,8 +31,9 @@
 .a-side {
   width: 272px;
   flex: none;
-  border-right: 1px solid #e4e3df;
-  background: #fff;
+  border-right: 1px solid #22211f;
+  background: #22211f;
+  color: #f4f1eb;
   padding: 28px 20px;
   display: flex;
   flex-direction: column;
@@ -48,7 +49,7 @@
   font-size: 24px;
   letter-spacing: 0.01em;
   padding: 0 10px 18px;
-  border-bottom: 1px solid #e4e3df;
+  border-bottom: 1px solid #3a3833;
   margin-bottom: 10px;
 }
 
@@ -56,25 +57,30 @@
   display: block;
   padding: 11px 14px;
   border-radius: 10px;
-  color: #4c4842;
+  color: #b9b4ab;
   text-decoration: none;
   font-size: 15px;
 }
 
 .a-navlink:hover {
-  background: #f4f1eb;
-  color: #22211f;
+  background: #2f2e2a;
+  color: #fff;
 }
 
 .a-navlink.on {
-  background: #22211f;
-  color: #fff;
+  background: #fff;
+  color: #22211f;
+}
+
+.a-navlink:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 1px;
 }
 
 .a-sidetail {
   margin-top: auto;
   padding-top: 14px;
-  border-top: 1px solid #e4e3df;
+  border-top: 1px solid #3a3833;
   display: grid;
   gap: 6px;
 }
@@ -87,7 +93,7 @@
   padding: 10px;
   margin-bottom: 4px;
   border-radius: 12px;
-  background: #f6f3ee;
+  background: #2f2e2a;
 }
 
 .a-avatar {
@@ -97,8 +103,8 @@
   border-radius: 50%;
   display: grid;
   place-items: center;
-  background: #22211f;
-  color: #fff;
+  background: #fff;
+  color: #22211f;
   font-size: 14px;
   font-weight: 600;
 }
@@ -112,7 +118,7 @@
 .a-accountemail {
   font-size: 13.5px;
   font-weight: 500;
-  color: #22211f;
+  color: #fff;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -122,7 +128,7 @@
   font-size: 10.5px;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: #7a7168;
+  color: #9a948a;
 }
 
 /* View site + Log out: a matching pair of small outlined buttons. */
@@ -143,10 +149,10 @@
   justify-content: center;
   gap: 6px;
   padding: 8px 6px;
-  border: 1px solid #e4e3df;
+  border: 1px solid #4a4844;
   border-radius: 10px;
-  background: #fff;
-  color: #4c4842;
+  background: transparent;
+  color: #d9d5cd;
   font: inherit;
   font-size: 12.5px;
   text-decoration: none;
@@ -155,13 +161,13 @@
 }
 
 .a-sideaction:hover {
-  border-color: #c9c4ba;
-  background: #faf9f6;
-  color: #22211f;
+  border-color: #8e8b85;
+  background: #2f2e2a;
+  color: #fff;
 }
 
 .a-sideaction:focus-visible {
-  outline: 2px solid #22211f;
+  outline: 2px solid #fff;
   outline-offset: 1px;
 }
 
@@ -186,10 +192,18 @@
 .a-main {
   flex: 1;
   min-width: 0;
-  padding: 40px 48px 72px;
+  padding: 24px;
 }
 
-.a-main > * {
+/* Every page's content sits inside one outlined panel that fills the main area. */
+.a-panel {
+  min-height: calc(100vh - 48px);
+  border: 1px solid #e4e3df;
+  border-radius: 20px;
+  padding: 36px 40px 64px;
+}
+
+.a-panel > * {
   max-width: 1200px;
 }
 
@@ -830,12 +844,20 @@
   position: absolute;
   top: 14px;
   right: 14px;
+  /* Sits on the dark sidebar. */
+  border-color: #4a4844;
+  background: transparent;
+  color: #fff;
 }
 
 .a-menubtn:focus-visible,
 .a-drawerclose:focus-visible {
   outline: 2px solid #22211f;
   outline-offset: 2px;
+}
+
+.a-drawerclose:focus-visible {
+  outline-color: #fff;
 }
 
 /* No page scrolling behind the open drawer. */
@@ -891,7 +913,12 @@ html:has(.a-shell[data-menu="open"]) {
     animation: a-sk-in 0.2s ease;
   }
   .a-main {
-    padding: 24px 16px 56px;
+    padding: 12px;
+  }
+  .a-panel {
+    min-height: 0;
+    border-radius: 16px;
+    padding: 20px 16px 48px;
   }
   .a-main h1 {
     font-size: 28px;
@@ -964,62 +991,27 @@ html:has(.a-shell[data-menu="open"]) {
   background: #8a2b19;
 }
 
-/* ---- Page loading placeholder (fallback.tsx) ------------------------------------ */
+/* ---- Page loading spinner (fallback.tsx) ---------------------------------------- */
 
-/* Fades in after a short delay, so quick page loads don't flash it. */
-.a-skeleton {
+/* Centred in the panel: while loading, the panel becomes a column with even
+   padding and the spinner's box fills it (and isn't capped at the content's
+   1200px). Fades in after a short delay, so quick page loads don't flash it. */
+.a-panel:has(> .a-loading) {
+  display: flex;
+  flex-direction: column;
+  padding-block: 36px;
+}
+
+.a-panel > .a-loading {
+  flex: 1;
+  max-width: none;
+}
+
+.a-loading {
   display: grid;
-  gap: 12px;
+  place-items: center;
+  min-height: 60vh;
   animation: a-sk-in 0.2s ease 0.15s both;
-}
-
-.a-sk {
-  display: block;
-  height: 14px;
-  border-radius: 8px;
-  background: linear-gradient(90deg, #eeebe5 0%, #f7f5f1 40%, #eeebe5 80%) 0 0 / 300% 100%;
-  animation: a-sk-shimmer 1.4s ease-in-out infinite;
-}
-
-.a-sk-label {
-  width: 80px;
-  height: 10px;
-}
-
-.a-sk-title {
-  width: 260px;
-  max-width: 70%;
-  height: 34px;
-  margin-bottom: 4px;
-}
-
-.a-sk-line {
-  width: 520px;
-  max-width: 90%;
-  margin-bottom: 16px;
-}
-
-.a-sk-card {
-  display: grid;
-  gap: 14px;
-  background: #fff;
-  border: 1px solid #e4e3df;
-  border-radius: 14px;
-  padding: 22px;
-}
-
-.a-sk-heading {
-  width: 180px;
-  height: 22px;
-}
-
-.a-sk-row {
-  height: 52px;
-  border-radius: 12px;
-}
-
-.a-sk-row.short {
-  width: 60%;
 }
 
 .a-sr {
@@ -1031,24 +1023,9 @@ html:has(.a-shell[data-menu="open"]) {
   white-space: nowrap;
 }
 
-@keyframes a-sk-shimmer {
-  from {
-    background-position: 100% 0;
-  }
-  to {
-    background-position: 0 0;
-  }
-}
-
 @keyframes a-sk-in {
   from {
     opacity: 0;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .a-sk {
-    animation: none;
   }
 }
 

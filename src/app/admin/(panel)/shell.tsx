@@ -82,7 +82,7 @@ export function AdminShell({ sidebar, children }: { sidebar: ReactNode; children
       {open && <div className="a-scrim" onClick={close} aria-hidden />}
 
       <main className="a-main" inert={open}>
-        {children}
+        <div className="a-panel">{children}</div>
       </main>
     </div>
   );
