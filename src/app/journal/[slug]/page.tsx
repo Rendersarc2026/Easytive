@@ -46,7 +46,7 @@ export async function generateMetadata({ params }: PageProps<"/journal/[slug]">)
       section: a.tag || undefined,
       ...(images && { images }),
     },
-    twitter: { title: a.title, description, ...(images && { images }) },
+    twitter: { card: images ? "summary_large_image" : "summary", title: a.title, description, ...(images && { images }) },
   };
 }
 

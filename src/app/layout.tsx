@@ -19,7 +19,7 @@ export const metadata: Metadata = {
   description: SITE_DESCRIPTION,
   applicationName: SITE_NAME,
   openGraph: siteOpenGraph,
-  twitter: { card: "summary_large_image" },
+  twitter: { card: "summary" },
   formatDetection: { telephone: false, email: false, address: false },
 };
 
