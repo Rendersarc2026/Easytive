@@ -118,6 +118,10 @@ header.site.lined {
    height, and the 404 page (.nf) does the same thing itself. */
 main:not(#top) { min-height: calc(100svh - 68px); }
 
+/* Loading spinner (components/PageLoader.tsx), centred in the space under the header. */
+.page-loader { min-height: calc(100svh - 68px); display: grid; place-items: center; animation: page-loader-in 0.2s ease 0.15s both; }
+@keyframes page-loader-in { from { opacity: 0; } }
+
 /* Pre-launch hero: a looping video under the 68px sticky header. Full screen
    on wider screens, a 4:5 frame (the mobile cut's shape) on phones. */
 .hero { position: relative; overflow: hidden; height: calc(100svh - 68px); min-height: 520px; background: #3a2716; color: var(--white); }

@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { Header } from "@/components/Header";
 import { Arrow } from "@/components/icons";
+import { PageLoader } from "@/components/PageLoader";
 import { Footer } from "@/components/sections/Footer";
 import { getPostBySlug, getPublishedSlugs, type PublishedPost } from "@/data/blog";
 import { absoluteUrl, excerpt, jsonLd, SITE_NAME, SITE_URL } from "@/lib/site";
@@ -12,7 +13,7 @@ import { absoluteUrl, excerpt, jsonLd, SITE_NAME, SITE_URL } from "@/lib/site";
 // Article page: grey title block over the photo on the left (pinned on desktop),
 // author + body on the right. Stacks title → photo → text on phones.
 // The slug is URL data, so the article streams inside <Suspense>; the header,
-// footer and an empty grey/photo frame show instantly on navigation.
+// footer and a loading spinner show instantly on navigation.
 
 const findArticle = getPostBySlug;
 
@@ -104,7 +105,7 @@ export default function ArticlePage({ params }: PageProps<"/journal/[slug]">) {
     <>
       <Header />
       <main>
-        <Suspense fallback={<ArticleFrame />}>
+        <Suspense fallback={<PageLoader />}>
           <Article params={params} />
         </Suspense>
       </main>
@@ -114,18 +115,6 @@ export default function ArticlePage({ params }: PageProps<"/journal/[slug]">) {
 }
 
 // Same grid as the article, minus the content: holds the layout while it loads.
-function ArticleFrame() {
-  return (
-    <div className="article" aria-busy="true">
-      <div className="art-l">
-        <div className="art-head" />
-        <div className="art-ph" />
-      </div>
-      <div className="art-r" />
-    </div>
-  );
-}
-
 // Keeps hyphenated words ("D-Mannose") on one line in the big title.
 function keepHyphens(text: string) {
   return text.split(/(\S*\w-\w\S*)/).map((part, i) => (i % 2 ? <span className="nowrap" key={i}>{part}</span> : part));
