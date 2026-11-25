@@ -8,7 +8,7 @@ export const SITE_URL = (process.env.SITE_URL ?? (vercel ? `https://${vercel}` :
 export const SITE_NAME = "Easytive";
 
 export const SITE_DESCRIPTION =
-  "Doctor-guided, third-party tested supplements for everyday bladder and urinary tract comfort.";
+  "Easytive is a science-led health brand committed to expanding the possibilities of everyday life. We bring together global health research and the expertise of doctors and scientists to develop thoughtful care that helps people live beyond the limitations of their health.";
 
 /**
  * Open Graph defaults. A page that sets its own `openGraph` replaces the layout's
