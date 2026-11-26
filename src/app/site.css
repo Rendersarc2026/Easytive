@@ -190,7 +190,7 @@ main:not(#top) { min-height: calc(100svh - 68px); }
 
 /* blog article: grey title + photo on the left (pinned on desktop), author + text on the right */
 .article { display: grid; grid-template-columns: minmax(0, 52fr) minmax(0, 48fr); }
-.art-l { position: sticky; top: 68px; height: calc(100svh - 68px); min-height: 560px; display: grid; grid-template-rows: auto minmax(0, 1fr); }
+.art-l { position: sticky; top: 68px; height: calc(100svh - 68px); min-height: 560px; display: grid; grid-template-rows: minmax(50%, auto) minmax(0, 1fr); }
 .art-head { background: var(--cloudy); padding: clamp(40px, 7vh, 96px) var(--pad) clamp(40px, 8vh, 110px); }
 .art-head .label { display: block; margin-bottom: 18px; }
 .art-head h1 { font-size: clamp(2.4rem, 4.4vw, 4.4rem); line-height: 1.04; max-width: 14ch; }
