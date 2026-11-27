@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import { socials } from "@/data/site";
+import { SocialIcon } from "@/components/icons";
 
 export function Footer() {
   const [note, setNote] = useState("");
@@ -11,6 +13,15 @@ export function Footer() {
         <div className="ftop solo">
           <div className="fbrand">
             <Image src="/easytive-logo.png" alt="Easytive" width={3202} height={700} sizes="120px" />
+            <ul className="fsocial" aria-label="Easytive on social media">
+              {socials.map((s) => (
+                <li key={s.name}>
+                  <a href={s.href} target="_blank" rel="noopener noreferrer" aria-label={`Easytive on ${s.name}`}>
+                    <SocialIcon name={s.name} />
+                  </a>
+                </li>
+              ))}
+            </ul>
           </div>
           <div className="fnews" id="letter">
             <h4>The Easy Letter</h4>

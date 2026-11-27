@@ -2,6 +2,7 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/sections/Footer";
 import { Hero } from "@/components/sections/Hero";
 import type { Metadata } from "next";
+import { socials } from "@/data/site";
 import { absoluteUrl, jsonLd, SITE_DESCRIPTION, SITE_NAME, SITE_URL, siteOpenGraph } from "@/lib/site";
 
 export const metadata: Metadata = {
@@ -20,6 +21,7 @@ const structuredData = {
       url: SITE_URL,
       logo: absoluteUrl("/easytive-logo.png"),
       description: SITE_DESCRIPTION,
+      sameAs: socials.map((s) => s.href),
     },
     {
       "@type": "WebSite",

@@ -260,6 +260,12 @@ footer.site-foot .wrap { max-width: none; padding-block: clamp(56px, 6vw, 96px) 
 .ftop.solo { grid-template-columns: 1fr minmax(0, 420px); align-items: end; }
 @media (max-width: 760px) { .ftop.solo { grid-template-columns: 1fr; } }
 #letter { scroll-margin-top: 24px; }
+/* Social icons under the footer logo */
+.fsocial { display: flex; gap: 10px; margin: 24px 0 0; padding: 0; list-style: none; }
+.fsocial a { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; border: 1px solid #4a4844; color: #e4e3df; transition: background 0.2s, color 0.2s, border-color 0.2s; }
+.fsocial a:hover { background: #e4e3df; border-color: #e4e3df; color: var(--obsidian); }
+.fsocial a:focus-visible { outline: 2px solid #e4e3df; outline-offset: 3px; }
+.fsocial svg { width: 17px; height: 17px; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }

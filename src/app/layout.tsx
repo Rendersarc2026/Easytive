@@ -19,7 +19,7 @@ export const metadata: Metadata = {
   description: SITE_DESCRIPTION,
   applicationName: SITE_NAME,
   openGraph: siteOpenGraph,
-  twitter: { card: "summary" },
+  twitter: { card: "summary", site: "@easytivehealth" },
   formatDetection: { telephone: false, email: false, address: false },
 };
 

@@ -100,3 +100,13 @@ export const aboutCopy: AboutCopy = {
   teamHeading: "Meet the minds behind the *science*.",
   teamSub: "Doctors and scientists guide our approach to health, shape our formulations and bring scientific knowledge into everyday care.",
 };
+
+// ---- Social profiles (footer icons, components/sections/Footer.tsx; Organization `sameAs` on the home page) ----
+export const socials = [
+  { name: "Instagram", href: "https://www.instagram.com/easytive.in/" },
+  { name: "Facebook", href: "https://www.facebook.com/people/EasytiveOfficial/61596274130972/" },
+  { name: "X", href: "https://x.com/easytivehealth" },
+  { name: "LinkedIn", href: "https://www.linkedin.com/company/easytive" },
+] as const;
+
+export type SocialName = (typeof socials)[number]["name"];
