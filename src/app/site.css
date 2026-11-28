@@ -232,18 +232,6 @@ main:not(#top) { min-height: calc(100svh - 68px); }
 /* The board is the last section here, so give it extra room before the dark footer. */
 .about .board { padding-block-end: calc(var(--sec) * 1.5); }
 
-/* Privacy policy and terms (components/LegalPage.tsx) */
-.legal { padding-block: calc(var(--sec) * 0.8) calc(var(--sec) * 1.2); }
-.legal .wrap { max-width: 760px; }
-.legal .label { display: block; margin-bottom: 22px; }
-.legal h1 { font-size: clamp(2.1rem, 4.2vw, 3.4rem); }
-.legal-date { margin: 16px 0 clamp(36px, 5vw, 56px); color: var(--muted); font-size: 0.85rem; }
-.legal-body { display: grid; gap: 1em; color: #4a4843; font-size: 0.95rem; line-height: 1.7; }
-.legal-body h2 { margin: 1.2em 0 -0.2em; font-family: var(--sans); font-size: 1.1rem; font-weight: 600; line-height: 1.35; letter-spacing: 0; color: var(--ink); }
-.legal-body ul { margin: 0; padding-left: 1.2em; display: grid; gap: 0.5em; }
-.legal-body strong { font-weight: 600; color: #2b2a27; }
-.legal-body a { text-decoration: underline; text-underline-offset: 3px; }
-
 /* footer */
 footer.site-foot { background: var(--obsidian); color: #e4e3df; }
 /* Full width, like the header, so the content lines up with the screen edges on wide screens. */

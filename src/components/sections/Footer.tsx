@@ -53,8 +53,8 @@ export function Footer() {
             or on medication.
           </p>
           <div className="flegal">
-            <Link href="/privacy">Privacy policy</Link>
-            <Link href="/terms">Terms and conditions</Link>
+            <Link href="/">Privacy policy</Link>
+            <Link href="/">Terms and conditions</Link>
             <span>© 2026 Easytive</span>
           </div>
         </div>
