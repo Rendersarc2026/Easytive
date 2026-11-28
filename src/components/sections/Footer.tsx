@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { socials } from "@/data/site";
 import { SocialIcon } from "@/components/icons";
 
@@ -51,7 +52,11 @@ export function Footer() {
             not intended to diagnose, treat, cure or prevent any disease. Consult your doctor before use if you are pregnant, nursing
             or on medication.
           </p>
-          <span>© 2026 Easytive</span>
+          <div className="flegal">
+            <Link href="/privacy">Privacy policy</Link>
+            <Link href="/terms">Terms and conditions</Link>
+            <span>© 2026 Easytive</span>
+          </div>
         </div>
       </div>
     </footer>

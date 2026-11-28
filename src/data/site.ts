@@ -110,3 +110,14 @@ export const socials = [
 ] as const;
 
 export type SocialName = (typeof socials)[number]["name"];
+
+// ---- Legal pages (/privacy, /terms) --------------------------------------------
+// PLACEHOLDER: fill in the bracketed values before these pages go live.
+export const legal = {
+  company: "[Registered company name]",
+  address: "[Registered office address], Kochi, Kerala, India",
+  email: "[contact email]",
+  grievanceOfficer: "[Grievance Officer name]",
+  jurisdiction: "Kochi, Kerala",
+  updated: "28 November 2026",
+};

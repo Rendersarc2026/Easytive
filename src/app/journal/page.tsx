@@ -31,8 +31,8 @@ export default async function BlogPage() {
               </h1>
               <div className="r">
                 <p>
-                  Notes on everyday urinary health — habits, ingredients and movement, guided by our advisory
-                  board. First articles land as we get closer to launch.
+                  Everyday urinary health insights from the Easytive Advisory Board, exploring habits, ingredients and
+                  movement.
                 </p>
               </div>
             </div>
